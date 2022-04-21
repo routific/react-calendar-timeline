@@ -15,7 +15,7 @@ import Timeline, {
   RowItems,
   GroupRow,
   HelpersContext
-} from 'react-calendar-timeline'
+} from '@routific/react-calendar-timeline'
 import { useDrag, useDrop } from 'react-dnd'
 import * as d3 from 'd3'
 
@@ -269,6 +269,10 @@ export default class App extends Component {
     }
   }
 
+  handleZoom = (timelineContext, unit) => {
+    console.log('Zoomed', timelineContext, unit)
+  }
+
   moveResizeValidator = (action, item, time) => {
     const unavailableSlots = this.state.unavailableSlots[item.group]
     const originalItem = this.state.items.find(i => i.id === item.id)
@@ -384,6 +388,7 @@ export default class App extends Component {
           unavailableSlots: this.state.unavailableSlots,
           timelineLinks: this.state.timelineLinks
         }}
+        onZoom={this.handleZoom}
         // moveResizeValidator={this.moveResizeValidator}
       >
         <TimelineHeaders>
@@ -466,6 +471,7 @@ export default class App extends Component {
   }
 }
 
+/* eslint-disable react/prop-types */
 function Link({
   timelineLink,
   getItemAbsoluteDimensions,
@@ -544,6 +550,8 @@ const Links = React.memo(({
     </div>
   )
 })
+
+Links.displayName = 'Links'
 
 function Droppable({ children, itemIdAccepts, style, slot, onDrop, ...rest }) {
   const [collected, droppableRef] = useDrop({

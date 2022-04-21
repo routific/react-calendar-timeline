@@ -18,10 +18,10 @@
     "lib",
     "src"
   ],
-  "homepage": "https://github.com/namespace-ee/react-calendar-timeline",
+  "homepage": "https://github.com/routific/react-calendar-timeline",
   "repository": {
     "type": "git",
-    "url": "https://github.com/namespace-ee/react-calendar-timeline.git"
+    "url": "https://github.com/routific/react-calendar-timeline.git"
   },
   "author": "Marius Andra <marius.andra@gmail.com>",
   "contributors": [
@@ -93,7 +93,7 @@
   },
   "dependencies": {
     "classnames": "^2.2.6",
-    "create-react-context": "^0.2.2",
+    "create-react-context": "^0.3.0",
     "element-resize-detector": "^1.1.12",
     "lodash.isequal": "^4.5.0",
     "memoize-one": "^5.1.1"

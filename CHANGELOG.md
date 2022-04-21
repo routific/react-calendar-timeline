@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres (more or less) to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 0.30.0 (Unreleased)
 
 ### Fixes and Improvements
 
@@ -44,6 +44,16 @@ if you render a stateful component via `itemRenderer` then the state will be los
 
 - You need to do `e.stopPropagation()` for all callbacks passed to `itemRenderer`
 
+## 0.27.0
+
+* Add unit argument to onZoom and onTimeChange callbacks
+* Add `className` prop to Timeline component to override `react-calendar-timeline` class #682
+* Fix injecting custom vertical line's class names for time periods longer than day
+
+## 0.26.7
+
+* fix scrolling with trackpad @ilaiwi #679
+* remove duplicate proptype validation in `TimelineStateContext` @xat
 
 ## 0.26.6
 
@@ -80,11 +90,11 @@ Using controlled scroll and react-spring to trigger scrolling and create an anim
 
 * add documentation for `onItemDeselect` #350 @ilaiwi
 * solve a bug where `onItemDeselect` is not triggered as expected for several item clicks #350 @ilaiwi
-* fix row height on browser scaling #615 @gaston-niglia 
+* fix row height on browser scaling #615 @gaston-niglia
 
 ### Packages
 
-update to `node-sass@4.12.0` for newer versions of node. 
+update to `node-sass@4.12.0` for newer versions of node.
 
 ## 0.26.2
 
@@ -116,7 +126,7 @@ you can as well solve the issue without upgrading by adding the following style
 
 #### Breaking
 
-* Removed `<InfoLabel />` in favour of allowing for custom component to be rendered on move or resize. Check out the demo in `demo/app/demo-custom-info-label` for an example on how to display your own custom info label or [this example](https://codesandbox.io/s/timeline-demo-info-label-neec9). 
+* Removed `<InfoLabel />` in favour of allowing for custom component to be rendered on move or resize. Check out the demo in `demo/app/demo-custom-info-label` for an example on how to display your own custom info label or [this example](https://codesandbox.io/s/timeline-demo-info-label-neec9).
 
 
 ## 0.25.4
