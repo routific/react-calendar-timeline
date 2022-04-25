@@ -461,8 +461,10 @@ export default class ReactCalendarTimeline extends Component {
         (prevState.visibleTimeStart - prevState.canvasTimeStart) /
         oldZoom
     )
+    // Suggested change from https://github.com/namespace-ee/react-calendar-timeline/pull/851
+    this.scrollComponent.scrollLeft = scrollLeft
     if (componentScrollLeft !== scrollLeft) {
-      this.scrollComponent.scrollLeft = scrollLeft
+      // this.scrollComponent.scrollLeft = scrollLeft
       this.scrollHeaderRef.scrollLeft = scrollLeft
     }
   }

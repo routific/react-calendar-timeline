@@ -538,7 +538,7 @@ export function stackTimelineItems(
  * @param {*} width
  * @param {*} buffer
  */
-export function getCanvasWidth(width, buffer = 2) {
+export function getCanvasWidth(width, buffer = 3) {
   return width * buffer
 }
 
