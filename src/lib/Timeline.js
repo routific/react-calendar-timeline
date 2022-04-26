@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+import PropTypes, { number } from 'prop-types'
 import React, { Component } from 'react'
 import moment from 'moment'
 
@@ -112,6 +112,9 @@ export default class ReactCalendarTimeline extends Component {
     defaultTimeStart: PropTypes.object,
     defaultTimeEnd: PropTypes.object,
 
+    remoteZoomTimeStart: number,
+    remoteZoomTimeEnd: number,
+
     visibleTimeStart: PropTypes.number,
     visibleTimeEnd: PropTypes.number,
     onTimeChange: PropTypes.func,
@@ -205,6 +208,9 @@ export default class ReactCalendarTimeline extends Component {
 
     defaultTimeStart: null,
     defaultTimeEnd: null,
+
+    remoteZoomTimeStart: null,
+    remoteZoomTimeEnd: null,
 
     itemTouchSendsClick: false,
 
@@ -311,6 +317,8 @@ export default class ReactCalendarTimeline extends Component {
 
     this.state = {
       width: 1000,
+      remoteZoomTimeStart: this.props.remoteZoomTimeStart,
+      remoteZoomTimeEnd: this.props.remoteZoomTimeEnd,
       visibleTimeStart: visibleTimeStart,
       visibleTimeEnd: visibleTimeEnd,
       canvasTimeStart: canvasTimeStart,
@@ -378,7 +386,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { visibleTimeStart, visibleTimeEnd, items, groups } = nextProps
+    const { remoteZoomTimeStart, remoteZoomTimeEnd, items, groups } = nextProps
 
     // This is a gross hack pushing items and groups in to state only to allow
     // For the forceUpdate check
@@ -387,14 +395,15 @@ export default class ReactCalendarTimeline extends Component {
     // if the items or groups have changed we must re-render
     const forceUpdate = items !== prevState.items || groups !== prevState.groups
 
-    // We are a controlled component
-    if (visibleTimeStart && visibleTimeEnd) {
+    // We want to trigger a refresh with updated time range based on zoom
+    if (remoteZoomTimeStart !== prevState.remoteZoomTimeStart || remoteZoomTimeEnd !== prevState.remoteZoomTimeEnd) {
+      derivedState = { remoteZoomTimeStart, remoteZoomTimeEnd, items, groups }
       // Get the new canvas position
       Object.assign(
         derivedState,
         calculateScrollCanvas(
-          visibleTimeStart,
-          visibleTimeEnd,
+          remoteZoomTimeStart, // visibleTimeStart,
+          remoteZoomTimeEnd, // visibleTimeEnd,
           forceUpdate,
           items,
           groups,
@@ -461,10 +470,8 @@ export default class ReactCalendarTimeline extends Component {
         (prevState.visibleTimeStart - prevState.canvasTimeStart) /
         oldZoom
     )
-    // Suggested change from https://github.com/namespace-ee/react-calendar-timeline/pull/851
-    this.scrollComponent.scrollLeft = scrollLeft
     if (componentScrollLeft !== scrollLeft) {
-      // this.scrollComponent.scrollLeft = scrollLeft
+      this.scrollComponent.scrollLeft = scrollLeft
       this.scrollHeaderRef.scrollLeft = scrollLeft
     }
   }
@@ -520,6 +527,13 @@ export default class ReactCalendarTimeline extends Component {
     const zoom = this.state.visibleTimeEnd - this.state.visibleTimeStart
 
     const visibleTimeStart = canvasTimeStart + zoom * scrollX / width
+
+    // Switch to Prop, possible fix for scrolling bounds
+    /* const minTime = 1643047200000;
+    if (visibleTimeStart < minTime) {
+      this.scrollComponent.scrollLeft = width;
+      this.setState({ visibleTimeStart: this.props.defaultTimeStart.valueOf(), visibleTimeEnd: this.props.defaultTimeStart.valueOf() + zoom });
+    } */
 
     if (
       this.state.visibleTimeStart !== visibleTimeStart ||
