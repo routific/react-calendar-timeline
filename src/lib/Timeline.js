@@ -528,8 +528,8 @@ export default class ReactCalendarTimeline extends Component {
 
     const visibleTimeStart = canvasTimeStart + zoom * scrollX / width
 
-    // Switch to Prop, possible fix for scrolling bounds
-    /* const minTime = 1643047200000;
+    // TODO: Switch to Prop/State for min/max, possible fix for scrolling bounds
+    /* const minTime = this.state.minTime;
     if (visibleTimeStart < minTime) {
       this.scrollComponent.scrollLeft = width;
       this.setState({ visibleTimeStart: this.props.defaultTimeStart.valueOf(), visibleTimeEnd: this.props.defaultTimeStart.valueOf() + zoom });
