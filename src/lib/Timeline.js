@@ -112,8 +112,8 @@ export default class ReactCalendarTimeline extends Component {
     defaultTimeStart: PropTypes.object,
     defaultTimeEnd: PropTypes.object,
 
-    remoteZoomTimeStart: number,
-    remoteZoomTimeEnd: number,
+    zoomTimeStart: number,
+    zoomTimeEnd: number,
 
     visibleTimeStart: PropTypes.number,
     visibleTimeEnd: PropTypes.number,
@@ -209,8 +209,8 @@ export default class ReactCalendarTimeline extends Component {
     defaultTimeStart: null,
     defaultTimeEnd: null,
 
-    remoteZoomTimeStart: null,
-    remoteZoomTimeEnd: null,
+    zoomTimeStart: null,
+    zoomTimeEnd: null,
 
     itemTouchSendsClick: false,
 
@@ -317,8 +317,8 @@ export default class ReactCalendarTimeline extends Component {
 
     this.state = {
       width: 1000,
-      remoteZoomTimeStart: this.props.remoteZoomTimeStart,
-      remoteZoomTimeEnd: this.props.remoteZoomTimeEnd,
+      zoomTimeStart: this.props.zoomTimeStart,
+      zoomTimeEnd: this.props.zoomTimeEnd,
       visibleTimeStart: visibleTimeStart,
       visibleTimeEnd: visibleTimeEnd,
       canvasTimeStart: canvasTimeStart,
@@ -386,7 +386,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { remoteZoomTimeStart, remoteZoomTimeEnd, items, groups } = nextProps
+    const { visibleTimeStart, visibleTimeEnd, zoomTimeStart, zoomTimeEnd, items, groups } = nextProps
 
     // This is a gross hack pushing items and groups in to state only to allow
     // For the forceUpdate check
@@ -395,15 +395,29 @@ export default class ReactCalendarTimeline extends Component {
     // if the items or groups have changed we must re-render
     const forceUpdate = items !== prevState.items || groups !== prevState.groups
 
-    // We want to trigger a refresh with updated time range based on zoom
-    if (remoteZoomTimeStart !== prevState.remoteZoomTimeStart || remoteZoomTimeEnd !== prevState.remoteZoomTimeEnd) {
-      derivedState = { remoteZoomTimeStart, remoteZoomTimeEnd, items, groups }
+    if (visibleTimeStart && visibleTimeEnd) {
       // Get the new canvas position
       Object.assign(
         derivedState,
         calculateScrollCanvas(
-          remoteZoomTimeStart, // visibleTimeStart,
-          remoteZoomTimeEnd, // visibleTimeEnd,
+          visibleTimeStart,
+          visibleTimeEnd,
+          forceUpdate,
+          items,
+          groups,
+          nextProps,
+          prevState
+        )
+      )
+    } else if (zoomTimeStart !== prevState.zoomTimeStart || zoomTimeEnd !== prevState.zoomTimeEnd) {
+      // We want to trigger a refresh with updated time range based on zoom
+      derivedState = { zoomTimeStart, zoomTimeEnd, items, groups }
+      // Get the new canvas position
+      Object.assign(
+        derivedState,
+        calculateScrollCanvas(
+          zoomTimeStart, // visibleTimeStart,
+          zoomTimeEnd, // visibleTimeEnd,
           forceUpdate,
           items,
           groups,
