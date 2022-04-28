@@ -395,6 +395,7 @@ export default class ReactCalendarTimeline extends Component {
     // if the items or groups have changed we must re-render
     const forceUpdate = items !== prevState.items || groups !== prevState.groups
 
+    // We are a controlled component
     if (visibleTimeStart && visibleTimeEnd) {
       // Get the new canvas position
       Object.assign(
