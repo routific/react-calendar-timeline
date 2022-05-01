@@ -1,6 +1,6 @@
 {
   "name": "@routific/react-calendar-timeline",
-  "version": "0.28.1-debug",
+  "version": "0.28.2-debug",
   "description": "react calendar timeline",
   "main": "lib/index.js",
   "scripts": {
