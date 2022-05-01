@@ -5,7 +5,8 @@ import PreventClickOnDrag from '../interaction/PreventClickOnDrag'
 class GroupRow extends Component {
   static propTypes = {
     onClick: PropTypes.func.isRequired,
-    onHover: PropTypes.func,
+    onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
     onDoubleClick: PropTypes.func.isRequired,
     onContextMenu: PropTypes.func.isRequired,
     isEvenRow: PropTypes.bool.isRequired,
@@ -22,7 +23,8 @@ class GroupRow extends Component {
       isEvenRow,
       style,
       onClick,
-      onHover,
+      onMouseEnter,
+      onMouseLeave,
       clickTolerance,
       horizontalLineClassNamesForGroup,
       group
@@ -38,7 +40,8 @@ class GroupRow extends Component {
         <div
           onContextMenu={onContextMenu}
           onDoubleClick={onDoubleClick}
-          onMouseOver={onHover}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
           className={(isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') + (classNamesForGroup ? classNamesForGroup.join(' ') : '')}
           style={style}
         />

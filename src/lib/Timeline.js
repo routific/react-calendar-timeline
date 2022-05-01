@@ -70,7 +70,8 @@ export default class ReactCalendarTimeline extends Component {
     onItemSelect: PropTypes.func,
     onItemDeselect: PropTypes.func,
     onCanvasClick: PropTypes.func,
-    onCanvasHover: PropTypes.func,
+    onCanvasRowHoverEnter: PropTypes.func,
+    onCanvasRowHoverLeave: PropTypes.func,
     onItemDoubleClick: PropTypes.func,
     onItemContextMenu: PropTypes.func,
     onCanvasDoubleClick: PropTypes.func,
@@ -197,7 +198,8 @@ export default class ReactCalendarTimeline extends Component {
     onItemDeselect: null,
     onItemDrag: null,
     onCanvasClick: null,
-    onCanvasHover: null,
+    onCanvasRowHoverEnter: null,
+    onCanvasRowHoverLeave: null,
     onItemDoubleClick: null,
     onItemContextMenu: null,
     onZoom: null,
@@ -771,15 +773,19 @@ export default class ReactCalendarTimeline extends Component {
     )
   }
 
-  handleRowHover = (e, rowIndex) => {
-    if (this.props.onCanvasHover == null) return
+  handleRowEnter = (e, rowIndex) => {
+    if (this.props.onCanvasRowHoverEnter == null) return
 
     const time = this.getTimeFromRowClickEvent(e)
     const groupId = _get(
       this.props.groups[rowIndex],
       this.props.keys.groupIdKey
     )
-    this.props.onCanvasHover(groupId, time, e)
+    this.props.onCanvasRowHoverEnter(groupId, time, e)
+  }
+
+  handleRowLeave = (e) => {
+    this.props.onCanvasRowHoverLeave(e);
   }
 
   handleRowClick = (e, rowIndex) => {
@@ -835,7 +841,8 @@ export default class ReactCalendarTimeline extends Component {
         clickTolerance={this.props.clickTolerance}
         onRowClick={this.handleRowClick}
         onRowDoubleClick={this.handleRowDoubleClick}
-        onRowHover={this.handleRowHover}
+        onRowHover={this.handleRowEnter}
+        onRowLeave={this.handleRowLeave}
         horizontalLineClassNamesForGroup={
           this.props.horizontalLineClassNamesForGroup
         }
