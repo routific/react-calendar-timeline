@@ -841,7 +841,7 @@ export default class ReactCalendarTimeline extends Component {
         clickTolerance={this.props.clickTolerance}
         onRowClick={this.handleRowClick}
         onRowDoubleClick={this.handleRowDoubleClick}
-        onRowHover={this.handleRowEnter}
+        onRowEnter={this.handleRowEnter}
         onRowLeave={this.handleRowLeave}
         horizontalLineClassNamesForGroup={
           this.props.horizontalLineClassNamesForGroup
