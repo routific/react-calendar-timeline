@@ -38,7 +38,7 @@ class GroupRow extends Component {
         <div
           onContextMenu={onContextMenu}
           onDoubleClick={onDoubleClick}
-          onHover={onHover}
+          onMouseOver={onHover}
           className={(isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') + (classNamesForGroup ? classNamesForGroup.join(' ') : '')}
           style={style}
         />
