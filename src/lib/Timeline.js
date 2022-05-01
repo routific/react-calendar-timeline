@@ -70,6 +70,7 @@ export default class ReactCalendarTimeline extends Component {
     onItemSelect: PropTypes.func,
     onItemDeselect: PropTypes.func,
     onCanvasClick: PropTypes.func,
+    onCanvasHover: PropTypes.func,
     onItemDoubleClick: PropTypes.func,
     onItemContextMenu: PropTypes.func,
     onCanvasDoubleClick: PropTypes.func,
@@ -196,6 +197,7 @@ export default class ReactCalendarTimeline extends Component {
     onItemDeselect: null,
     onItemDrag: null,
     onCanvasClick: null,
+    onCanvasHover: null,
     onItemDoubleClick: null,
     onItemContextMenu: null,
     onZoom: null,
@@ -769,6 +771,17 @@ export default class ReactCalendarTimeline extends Component {
     )
   }
 
+  handleRowHover = (e, rowIndex) => {
+    if (this.props.onCanvasHover == null) return
+
+    const time = this.getTimeFromRowClickEvent(e)
+    const groupId = _get(
+      this.props.groups[rowIndex],
+      this.props.keys.groupIdKey
+    )
+    this.props.onCanvasHover(groupId, time, e)
+  }
+
   handleRowClick = (e, rowIndex) => {
     // shouldnt this be handled by the user, as far as when to deselect an item?
     if (this.hasSelectedItem()) {
@@ -822,6 +835,7 @@ export default class ReactCalendarTimeline extends Component {
         clickTolerance={this.props.clickTolerance}
         onRowClick={this.handleRowClick}
         onRowDoubleClick={this.handleRowDoubleClick}
+        onRowHover={this.handleRowHover}
         horizontalLineClassNamesForGroup={
           this.props.horizontalLineClassNamesForGroup
         }
