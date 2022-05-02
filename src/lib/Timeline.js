@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'
+import PropTypes, { number } from 'prop-types'
 import React, { Component } from 'react'
 
 import Sidebar from './layout/Sidebar'
@@ -111,6 +111,9 @@ export default class ReactCalendarTimeline extends Component {
     defaultTimeStart: PropTypes.object,
     defaultTimeEnd: PropTypes.object,
 
+    zoomTimeStart: number,
+    zoomTimeEnd: number,
+
     visibleTimeStart: PropTypes.number,
     visibleTimeEnd: PropTypes.number,
     onTimeChange: PropTypes.func,
@@ -208,6 +211,9 @@ export default class ReactCalendarTimeline extends Component {
 
     defaultTimeStart: null,
     defaultTimeEnd: null,
+
+    zoomTimeStart: null,
+    zoomTimeEnd: null,
 
     itemTouchSendsClick: false,
 
@@ -318,6 +324,8 @@ export default class ReactCalendarTimeline extends Component {
 
     this.state = {
       width: 1000,
+      zoomTimeStart: this.props.zoomTimeStart,
+      zoomTimeEnd: this.props.zoomTimeEnd,
       visibleTimeStart: visibleTimeStart,
       visibleTimeEnd: visibleTimeEnd,
       canvasTimeStart: canvasTimeStart,
@@ -386,7 +394,7 @@ export default class ReactCalendarTimeline extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { visibleTimeStart, visibleTimeEnd, items, groups } = nextProps
+    const { visibleTimeStart, visibleTimeEnd, zoomTimeStart, zoomTimeEnd, items, groups } = nextProps
 
     // This is a gross hack pushing items and groups in to state only to allow
     // For the forceUpdate check
@@ -403,6 +411,22 @@ export default class ReactCalendarTimeline extends Component {
         calculateScrollCanvas(
           visibleTimeStart,
           visibleTimeEnd,
+          forceUpdate,
+          items,
+          groups,
+          nextProps,
+          prevState
+        )
+      )
+    } else if (zoomTimeStart !== prevState.zoomTimeStart || zoomTimeEnd !== prevState.zoomTimeEnd) {
+      // We want to trigger a refresh with updated time range based on zoom
+      derivedState = { zoomTimeStart, zoomTimeEnd, items, groups }
+      // Get the new canvas position
+      Object.assign(
+        derivedState,
+        calculateScrollCanvas(
+          zoomTimeStart, // visibleTimeStart,
+          zoomTimeEnd, // visibleTimeEnd,
           forceUpdate,
           items,
           groups,
