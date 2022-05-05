@@ -1,23 +1,20 @@
 import PropTypes, { number } from 'prop-types'
 import React, { Component } from 'react'
-import moment from 'moment'
 
-import Items from './items/Items'
 import Sidebar from './layout/Sidebar'
-import Columns from './columns/Columns'
-import GroupRows from './row/GroupRows'
 import ScrollElement from './scroll/ScrollElement'
 import MarkerCanvas from './markers/MarkerCanvas'
+import Rows from './rows/Rows'
+
 import windowResizeDetector from '../resize-detector/window'
 
 import {
   getMinUnit,
-  getNextUnit,
   calculateTimeForXPosition,
-  calculateScrollCanvas,
   getCanvasBoundariesFromVisibleTime,
   getCanvasWidth,
-  stackTimelineItems
+  calculateScrollCanvas,
+  stackTimelineItems,
 } from './utility/calendar'
 import { _get, _length } from './utility/generic'
 import {
@@ -31,7 +28,9 @@ import { TimelineMarkersProvider } from './markers/TimelineMarkersContext'
 import { TimelineHeadersProvider } from './headers/HeadersContext'
 import TimelineHeaders from './headers/TimelineHeaders'
 import DateHeader from './headers/DateHeader'
-import SidebarHeader from './headers/SidebarHeader'
+import DefaultLayer from './rows/DefaultLayer'
+import Columns from './columns/Columns'
+import { HelpersContextProvider } from './timeline/HelpersContext'
 
 export default class ReactCalendarTimeline extends Component {
   static propTypes = {
@@ -41,7 +40,7 @@ export default class ReactCalendarTimeline extends Component {
     rightSidebarWidth: PropTypes.number,
     dragSnap: PropTypes.number,
     minResizeWidth: PropTypes.number,
-    stickyHeader: PropTypes.bool,
+    // stickyHeader: PropTypes.bool,
     lineHeight: PropTypes.number,
     itemHeightRatio: PropTypes.number,
 
@@ -82,7 +81,7 @@ export default class ReactCalendarTimeline extends Component {
     itemRenderer: PropTypes.func,
     groupRenderer: PropTypes.func,
 
-    className: PropTypes.string,
+    // className: PropTypes.string,
     style: PropTypes.object,
 
     keys: PropTypes.shape({
@@ -160,7 +159,11 @@ export default class ReactCalendarTimeline extends Component {
 
     verticalLineClassNamesForTime: PropTypes.func,
 
-    children: PropTypes.node
+    children: PropTypes.node,
+
+    rowRenderer: PropTypes.func,
+    rowData: PropTypes.object,
+    hideHorizontalLines : PropTypes.bool,
   }
 
   static defaultProps = {
@@ -239,7 +242,11 @@ export default class ReactCalendarTimeline extends Component {
     headerLabelFormats: defaultHeaderLabelFormats,
     subHeaderLabelFormats: defaultSubHeaderLabelFormats,
 
-    selected: null
+    selected: null,
+
+    rowRenderer: DefaultLayer,
+    rowData: {},
+    hideHorizontalLines: false,
   }
 
   static childContextTypes = {
@@ -325,19 +332,19 @@ export default class ReactCalendarTimeline extends Component {
       canvasTimeEnd: canvasTimeEnd,
       selectedItem: null,
       dragTime: null,
-      dragGroupTitle: null,
-      resizeTime: null,
       resizingItem: null,
-      resizingEdge: null
+      resizeTime: undefined,
+      resizingEdge: undefined
     }
 
     const canvasWidth = getCanvasWidth(this.state.width)
 
     const {
-      dimensionItems,
+      groupsWithItemsDimensions,
       height,
       groupHeights,
-      groupTops
+      groupTops,
+      itemsWithInteractions,
     } = stackTimelineItems(
       props.items,
       props.groups,
@@ -353,14 +360,15 @@ export default class ReactCalendarTimeline extends Component {
       this.state.dragTime,
       this.state.resizingEdge,
       this.state.resizeTime,
-      this.state.newGroupOrder
+      this.state.newGroupId
     )
 
     /* eslint-disable react/no-direct-mutation-state */
-    this.state.dimensionItems = dimensionItems
+    this.state.groupsWithItemsDimensions = groupsWithItemsDimensions
     this.state.height = height
     this.state.groupHeights = groupHeights
     this.state.groupTops = groupTops
+    this.state.itemsWithInteractions = itemsWithInteractions
 
     /* eslint-enable */
   }
@@ -446,7 +454,7 @@ export default class ReactCalendarTimeline extends Component {
           prevState.dragTime,
           prevState.resizingEdge,
           prevState.resizeTime,
-          prevState.newGroupOrder
+          prevState.newGroupId
         )
       )
     }
@@ -497,7 +505,7 @@ export default class ReactCalendarTimeline extends Component {
     let width = containerWidth - props.sidebarWidth - props.rightSidebarWidth
     const canvasWidth = getCanvasWidth(width)
     const {
-      dimensionItems,
+      groupsWithItemsDimensions,
       height,
       groupHeights,
       groupTops
@@ -516,7 +524,7 @@ export default class ReactCalendarTimeline extends Component {
       this.state.dragTime,
       this.state.resizingEdge,
       this.state.resizeTime,
-      this.state.newGroupOrder
+      this.state.newGroupId
     )
 
     // this is needed by dragItem since it uses pageY from the drag events
@@ -524,7 +532,7 @@ export default class ReactCalendarTimeline extends Component {
 
     this.setState({
       width,
-      dimensionItems,
+      groupsWithItemsDimensions,
       height,
       groupHeights,
       groupTops
@@ -693,29 +701,25 @@ export default class ReactCalendarTimeline extends Component {
     return time
   }
 
-  dragItem = (item, dragTime, newGroupOrder) => {
-    let newGroup = this.props.groups[newGroupOrder]
-    const keys = this.props.keys
-
+  dragItem = (item, dragTime, newGroupId) => {
     this.setState({
       draggingItem: item,
       dragTime: dragTime,
-      newGroupOrder: newGroupOrder,
-      dragGroupTitle: newGroup ? _get(newGroup, keys.groupLabelKey) : ''
+      newGroupId: newGroupId,
     })
 
     this.updatingItem({
       eventType: 'move',
       itemId: item,
       time: dragTime,
-      newGroupOrder
+      newGroupId
     })
   }
 
-  dropItem = (item, dragTime, newGroupOrder) => {
-    this.setState({ draggingItem: null, dragTime: null, dragGroupTitle: null })
+  dropItem = (item, dragTime, newGroupId) => {
+    this.setState({ draggingItem: null, dragTime: null })
     if (this.props.onItemMove) {
-      this.props.onItemMove(item, dragTime, newGroupOrder)
+      this.props.onItemMove(item, dragTime, newGroupId)
     }
   }
 
@@ -741,32 +745,10 @@ export default class ReactCalendarTimeline extends Component {
     }
   }
 
-  updatingItem = ({ eventType, itemId, time, edge, newGroupOrder }) => {
+  updatingItem = ({ eventType, itemId, time, edge, newGroupId }) => {
     if (this.props.onItemDrag) {
-      this.props.onItemDrag({ eventType, itemId, time, edge, newGroupOrder })
+      this.props.onItemDrag({ eventType, itemId, time, edge, newGroupId })
     }
-  }
-
-  columns(
-    canvasTimeStart,
-    canvasTimeEnd,
-    canvasWidth,
-    minUnit,
-    timeSteps,
-    height
-  ) {
-    return (
-      <Columns
-        canvasTimeStart={canvasTimeStart}
-        canvasTimeEnd={canvasTimeEnd}
-        canvasWidth={canvasWidth}
-        lineCount={_length(this.props.groups)}
-        minUnit={minUnit}
-        timeSteps={timeSteps}
-        height={height}
-        verticalLineClassNamesForTime={this.props.verticalLineClassNamesForTime}
-      />
-    )
   }
 
   handleRowClick = (e, rowIndex) => {
@@ -810,67 +792,6 @@ export default class ReactCalendarTimeline extends Component {
       e.preventDefault()
       this.props.onCanvasContextMenu(groupId, timePosition, e)
     }
-  }
-
-  rows(canvasWidth, groupHeights, groups) {
-    return (
-      <GroupRows
-        groups={groups}
-        canvasWidth={canvasWidth}
-        lineCount={_length(this.props.groups)}
-        groupHeights={groupHeights}
-        clickTolerance={this.props.clickTolerance}
-        onRowClick={this.handleRowClick}
-        onRowDoubleClick={this.handleRowDoubleClick}
-        horizontalLineClassNamesForGroup={
-          this.props.horizontalLineClassNamesForGroup
-        }
-        onRowContextClick={this.handleScrollContextMenu}
-      />
-    )
-  }
-
-  items(
-    canvasTimeStart,
-    zoom,
-    canvasTimeEnd,
-    canvasWidth,
-    minUnit,
-    dimensionItems,
-    groupHeights,
-    groupTops
-  ) {
-    return (
-      <Items
-        canvasTimeStart={canvasTimeStart}
-        canvasTimeEnd={canvasTimeEnd}
-        canvasWidth={canvasWidth}
-        dimensionItems={dimensionItems}
-        groupTops={groupTops}
-        items={this.props.items}
-        groups={this.props.groups}
-        keys={this.props.keys}
-        selectedItem={this.state.selectedItem}
-        dragSnap={this.props.dragSnap}
-        minResizeWidth={this.props.minResizeWidth}
-        canChangeGroup={this.props.canChangeGroup}
-        canMove={this.props.canMove}
-        canResize={this.props.canResize}
-        useResizeHandle={this.props.useResizeHandle}
-        canSelect={this.props.canSelect}
-        moveResizeValidator={this.props.moveResizeValidator}
-        itemSelect={this.selectItem}
-        itemDrag={this.dragItem}
-        itemDrop={this.dropItem}
-        onItemDoubleClick={this.doubleClickItem}
-        onItemContextMenu={this.props.onItemContextMenu ? this.contextMenuClickItem : undefined}
-        itemResizing={this.resizingItem}
-        itemResized={this.resizedItem}
-        itemRenderer={this.props.itemRenderer}
-        selected={this.props.selected}
-        scrollRef={this.scrollComponent}
-      />
-    )
   }
 
   handleHeaderRef = el => {
@@ -919,20 +840,8 @@ export default class ReactCalendarTimeline extends Component {
     if(child.type === undefined) return false
     return child.type.secretKey ===TimelineHeaders.secretKey
   }
-
-  childrenWithProps(
-    canvasTimeStart,
-    canvasTimeEnd,
-    canvasWidth,
-    dimensionItems,
-    groupHeights,
-    groupTops,
-    height,
-    visibleTimeStart,
-    visibleTimeEnd,
-    minUnit,
-    timeSteps
-  ) {
+  
+  childrenWithProps() {
     if (!this.props.children) {
       return null
     }
@@ -942,27 +851,9 @@ export default class ReactCalendarTimeline extends Component {
       ? this.props.children.filter(c => c)
       : [this.props.children]
 
-    const childProps = {
-      canvasTimeStart,
-      canvasTimeEnd,
-      canvasWidth,
-      visibleTimeStart: visibleTimeStart,
-      visibleTimeEnd: visibleTimeEnd,
-      dimensionItems,
-      items: this.props.items,
-      groups: this.props.groups,
-      keys: this.props.keys,
-      groupHeights: groupHeights,
-      groupTops: groupTops,
-      selected: this.getSelected(),
-      height: height,
-      minUnit: minUnit,
-      timeSteps: timeSteps
-    }
-
     return React.Children.map(childArray, child => {
       if (!this.isTimelineHeader(child)) {
-        return React.cloneElement(child, childProps)
+        return child
       } else {
         return null
       }
@@ -1016,7 +907,10 @@ export default class ReactCalendarTimeline extends Component {
       sidebarWidth,
       rightSidebarWidth,
       timeSteps,
-      traditionalZoom
+      traditionalZoom,
+      itemRenderer,
+      keys,
+      hideHorizontalLines,
     } = this.props
     const {
       draggingItem,
@@ -1027,7 +921,7 @@ export default class ReactCalendarTimeline extends Component {
       canvasTimeStart,
       canvasTimeEnd
     } = this.state
-    let { dimensionItems, height, groupHeights, groupTops } = this.state
+    let { groupsWithItemsDimensions, height, groupHeights, groupTops, itemsWithInteractions } = this.state
 
     const zoom = visibleTimeEnd - visibleTimeStart
     const canvasWidth = getCanvasWidth(width)
@@ -1051,12 +945,13 @@ export default class ReactCalendarTimeline extends Component {
         this.state.dragTime,
         this.state.resizingEdge,
         this.state.resizeTime,
-        this.state.newGroupOrder
+        this.state.newGroupId
       )
-      dimensionItems = stackResults.dimensionItems
+      groupsWithItemsDimensions = stackResults.groupsWithItemsDimensions
       height = stackResults.height
       groupHeights = stackResults.groupHeights
       groupTops = stackResults.groupTops
+      itemsWithInteractions = stackResults.itemsWithInteractions
     }
 
     const outerComponentStyle = {
@@ -1073,6 +968,7 @@ export default class ReactCalendarTimeline extends Component {
         showPeriod={this.showPeriod}
         timelineUnit={minUnit}
         timelineWidth={this.state.width}
+        keys={keys}
       >
         <TimelineMarkersProvider>
           <TimelineHeadersProvider
@@ -1081,64 +977,87 @@ export default class ReactCalendarTimeline extends Component {
             leftSidebarWidth={this.props.sidebarWidth}
             rightSidebarWidth={this.props.rightSidebarWidth}
           >
-            <div
-              style={this.props.style}
-              ref={el => (this.container = el)}
-              className={`react-calendar-timeline ${this.props.className}`}
+            <HelpersContextProvider
+              groupsWithItemsDimensions={groupsWithItemsDimensions}
+              items={isInteractingWithItem? itemsWithInteractions : items}
+              keys={keys}
+              groupHeights={groupHeights}
+              groupTops={groupTops}
             >
-              {this.renderHeaders()}
-              <div style={outerComponentStyle} className="rct-outer">
-                {sidebarWidth > 0 ? this.sidebar(height, groupHeights) : null}
-                <ScrollElement
-                  scrollRef={this.getScrollElementRef}
-                  width={width}
-                  height={height}
-                  onZoom={this.changeZoom}
-                  onWheelZoom={this.handleWheelZoom}
-                  traditionalZoom={traditionalZoom}
-                  onScroll={this.onScroll}
-                  isInteractingWithItem={isInteractingWithItem}
-                >
-                  <MarkerCanvas>
-                    {this.columns(
-                      canvasTimeStart,
-                      canvasTimeEnd,
-                      canvasWidth,
-                      minUnit,
-                      timeSteps,
-                      height
-                    )}
-                    {this.rows(canvasWidth, groupHeights, groups)}
-                    {this.items(
-                      canvasTimeStart,
-                      zoom,
-                      canvasTimeEnd,
-                      canvasWidth,
-                      minUnit,
-                      dimensionItems,
-                      groupHeights,
-                      groupTops
-                    )}
-                    {this.childrenWithProps(
-                      canvasTimeStart,
-                      canvasTimeEnd,
-                      canvasWidth,
-                      dimensionItems,
-                      groupHeights,
-                      groupTops,
-                      height,
-                      visibleTimeStart,
-                      visibleTimeEnd,
-                      minUnit,
-                      timeSteps
-                    )}
-                  </MarkerCanvas>
-                </ScrollElement>
-                {rightSidebarWidth > 0
-                  ? this.rightSidebar(height, groupHeights)
-                  : null}
+              <div
+                style={this.props.style}
+                ref={el => (this.container = el)}
+                className="react-calendar-timeline"
+              >
+                {this.renderHeaders()}
+                <div style={outerComponentStyle} className="rct-outer">
+                  {sidebarWidth > 0 ? this.sidebar(height, groupHeights) : null}
+                  <ScrollElement
+                    scrollRef={this.getScrollElementRef}
+                    width={width}
+                    height={height}
+                    onZoom={this.changeZoom}
+                    onWheelZoom={this.handleWheelZoom}
+                    traditionalZoom={traditionalZoom}
+                    onScroll={this.onScroll}
+                    isInteractingWithItem={isInteractingWithItem}
+                  >
+                    <MarkerCanvas>
+                      {this.childrenWithProps()}
+                      <Rows
+                        items={isInteractingWithItem? itemsWithInteractions : items}
+                        groupHeights={groupHeights}
+                        itemRenderer={itemRenderer}
+                        itemResized={this.resizedItem}
+                        itemResizing={this.resizingItem}
+                        itemSelect={this.selectItem}
+                        itemDrag={this.dragItem}
+                        itemDrop={this.dropItem}
+                        onItemDoubleClick={this.doubleClickItem}
+                        onItemContextMenu={this.contextMenuClickItem}
+                        scrollRef={this.scrollComponent}
+                        selectedItem={this.state.selectedItem}
+                        onRowClick={this.handleRowClick}
+                        onRowDoubleClick={this.handleRowDoubleClick}
+                        onRowContextClick={this.handleScrollContextMenu}
+                        groupsWithItemsDimensions={groupsWithItemsDimensions}
+                        //props
+                        groups={groups}
+                        keys={keys}
+                        resizeEdge={this.state.resizingEdge}
+                        canChangeGroup={this.props.canChangeGroup}
+                        canMove={this.props.canMove}
+                        canResize={this.props.canResize}
+                        canSelect={this.props.canSelect}
+                        useResizeHandle={this.props.useResizeHandle}
+                        dragSnap={this.props.dragSnap}
+                        minResizeWidth={this.props.minResizeWidth}
+                        moveResizeValidator={this.props.moveResizeValidator}
+                        selected={this.props.selected}
+                        rowRenderer={this.props.rowRenderer}
+                        rowData={this.props.rowData}
+                        clickTolerance={this.props.clickTolerance}
+                        horizontalLineClassNamesForGroup={
+                          this.props.horizontalLineClassNamesForGroup
+                        }
+                      />
+                      {hideHorizontalLines? null : <Columns 
+                        lineCount={_length(groups)}
+                        minUnit={minUnit}
+                        timeSteps={timeSteps}
+                        verticalLineClassNamesForTime={this.props.verticalLineClassNamesForTime}
+                        canvasTimeStart={canvasTimeStart}
+                        canvasTimeEnd={canvasTimeEnd}
+                        canvasWidth={canvasWidth}
+                      />}
+                    </MarkerCanvas>
+                  </ScrollElement>
+                  {rightSidebarWidth > 0
+                    ? this.rightSidebar(height, groupHeights)
+                    : null}
+                </div>
               </div>
-            </div>
+            </HelpersContextProvider>
           </TimelineHeadersProvider>
         </TimelineMarkersProvider>
       </TimelineStateProvider>

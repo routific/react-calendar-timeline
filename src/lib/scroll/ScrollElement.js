@@ -7,7 +7,7 @@ class ScrollElement extends Component {
     children: PropTypes.element.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    traditionalZoom: PropTypes.bool.isRequired,
+    // traditionalZoom: PropTypes.bool.isRequired,
     scrollRef: PropTypes.func.isRequired,
     isInteractingWithItem: PropTypes.bool.isRequired,
     onZoom: PropTypes.func.isRequired,
@@ -40,7 +40,7 @@ class ScrollElement extends Component {
   
 
   handleWheel = e => {
-    const { traditionalZoom } = this.props
+    // const { traditionalZoom } = this.props
 
     
 
