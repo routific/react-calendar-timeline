@@ -3,8 +3,8 @@
 
 import PropTypes from 'prop-types';
 import Cluster from './Cluster';
-import { _get, _length, _sort } from './generic';
-// Curent version will just support arrays and after PR review I will add support for immutable.js (Objects)
+import { _get, _length } from './generic';
+
 export default class ClusteringService {
     #items;
 
@@ -44,18 +44,18 @@ export default class ClusteringService {
     }
 
     #isTinyItem(item) {
-      let returnValue = 0;
+      let itemLength = 0;
       if (item.start !== undefined && item.end !== undefined) {
-        returnValue = (item.end - item.start) || 0;
+        itemLength = (item.end - item.start) || 0;
       }
-      return (returnValue / this.#timeRange) * 100 <= this.#tinyItemSize;
+      return (itemLength / this.#timeRange) * 100 <= this.#tinyItemSize;
     }
 
     #getItemAtIndex(index) {
-      if (index > _length(this.#items)|| index < 0) {
+      if (index > _length(this.#items) || index < 0) {
         return undefined;
       }
-      return _get(this.#items,index);
+      return _get(this.#items, index);
     }
 
     #isWithinClusteringRange(distance) {
@@ -81,7 +81,6 @@ export default class ClusteringService {
       return undefined;
     }
 
-
     #findSequencialClusters(cluster) {
       let sequencialClusterFound = true;
       do {
@@ -89,7 +88,7 @@ export default class ClusteringService {
         const nextItem = this.#getItemAtIndex(this.#currentItemIndex + 1);
 
         if (nextItem && nextItem.start) {
-          sequencialClusterFound = this.#isWithinClusteringRange(nextItem.start - item.end) && this.#isTinyItem(nextItem);
+          sequencialClusterFound = this.#isWithinClusteringRange(nextItem.start - item.end) && (this.#sequencialClusterTinyItemsOnly === true ? this.#isTinyItem(nextItem) : true);
 
           if (sequencialClusterFound) {
             cluster.add(nextItem);
@@ -105,7 +104,6 @@ export default class ClusteringService {
       const cluster = new Cluster(this.#groupNumber);
 
       cluster.setStart(currentItem.start);
-
 
       if (leftItem === nearestItem) {
         cluster.setStart(leftItem.start);
@@ -129,7 +127,7 @@ export default class ClusteringService {
     get items() {
       return this.#itemsWithClustering;
     }
-    
+
     cluster() {
       const currentItems = this.#items;
 
