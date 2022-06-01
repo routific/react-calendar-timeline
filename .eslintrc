@@ -1,4 +1,9 @@
 {
+  "settings": {
+    "react": {
+      "version": "14.8.2" // React version. "detect" automatically picks the version you have installed.
+    }
+  },
   "plugins": [
     "react",
     "jest",
@@ -13,18 +18,36 @@
   "rules": {
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
+    "react/jsx-props-no-spreading": 0,
     "react/no-unused-prop-types": 2,
     "react/react-in-jsx-scope": 2,
+    "react/prop-types": 0,
+    "import/no-cycle": 0,
     "no-labels": 0,
-    "arrow-parens": 0
+    "arrow-parens": 0,
+    "max-len": [
+      2,
+      {
+        "code": 180
+      }
+    ],
+    "no-use-before-define": "off", //TODO: Look into why import React from 'react' is triggering this
+    "no-param-reassign": "off",
+    "func-names": "off",
+    "no-shadow": "off",
+    "linebreak-style": [
+      "error",
+      "unix"
+    ]
   },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "prettier",
-    "prettier/react"
+    "prettier/react",
+    "airbnb-base"
   ],
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
