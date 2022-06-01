@@ -15,7 +15,7 @@ import Timeline, {
   RowItems,
   GroupRow,
   HelpersContext
-} from '@routific/react-calendar-timeline'
+} from 'react-calendar-timeline'
 import { useDrag, useDrop } from 'react-dnd'
 import * as d3 from 'd3'
 
