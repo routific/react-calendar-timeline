@@ -3,7 +3,7 @@
 
 import PropTypes from 'prop-types';
 import Cluster from './Cluster';
-
+import { _get, _length, _sort } from './generic';
 // Curent version will just support arrays and after PR review I will add support for immutable.js (Objects)
 export default class ClusteringService {
     #items;
@@ -52,10 +52,10 @@ export default class ClusteringService {
     }
 
     #getItemAtIndex(index) {
-      if (index > this.#items.length || index < 0) {
+      if (index > _length(this.#items)|| index < 0) {
         return undefined;
       }
-      return this.#items[index];
+      return _get(this.#items,index);
     }
 
     #isWithinClusteringRange(distance) {
@@ -85,8 +85,8 @@ export default class ClusteringService {
     #findSequencialClusters(cluster) {
       let sequencialClusterFound = true;
       do {
-        const item = this.#items[this.#currentItemIndex];
-        const nextItem = this.#items[this.#currentItemIndex + 1];
+        const item = this.#getItemAtIndex(this.#currentItemIndex);
+        const nextItem = this.#getItemAtIndex(this.#currentItemIndex + 1);
 
         if (nextItem && nextItem.start) {
           sequencialClusterFound = this.#isWithinClusteringRange(nextItem.start - item.end) && this.#isTinyItem(nextItem);
@@ -98,7 +98,7 @@ export default class ClusteringService {
         } else {
           sequencialClusterFound = false;
         }
-      } while (sequencialClusterFound && this.#currentItemIndex < this.#items.length);
+      } while (sequencialClusterFound && this.#currentItemIndex < _length(this.#items));
     }
 
     #startClustering(nearestItem, currentItem, leftItem, rightItem) {
@@ -126,11 +126,15 @@ export default class ClusteringService {
       }
     }
 
+    get items() {
+      return this.#itemsWithClustering;
+    }
+    
     cluster() {
       const currentItems = this.#items;
 
-      while (this.#currentItemIndex < currentItems.length) {
-        const currentItem = currentItems[this.#currentItemIndex];
+      while (this.#currentItemIndex < _length(currentItems)) {
+        const currentItem = this.#getItemAtIndex(this.#currentItemIndex);
 
         if (currentItem.canCluster && this.#isTinyItem(currentItem)) {
           const leftItem = this.#getItemAtIndex(this.#currentItemIndex - 1);
@@ -147,9 +151,5 @@ export default class ClusteringService {
         }
         this.#currentItemIndex += 1;
       }
-    }
-
-    get items() {
-      return this.#itemsWithClustering;
     }
 }

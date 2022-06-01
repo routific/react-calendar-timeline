@@ -25,7 +25,7 @@ export default class Cluster {
       return this.#startTime();
     }
 
-    get itemsInCluster() {
+    get items() {
       return this.#items;
     }
 
