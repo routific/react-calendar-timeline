@@ -1,8 +1,9 @@
-import { getGroupOrders } from 'lib/utility/calendar'
-import { groups} from '../../../__fixtures__/itemsAndGroups'
-import {defaultKeys} from 'lib/default-config'
+import { getGroupOrders } from 'lib/utility/calendar';
+import { defaultKeys } from 'lib/default-config';
+import { groups } from '../../../__fixtures__/itemsAndGroups';
+
 describe('getGroupOrders', () => {
   it('works as expected', () => {
-    expect(getGroupOrders(groups, defaultKeys)).toMatchSnapshot()
-  })
-})
+    expect(getGroupOrders(groups, defaultKeys)).toMatchSnapshot();
+  });
+});

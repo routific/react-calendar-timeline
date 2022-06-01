@@ -1,10 +1,8 @@
 import React from 'react';
-import {GroupRow, RowColumns, RowItems} from '../../index'
+import { GroupRow, RowColumns, RowItems } from '../../index';
 
-const DefaultLayer = () => {
-    return <GroupRow>
+const DefaultLayer = () => <GroupRow>
         <RowItems/>
-    </GroupRow>
-}
+    </GroupRow>;
 
 export default DefaultLayer;

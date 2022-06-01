@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { getParentPosition } from '../utility/dom-helpers'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { getParentPosition } from '../utility/dom-helpers';
 
 class ScrollElement extends Component {
   static propTypes = {
@@ -12,178 +12,176 @@ class ScrollElement extends Component {
     isInteractingWithItem: PropTypes.bool.isRequired,
     onZoom: PropTypes.func.isRequired,
     onWheelZoom: PropTypes.func.isRequired,
-    onScroll: PropTypes.func.isRequired
+    onScroll: PropTypes.func.isRequired,
   }
 
   constructor() {
-    super()
+    super();
     this.state = {
-      isDragging: false
-    }
+      isDragging: false,
+    };
   }
 
   /**
    * needed to handle scrolling with trackpad
    */
   handleScroll = () => {
-    const scrollX = this.scrollComponent.scrollLeft
-    this.props.onScroll(scrollX)
+    const scrollX = this.scrollComponent.scrollLeft;
+    this.props.onScroll(scrollX);
   }
 
   refHandler = el => {
-    this.scrollComponent = el
-    this.props.scrollRef(el)
-    if(el){
-      el.addEventListener('wheel', this.handleWheel, {passive: false});
+    this.scrollComponent = el;
+    this.props.scrollRef(el);
+    if (el) {
+      el.addEventListener('wheel', this.handleWheel, { passive: false });
     }
   }
-  
+
 
   handleWheel = e => {
     // const { traditionalZoom } = this.props
 
-    
 
     // zoom in the time dimension
     if (e.ctrlKey || e.metaKey || e.altKey) {
-      e.preventDefault()
-      const parentPosition = getParentPosition(e.currentTarget)
-      const xPosition = e.clientX - parentPosition.x
+      e.preventDefault();
+      const parentPosition = getParentPosition(e.currentTarget);
+      const xPosition = e.clientX - parentPosition.x;
 
-      const speed = e.ctrlKey ? 10 : e.metaKey ? 3 : 1
+      const speed = e.ctrlKey ? 10 : e.metaKey ? 3 : 1;
 
       // convert vertical zoom to horiziontal
-      this.props.onWheelZoom(speed, xPosition, e.deltaY)
+      this.props.onWheelZoom(speed, xPosition, e.deltaY);
     } else if (e.shiftKey) {
-      e.preventDefault()
+      e.preventDefault();
       // shift+scroll event from a touchpad has deltaY property populated; shift+scroll event from a mouse has deltaX
-      this.props.onScroll(this.scrollComponent.scrollLeft + (e.deltaY || e.deltaX))
+      this.props.onScroll(this.scrollComponent.scrollLeft + (e.deltaY || e.deltaX));
       // no modifier pressed? we prevented the default event, so scroll or zoom as needed
     }
   }
 
   handleMouseDown = e => {
     if (e.button === 0) {
-      this.dragStartPosition = e.pageX
-      this.dragLastPosition = e.pageX
+      this.dragStartPosition = e.pageX;
+      this.dragLastPosition = e.pageX;
       this.setState({
-        isDragging: true
-      })
+        isDragging: true,
+      });
     }
   }
 
   handleMouseMove = e => {
     // this.props.onMouseMove(e)
-    //why is interacting with item important?
+    // why is interacting with item important?
     if (this.state.isDragging && !this.props.isInteractingWithItem) {
-      this.props.onScroll(this.scrollComponent.scrollLeft + this.dragLastPosition - e.pageX)
-      this.dragLastPosition = e.pageX
+      this.props.onScroll(this.scrollComponent.scrollLeft + this.dragLastPosition - e.pageX);
+      this.dragLastPosition = e.pageX;
     }
   }
 
   handleMouseUp = () => {
-    this.dragStartPosition = null
-    this.dragLastPosition = null
+    this.dragStartPosition = null;
+    this.dragLastPosition = null;
 
     this.setState({
-      isDragging: false
-    })
+      isDragging: false,
+    });
   }
 
   handleMouseLeave = () => {
     // this.props.onMouseLeave(e)
-    this.dragStartPosition = null
-    this.dragLastPosition = null
+    this.dragStartPosition = null;
+    this.dragLastPosition = null;
     this.setState({
-      isDragging: false
-    })
+      isDragging: false,
+    });
   }
 
   handleTouchStart = e => {
     if (e.touches.length === 2) {
-      e.preventDefault()
+      e.preventDefault();
 
       this.lastTouchDistance = Math.abs(
-        e.touches[0].screenX - e.touches[1].screenX
-      )
-      this.singleTouchStart = null
-      this.lastSingleTouch = null
+        e.touches[0].screenX - e.touches[1].screenX,
+      );
+      this.singleTouchStart = null;
+      this.lastSingleTouch = null;
     } else if (e.touches.length === 1) {
-      e.preventDefault()
+      e.preventDefault();
 
-      let x = e.touches[0].clientX
-      let y = e.touches[0].clientY
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
 
-      this.lastTouchDistance = null
-      this.singleTouchStart = { x: x, y: y, screenY: window.pageYOffset }
-      this.lastSingleTouch = { x: x, y: y, screenY: window.pageYOffset }
+      this.lastTouchDistance = null;
+      this.singleTouchStart = { x, y, screenY: window.pageYOffset };
+      this.lastSingleTouch = { x, y, screenY: window.pageYOffset };
     }
   }
 
   handleTouchMove = e => {
-    const { isInteractingWithItem, width, onZoom } = this.props
+    const { isInteractingWithItem, width, onZoom } = this.props;
     if (isInteractingWithItem) {
-      e.preventDefault()
-      return
+      e.preventDefault();
+      return;
     }
     if (this.lastTouchDistance && e.touches.length === 2) {
-      e.preventDefault()
-      let touchDistance = Math.abs(e.touches[0].screenX - e.touches[1].screenX)
-      let parentPosition = getParentPosition(e.currentTarget)
-      let xPosition =
-        (e.touches[0].screenX + e.touches[1].screenX) / 2 - parentPosition.x
+      e.preventDefault();
+      const touchDistance = Math.abs(e.touches[0].screenX - e.touches[1].screenX);
+      const parentPosition = getParentPosition(e.currentTarget);
+      const xPosition = (e.touches[0].screenX + e.touches[1].screenX) / 2 - parentPosition.x;
       if (touchDistance !== 0 && this.lastTouchDistance !== 0) {
-        onZoom(this.lastTouchDistance / touchDistance, xPosition / width)
-        this.lastTouchDistance = touchDistance
+        onZoom(this.lastTouchDistance / touchDistance, xPosition / width);
+        this.lastTouchDistance = touchDistance;
       }
     } else if (this.lastSingleTouch && e.touches.length === 1) {
-      e.preventDefault()
-      let x = e.touches[0].clientX
-      let y = e.touches[0].clientY
-      let deltaX = x - this.lastSingleTouch.x
-      let deltaX0 = x - this.singleTouchStart.x
-      let deltaY0 = y - this.singleTouchStart.y
-      this.lastSingleTouch = { x: x, y: y }
-      let moveX = Math.abs(deltaX0) * 3 > Math.abs(deltaY0)
-      let moveY = Math.abs(deltaY0) * 3 > Math.abs(deltaX0)
+      e.preventDefault();
+      const x = e.touches[0].clientX;
+      const y = e.touches[0].clientY;
+      const deltaX = x - this.lastSingleTouch.x;
+      const deltaX0 = x - this.singleTouchStart.x;
+      const deltaY0 = y - this.singleTouchStart.y;
+      this.lastSingleTouch = { x, y };
+      const moveX = Math.abs(deltaX0) * 3 > Math.abs(deltaY0);
+      const moveY = Math.abs(deltaY0) * 3 > Math.abs(deltaX0);
       if (deltaX !== 0 && moveX) {
-        this.props.onScroll(this.scrollComponent.scrollLeft - deltaX)
+        this.props.onScroll(this.scrollComponent.scrollLeft - deltaX);
       }
       if (moveY) {
         window.scrollTo(
           window.pageXOffset,
-          this.singleTouchStart.screenY - deltaY0
-        )
+          this.singleTouchStart.screenY - deltaY0,
+        );
       }
     }
   }
 
   handleTouchEnd = () => {
     if (this.lastTouchDistance) {
-      this.lastTouchDistance = null
+      this.lastTouchDistance = null;
     }
     if (this.lastSingleTouch) {
-      this.lastSingleTouch = null
-      this.singleTouchStart = null
+      this.lastSingleTouch = null;
+      this.singleTouchStart = null;
     }
   }
 
-  componentWillUnmount(){
-    if(this.scrollComponent){
+  componentWillUnmount() {
+    if (this.scrollComponent) {
       this.scrollComponent.removeEventListener('wheel', this.handleWheel);
     }
   }
 
   render() {
-    const { width, height, children } = this.props
-    const { isDragging } = this.state
+    const { width, height, children } = this.props;
+    const { isDragging } = this.state;
 
     const scrollComponentStyle = {
       width: `${width}px`,
-      height: `${height + 20}px`, //20px to push the scroll element down off screen...?
+      height: `${height + 20}px`, // 20px to push the scroll element down off screen...?
       cursor: isDragging ? 'move' : 'default',
-      position: 'relative'
-    }
+      position: 'relative',
+    };
 
     return (
       <div
@@ -203,8 +201,8 @@ class ScrollElement extends Component {
         {children}
       </div>
 
-    )
+    );
   }
 }
 
-export default ScrollElement
+export default ScrollElement;

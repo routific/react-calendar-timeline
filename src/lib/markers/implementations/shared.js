@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 /**
  * Baseline styles to get the marker to render correctly
@@ -12,19 +12,18 @@ const criticalStyles = {
   // by default, pointer events (specifically click) will
   // "pass through".  This is added so that CursorMarker
   // will not get in the way of canvas click
-  pointerEvents: 'none'
-}
+  pointerEvents: 'none',
+};
 
 // FIXME: this creates a new object each time in render
 // might want to memoize this?
 export const createMarkerStylesWithLeftOffset = leftOffset => ({
   ...criticalStyles,
-  left: leftOffset
-})
+  left: leftOffset,
+});
 
-export const createDefaultRenderer = dataTestidValue => {
+export const createDefaultRenderer = dataTestidValue =>
   // eslint-disable-next-line
-  return function DefaultMarkerRenderer({ styles }) {
-    return <div style={styles} data-testid={dataTestidValue} />
-  }
-}
+   function DefaultMarkerRenderer({ styles }) {
+    return <div style={styles} data-testid={dataTestidValue} />;
+  };
