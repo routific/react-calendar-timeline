@@ -20,6 +20,7 @@ $weekend: rgba(250, 246, 225, 0.5);
   //create local stack context for z-index
   position: relative;
   z-index: 0;
+
   * {
     box-sizing: border-box;
   }
@@ -86,6 +87,7 @@ $weekend: rgba(250, 246, 225, 0.5);
     &.rct-sidebar-row-odd {
       background: $row-background-odd;
     }
+
     &.rct-sidebar-row-even {
       background: $row-background-even;
     }
@@ -96,12 +98,15 @@ $weekend: rgba(250, 246, 225, 0.5);
 // to columns
 .rct-vertical-lines {
   height: 100%;
+
   .rct-vl {
     position: absolute;
     border-left: 1px solid $border-color;
+
     &.rct-vl-first {
       border-left-width: 2px;
     }
+
     &.rct-day-6,
     &.rct-day-0 {
       background: $weekend;
@@ -122,9 +127,11 @@ $weekend: rgba(250, 246, 225, 0.5);
     border-bottom: $border-width solid $border-color;
     box-sizing: border-box;
   }
+
   .rct-hl-odd {
     background: $row-background-odd;
   }
+
   .rct-hl-even {
     background: $row-background-even;
   }
@@ -146,12 +153,12 @@ $weekend: rgba(250, 246, 225, 0.5);
   cursor: pointer;
   font-size: 14px;
   background-color: rgb(240, 240, 240);
-  border-left:  2px solid #bbb;
+  border-left: 2px solid #bbb;
 }
 
 .rct-dateHeader-primary {
   background-color: initial;
-  border-left:  1px solid #bbb;
+  border-left: 1px solid #bbb;
   border-right: 1px solid #bbb;
   color: #fff
 }

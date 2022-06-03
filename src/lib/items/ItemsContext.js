@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
 const defaultContextState = {
   items: undefined,
@@ -19,6 +19,7 @@ const defaultContextState = {
   onItemDoubleClick: undefined,
   onItemContextMenu: undefined,
   itemRenderer: undefined,
+  itemRendererCluster: undefined,
   selected: undefined,
   groupDimensions: undefined,
   useResizeHandle: undefined,
@@ -32,11 +33,11 @@ const defaultContextState = {
   resizing: undefined,
   dragOffset: undefined,
   interactingItemId: undefined,
-}
+};
 
-const ItemsContext = React.createContext(defaultContextState)
+const ItemsContext = React.createContext(defaultContextState);
 
-const { Consumer, Provider } = ItemsContext
+const { Consumer, Provider } = ItemsContext;
 
 export class ItemsContextProvider extends PureComponent {
   static propTypes = {
@@ -57,6 +58,7 @@ export class ItemsContextProvider extends PureComponent {
     onItemDoubleClick: PropTypes.func,
     onItemContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
+    itemRendererCluster: PropTypes.func,
     selected: PropTypes.array,
     groupDimensions: PropTypes.object,
     useResizeHandle: PropTypes.bool,
@@ -70,11 +72,12 @@ export class ItemsContextProvider extends PureComponent {
     interactingItemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     resizeEdge: PropTypes.oneOf(['right', 'left']),
   }
-  render(){
-    const {children,...rest} = this.props
-    return <Provider value={rest}>{children}</Provider>
+
+  render() {
+    const { children, ...rest } = this.props;
+    return <Provider value={rest}>{children}</Provider>;
   }
 }
 
-export const ItemsConsumer = Consumer
-export default ItemsContext
+export const ItemsConsumer = Consumer;
+export default ItemsContext;

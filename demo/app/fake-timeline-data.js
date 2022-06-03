@@ -7,6 +7,7 @@ const timelineData = [
     end: 1652371200000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4536',
@@ -14,6 +15,10 @@ const timelineData = [
     end: 1652372940000,
     group: '30',
     canCluster: true,
+    title: 'item',
+    bgColor: 'purple',
+    selectedBgColor: 'green',
+    color: 'black',
   },
   {
     id: '4537',
@@ -21,6 +26,7 @@ const timelineData = [
     end: 1652373300000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4535',
@@ -28,6 +34,7 @@ const timelineData = [
     end: 1652374200000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4534',
@@ -35,6 +42,7 @@ const timelineData = [
     end: 1652375760000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4507',
@@ -42,6 +50,7 @@ const timelineData = [
     end: 1652377440000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4506',
@@ -49,6 +58,7 @@ const timelineData = [
     end: 1652377860000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4543',
@@ -56,6 +66,7 @@ const timelineData = [
     end: 1652377980000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4541',
@@ -63,6 +74,7 @@ const timelineData = [
     end: 1652379240000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4544',
@@ -70,6 +82,7 @@ const timelineData = [
     end: 1652379900000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4540',
@@ -77,6 +90,7 @@ const timelineData = [
     end: 1652380980000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4548',
@@ -84,6 +98,7 @@ const timelineData = [
     end: 1652381820000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4508',
@@ -91,6 +106,7 @@ const timelineData = [
     end: 1652382300000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4547',
@@ -98,6 +114,7 @@ const timelineData = [
     end: 1652382660000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4509',
@@ -105,6 +122,7 @@ const timelineData = [
     end: 1652383380000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4546',
@@ -112,6 +130,7 @@ const timelineData = [
     end: 1652384040000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4545',
@@ -119,6 +138,7 @@ const timelineData = [
     end: 1652384940000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4542',
@@ -126,6 +146,7 @@ const timelineData = [
     end: 1652385240000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4538',
@@ -133,6 +154,7 @@ const timelineData = [
     end: 1652386260000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4539',
@@ -140,6 +162,7 @@ const timelineData = [
     end: 1652386980000,
     group: '30',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4559',
@@ -147,6 +170,7 @@ const timelineData = [
     end: 1652372400000,
     group: '31',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4560',
@@ -154,6 +178,7 @@ const timelineData = [
     end: 1652372640000,
     group: '31',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4564',
@@ -161,6 +186,7 @@ const timelineData = [
     end: 1652373120000,
     group: '31',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4562',
@@ -168,6 +194,7 @@ const timelineData = [
     end: 1652373480000,
     group: '31',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4504',
@@ -175,6 +202,7 @@ const timelineData = [
     end: 1652371500000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4522',
@@ -182,6 +210,7 @@ const timelineData = [
     end: 1652371980000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4523',
@@ -189,6 +218,7 @@ const timelineData = [
     end: 1652373480000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4521',
@@ -196,6 +226,7 @@ const timelineData = [
     end: 1652375280000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4519',
@@ -203,6 +234,7 @@ const timelineData = [
     end: 1652375820000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4492',
@@ -210,6 +242,7 @@ const timelineData = [
     end: 1652377020000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4511',
@@ -217,6 +250,7 @@ const timelineData = [
     end: 1652377500000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4491',
@@ -224,6 +258,7 @@ const timelineData = [
     end: 1652378280000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4490',
@@ -231,6 +266,7 @@ const timelineData = [
     end: 1652379780000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4512',
@@ -238,6 +274,7 @@ const timelineData = [
     end: 1652380440000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4515',
@@ -245,6 +282,7 @@ const timelineData = [
     end: 1652381040000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4495',
@@ -252,6 +290,7 @@ const timelineData = [
     end: 1652381640000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4493',
@@ -259,6 +298,7 @@ const timelineData = [
     end: 1652382480000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4514',
@@ -266,6 +306,7 @@ const timelineData = [
     end: 1652383140000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4494',
@@ -273,6 +314,7 @@ const timelineData = [
     end: 1652383980000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4513',
@@ -280,6 +322,7 @@ const timelineData = [
     end: 1652384280000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4516',
@@ -287,6 +330,7 @@ const timelineData = [
     end: 1652385180000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4517',
@@ -294,6 +338,7 @@ const timelineData = [
     end: 1652386080000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4520',
@@ -301,6 +346,7 @@ const timelineData = [
     end: 1652386620000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4518',
@@ -308,6 +354,7 @@ const timelineData = [
     end: 1652387340000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4510',
@@ -315,6 +362,7 @@ const timelineData = [
     end: 1652388840000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4567',
@@ -322,6 +370,7 @@ const timelineData = [
     end: 1652389620000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4568',
@@ -329,6 +378,7 @@ const timelineData = [
     end: 1652389980000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4561',
@@ -336,6 +386,7 @@ const timelineData = [
     end: 1652390520000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4563',
@@ -343,6 +394,7 @@ const timelineData = [
     end: 1652391600000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4501',
@@ -350,6 +402,7 @@ const timelineData = [
     end: 1652393220000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4499',
@@ -357,6 +410,7 @@ const timelineData = [
     end: 1652393700000,
     group: '32',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4553',
@@ -364,6 +418,7 @@ const timelineData = [
     end: 1652371260000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4552',
@@ -371,6 +426,7 @@ const timelineData = [
     end: 1652372640000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4550',
@@ -378,6 +434,7 @@ const timelineData = [
     end: 1652372940000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4549',
@@ -385,6 +442,7 @@ const timelineData = [
     end: 1652373240000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4551',
@@ -392,6 +450,7 @@ const timelineData = [
     end: 1652376660000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4554',
@@ -399,6 +458,7 @@ const timelineData = [
     end: 1652377560000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4555',
@@ -406,6 +466,7 @@ const timelineData = [
     end: 1652382060000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4556',
@@ -413,6 +474,7 @@ const timelineData = [
     end: 1652383200000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4557',
@@ -420,6 +482,7 @@ const timelineData = [
     end: 1652384040000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4558',
@@ -427,6 +490,7 @@ const timelineData = [
     end: 1652385660000,
     group: '33',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4566',
@@ -434,6 +498,7 @@ const timelineData = [
     end: 1652372160000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4565',
@@ -441,6 +506,7 @@ const timelineData = [
     end: 1652372520000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4496',
@@ -448,6 +514,7 @@ const timelineData = [
     end: 1652373660000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4524',
@@ -455,6 +522,7 @@ const timelineData = [
     end: 1652374080000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4497',
@@ -462,6 +530,7 @@ const timelineData = [
     end: 1652374980000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4498',
@@ -469,6 +538,7 @@ const timelineData = [
     end: 1652375760000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4526',
@@ -476,6 +546,7 @@ const timelineData = [
     end: 1652376120000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4503',
@@ -483,6 +554,7 @@ const timelineData = [
     end: 1652376840000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4529',
@@ -490,6 +562,7 @@ const timelineData = [
     end: 1652377740000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4528',
@@ -497,6 +570,7 @@ const timelineData = [
     end: 1652377980000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4527',
@@ -504,6 +578,7 @@ const timelineData = [
     end: 1652378400000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4525',
@@ -511,6 +586,7 @@ const timelineData = [
     end: 1652378940000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4531',
@@ -518,6 +594,7 @@ const timelineData = [
     end: 1652379720000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4505',
@@ -525,6 +602,7 @@ const timelineData = [
     end: 1652381160000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4533',
@@ -532,6 +610,7 @@ const timelineData = [
     end: 1652382720000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4530',
@@ -539,6 +618,7 @@ const timelineData = [
     end: 1652383560000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4532',
@@ -546,6 +626,7 @@ const timelineData = [
     end: 1652383980000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4500',
@@ -553,6 +634,7 @@ const timelineData = [
     end: 1652385360000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
   {
     id: '4502',
@@ -560,6 +642,7 @@ const timelineData = [
     end: 1652386200000,
     group: '34',
     canCluster: true,
+    title: 'item',
   },
 
 ];

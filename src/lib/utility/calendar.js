@@ -711,6 +711,19 @@ export function groupItemsByKey(items, key) {
   }, {});
 }
 
+function shouldCluster(clusterSettings, canvasTimeSpan) {
+  if (!clusterSettings) {
+    return false;
+  }
+
+  if (clusterSettings.disableClusteringBelowTime) {
+    if (canvasTimeSpan < clusterSettings.disableClusteringBelowTime) {
+      return false;
+    }
+  }
+
+  return true;
+}
 export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, canvasTimeStart, canvasTimeEnd) {
   const groupOrders = getGroupOrders(groups, keys);
   const groupsWithItems = {};
@@ -724,7 +737,7 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
 
     let _groupedItems = groupedItems[_get(groupOrder.group, keys.groupIdKey)] || [];
 
-    if (clusterSettings) {
+    if (shouldCluster(clusterSettings, canvasTimeEnd - canvasTimeStart)) {
       const clusterService = new ClusteringService(_groupedItems, canvasTimeEnd - canvasTimeStart, clusterSettings, _get(groupOrder.group, keys.groupIdKey));
       clusterService.cluster();
       _groupedItems = clusterService.items;
