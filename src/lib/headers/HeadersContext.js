@@ -1,20 +1,20 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import createReactContext from 'create-react-context'
-import { noop } from '../utility/generic'
+import React from 'react';
+import PropTypes from 'prop-types';
+import createReactContext from 'create-react-context';
+import { noop } from '../utility/generic';
 
 const defaultContextState = {
   registerScroll: () => {
     // eslint-disable-next-line
     console.warn('default registerScroll header used')
-    return noop
+    return noop;
   },
   rightSidebarWidth: 0,
   leftSidebarWidth: 150,
-  timeSteps: {}
-}
+  timeSteps: {},
+};
 
-const { Consumer, Provider } = createReactContext(defaultContextState)
+const { Consumer, Provider } = createReactContext(defaultContextState);
 
 
 export class TimelineHeadersProvider extends React.Component {
@@ -22,7 +22,7 @@ export class TimelineHeadersProvider extends React.Component {
     children: PropTypes.element.isRequired,
     rightSidebarWidth: PropTypes.number,
     leftSidebarWidth: PropTypes.number.isRequired,
-    //TODO: maybe this should be skipped?
+    // TODO: maybe this should be skipped?
     timeSteps: PropTypes.object.isRequired,
     registerScroll: PropTypes.func.isRequired,
   }
@@ -34,9 +34,9 @@ export class TimelineHeadersProvider extends React.Component {
       leftSidebarWidth: this.props.leftSidebarWidth,
       timeSteps: this.props.timeSteps,
       registerScroll: this.props.registerScroll,
-    }
-    return <Provider value={contextValue}>{this.props.children}</Provider>
+    };
+    return <Provider value={contextValue}>{this.props.children}</Provider>;
   }
 }
 
-export const TimelineHeadersConsumer = Consumer
+export const TimelineHeadersConsumer = Consumer;

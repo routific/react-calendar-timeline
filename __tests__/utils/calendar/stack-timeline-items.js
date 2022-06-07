@@ -1,5 +1,5 @@
-import { stackTimelineItems } from 'lib/utility/calendar'
-import { items, groups } from '../../../__fixtures__/itemsAndGroups'
+import { stackTimelineItems } from 'lib/utility/calendar';
+import { items, groups } from '../../../__fixtures__/itemsAndGroups';
 import {
   props,
   state,
@@ -7,7 +7,8 @@ import {
   stateResizeItemLeft,
   stateResizeItemRight,
   propsNoStack,
-} from '../../../__fixtures__/stateAndProps'
+} from '../../../__fixtures__/stateAndProps';
+
 describe('stackItems', () => {
   it('work as expected', () => {
     expect(
@@ -26,10 +27,10 @@ describe('stackItems', () => {
         state.dragTime,
         state.resizingEdge,
         state.resizeTime,
-        state.newGroupId
-      )
-    ).toMatchSnapshot()
-  })
+        state.newGroupId,
+      ),
+    ).toMatchSnapshot();
+  });
   it('work as expected no stack', () => {
     expect(
       stackTimelineItems(
@@ -47,10 +48,10 @@ describe('stackItems', () => {
         state.dragTime,
         state.resizingEdge,
         state.resizeTime,
-        state.newGroupId
-      )
-    ).toMatchSnapshot()
-  })
+        state.newGroupId,
+      ),
+    ).toMatchSnapshot();
+  });
   it('should stack items while moving an item', () => {
     expect(
       stackTimelineItems(
@@ -68,10 +69,10 @@ describe('stackItems', () => {
         stateMoveItem.dragTime,
         stateMoveItem.resizingEdge,
         stateMoveItem.resizeTime,
-        stateMoveItem.newGroupId
-      )
-    ).toMatchSnapshot()
-  })
+        stateMoveItem.newGroupId,
+      ),
+    ).toMatchSnapshot();
+  });
   it('should stack items while resize item left', () => {
     expect(
       stackTimelineItems(
@@ -89,10 +90,10 @@ describe('stackItems', () => {
         stateResizeItemLeft.dragTime,
         stateResizeItemLeft.resizingEdge,
         stateResizeItemLeft.resizeTime,
-        stateResizeItemLeft.newGroupId
-      )
-    ).toMatchSnapshot()
-  })
+        stateResizeItemLeft.newGroupId,
+      ),
+    ).toMatchSnapshot();
+  });
   it('should stack items while resize item right', () => {
     expect(
       stackTimelineItems(
@@ -110,10 +111,10 @@ describe('stackItems', () => {
         stateResizeItemRight.dragTime,
         stateResizeItemRight.resizingEdge,
         stateResizeItemRight.resizeTime,
-        stateResizeItemRight.newGroupId
-      )
-    ).toMatchSnapshot()
-  })
+        stateResizeItemRight.newGroupId,
+      ),
+    ).toMatchSnapshot();
+  });
   it('should return empty dimensions if groups are empty', () => {
     expect(
       stackTimelineItems(
@@ -131,13 +132,13 @@ describe('stackItems', () => {
         state.dragTime,
         state.resizingEdge,
         state.resizeTime,
-        state.newGroupId
-      )
+        state.newGroupId,
+      ),
     ).toMatchObject({
       groupsWithItemsDimensions: {},
       height: 0,
       groupHeights: [],
-      groupTops: []
-    })
-  })
-})
+      groupTops: [],
+    });
+  });
+});

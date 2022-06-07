@@ -1,24 +1,24 @@
 import React from 'react';
-import { render } from 'react-testing-library'
-import { items, groups } from '../../__fixtures__/itemsAndGroups'
-import { props, state } from '../../__fixtures__/stateAndProps'
-import { HelpersContextProvider } from '../../src/lib/timeline/HelpersContext'
+import { render } from 'react-testing-library';
+import { stackTimelineItems } from 'lib/utility/calendar';
+import { items, groups } from '../../__fixtures__/itemsAndGroups';
+import { props, state } from '../../__fixtures__/stateAndProps';
+import { HelpersContextProvider } from '../../src/lib/timeline/HelpersContext';
 import {
   TimelineStateProvider,
-  TimelineStateConsumer
-} from '../../src/lib/timeline/TimelineStateContext'
-import { stackTimelineItems } from 'lib/utility/calendar'
+  TimelineStateConsumer,
+} from '../../src/lib/timeline/TimelineStateContext';
 
 function renderWithTimelineStateAndHelpers(
   ui,
-  { providersPropsOverride, ...options } = { providersPropsOverride: {} }
+  { providersPropsOverride, ...options } = { providersPropsOverride: {} },
 ) {
-  const canvasWidth = state.width * 3
+  const canvasWidth = state.width * 3;
   const {
     groupsWithItemsDimensions,
     groupHeights,
     groupTops,
-    itemsWithInteractions
+    itemsWithInteractions,
   } = stackTimelineItems(
     items,
     groups,
@@ -34,15 +34,15 @@ function renderWithTimelineStateAndHelpers(
     state.dragTime,
     state.resizingEdge,
     state.resizeTime,
-    state.newGroupId
-  )
+    state.newGroupId,
+  );
   const providersProps = {
     visibleTimeStart: state.visibleTimeStart,
     visibleTimeEnd: state.visibleTimeEnd,
     canvasTimeStart: state.canvasTimeStart,
     canvasTimeEnd: state.canvasTimeEnd,
-    canvasWidth: canvasWidth,
-    showPeriod: ()=>{},
+    canvasWidth,
+    showPeriod: () => {},
     timelineUnit: 'day',
     timelineWidth: state.width,
     keys: props.keys,
@@ -50,8 +50,8 @@ function renderWithTimelineStateAndHelpers(
     groupHeights,
     groupTops,
     itemsWithInteractions,
-    ...providersPropsOverride
-  }
+    ...providersPropsOverride,
+  };
   function Wrapper(props) {
     return (
       <TimelineStateProvider
@@ -83,9 +83,9 @@ function renderWithTimelineStateAndHelpers(
           )}
         </TimelineStateConsumer>
       </TimelineStateProvider>
-    )
+    );
   }
-  return render(ui, { wrapper: Wrapper, ...options })
+  return render(ui, { wrapper: Wrapper, ...options });
 }
 
-export default renderWithTimelineStateAndHelpers
+export default renderWithTimelineStateAndHelpers;
