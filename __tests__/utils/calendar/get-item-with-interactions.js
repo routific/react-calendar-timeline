@@ -1,10 +1,10 @@
-import { getItemWithInteractions } from 'lib/utility/calendar'
-import { items, groups } from '../../../__fixtures__/itemsAndGroups'
-import { defaultKeys } from 'lib/default-config'
+import { getItemWithInteractions } from 'lib/utility/calendar';
+import { defaultKeys } from 'lib/default-config';
+import { items, groups } from '../../../__fixtures__/itemsAndGroups';
 
 describe('getItemWithInteractions', () => {
   it('should return the same item if no interaction occurred', () => {
-    const item = items[0]
+    const item = items[0];
     expect(
       getItemWithInteractions({
         item,
@@ -14,12 +14,12 @@ describe('getItemWithInteractions', () => {
         dragTime: false,
         resizingEdge: false,
         resizeTime: false,
-        newGroupId: '1'
-      })
-    ).toBe(item)
-  })
+        newGroupId: '1',
+      }),
+    ).toBe(item);
+  });
   it('should return the same item if draggingItem and resizingItem is not for the same item', () => {
-    const item = items[0]
+    const item = items[0];
     expect(
       getItemWithInteractions({
         item,
@@ -29,14 +29,14 @@ describe('getItemWithInteractions', () => {
         dragTime: false,
         resizingEdge: false,
         resizeTime: false,
-        newGroupId: '1'
-      })
-    ).toBe(item)
-  })
+        newGroupId: '1',
+      }),
+    ).toBe(item);
+  });
   it('should return new item with new start and end time if dragged with no changed group', () => {
-    const item = items[0]
-    //moved 1 hour
-    const dragOffset = 60 * 60 * 1000
+    const item = items[0];
+    // moved 1 hour
+    const dragOffset = 60 * 60 * 1000;
     expect(
       getItemWithInteractions({
         item,
@@ -46,19 +46,19 @@ describe('getItemWithInteractions', () => {
         dragTime: item.start_time + dragOffset,
         resizingEdge: false,
         resizeTime: false,
-        newGroupId: '1'
-      })
+        newGroupId: '1',
+      }),
     ).toMatchObject({
       ...item,
       start_time: item.start_time + dragOffset,
       end_time: item.end_time + dragOffset,
-      group: item.group
-    })
-  })
+      group: item.group,
+    });
+  });
   it('should return new item with new start and end time if dragged with changed group', () => {
-    const item = items[0]
-    //moved 1 hour
-    const dragOffset = 60 * 60 * 1000
+    const item = items[0];
+    // moved 1 hour
+    const dragOffset = 60 * 60 * 1000;
     expect(
       getItemWithInteractions({
         item,
@@ -69,18 +69,18 @@ describe('getItemWithInteractions', () => {
         resizingEdge: false,
         resizeTime: false,
         newGroupId: groups[1].id,
-      })
+      }),
     ).toMatchObject({
       ...item,
       start_time: item.start_time + dragOffset,
       end_time: item.end_time + dragOffset,
-      group: groups[1].id
-    })
-  })
+      group: groups[1].id,
+    });
+  });
   it('should return new item with new start time if resized left', () => {
-    const item = items[0]
-    //moved 1 hour
-    const dragOffset = 60 * 60 * 1000
+    const item = items[0];
+    // moved 1 hour
+    const dragOffset = 60 * 60 * 1000;
     expect(
       getItemWithInteractions({
         item,
@@ -90,17 +90,17 @@ describe('getItemWithInteractions', () => {
         dragTime: undefined,
         resizingEdge: 'left',
         resizeTime: item.start_time + dragOffset,
-        newGroupId: 0
-      })
+        newGroupId: 0,
+      }),
     ).toMatchObject({
       ...item,
       start_time: item.start_time + dragOffset,
-    })
-  })
+    });
+  });
   it('should return new item with end start time if resized right', () => {
-    const item = items[0]
-    //moved 1 hour
-    const dragOffset = 60 * 60 * 1000
+    const item = items[0];
+    // moved 1 hour
+    const dragOffset = 60 * 60 * 1000;
     expect(
       getItemWithInteractions({
         item,
@@ -110,11 +110,11 @@ describe('getItemWithInteractions', () => {
         dragTime: undefined,
         resizingEdge: 'right',
         resizeTime: item.end_time + dragOffset,
-        newGroupId: 0
-      })
+        newGroupId: 0,
+      }),
     ).toMatchObject({
       ...item,
       end_time: item.end_time + dragOffset,
-    })
-  })
-})
+    });
+  });
+});

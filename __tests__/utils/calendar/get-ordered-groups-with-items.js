@@ -1,10 +1,12 @@
 import { getOrderedGroupsWithItems } from 'lib/utility/calendar';
 import { items, groups } from '../../../__fixtures__/itemsAndGroups';
 import { props } from '../../../__fixtures__/stateAndProps';
+
 import {
   clusterSettings, canvasSize, itemsToCluster, clusterGroup,
   clusterSettingsLarge, clusterSettingsLgDisableBelow23Hours,
 } from '../../../__fixtures__/clusterItems';
+
 
 describe('getGroupWithItemDimensions', () => {
   it('should work as expected', () => {

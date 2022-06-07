@@ -55,8 +55,9 @@ export default class Item extends Component {
     onResized: PropTypes.func,
     onContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
-    itemRendererCluster: PropTypes.func,
 
+    itemRendererCluster: PropTypes.func,
+    
     itemProps: PropTypes.object,
     canSelect: PropTypes.bool,
     dimensions: PropTypes.object,
@@ -554,6 +555,7 @@ export default class Item extends Component {
         : null,
       width: this.props.dimensions.width,
     };
+
     const { itemRenderer, itemRendererCluster } = this.props;
 
     const renderer = this.props.item.isCluster ? itemRendererCluster : itemRenderer;
@@ -565,22 +567,5 @@ export default class Item extends Component {
       getItemProps: this.getItemProps,
       getResizeProps: this.getResizeProps,
     });
-
-    // if (this.props.item.isCluster) {
-    //   return this.props.itemRendererCluster({
-    //     item: this.props.item,
-    //     timelineContext,
-    //     itemContext,
-    //     getItemProps: this.getItemProps,
-    //     getResizeProps: this.getResizeProps,
-    //   });
-    // }
-    // return this.props.itemRenderer({
-    //   item: this.props.item,
-    //   timelineContext,
-    //   itemContext,
-    //   getItemProps: this.getItemProps,
-    //   getResizeProps: this.getResizeProps,
-    // });
   }
 }

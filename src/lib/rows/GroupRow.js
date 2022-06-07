@@ -1,10 +1,10 @@
-import React, { Component, PureComponent } from 'react'
-import PropTypes from 'prop-types'
-import PreventClickOnDrag from '../interaction/PreventClickOnDrag'
-import interact from 'interactjs'
-import { _get } from '../utility/generic'
-import { GroupRowConsumer } from './GroupRowContext'
-import { TimelineStateConsumer } from '../timeline/TimelineStateContext'
+import React, { Component, PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import interact from 'interactjs';
+import PreventClickOnDrag from '../interaction/PreventClickOnDrag';
+import { _get } from '../utility/generic';
+import { GroupRowConsumer } from './GroupRowContext';
+import { TimelineStateConsumer } from '../timeline/TimelineStateContext';
 
 class GroupRow extends Component {
   static propTypes = {
@@ -17,7 +17,7 @@ class GroupRow extends Component {
     clickTolerance: PropTypes.number.isRequired,
     group: PropTypes.object.isRequired,
     horizontalLineClassNamesForGroup: PropTypes.func,
-    keys: PropTypes.object
+    keys: PropTypes.object,
   }
 
   ref = React.createRef()
@@ -25,8 +25,8 @@ class GroupRow extends Component {
   componentDidMount() {
     interact(this.ref.current).dropzone({
       accept: '.rct-item',
-      overlap: 'pointer'
-    })
+      overlap: 'pointer',
+    });
   }
 
   render() {
@@ -41,11 +41,11 @@ class GroupRow extends Component {
       children,
       keys,
       canvasWidth,
-      groupHeight
-    } = this.props
-    let classNamesForGroup = []
+      groupHeight,
+    } = this.props;
+    let classNamesForGroup = [];
     if (horizontalLineClassNamesForGroup) {
-      classNamesForGroup = horizontalLineClassNamesForGroup(group)
+      classNamesForGroup = horizontalLineClassNamesForGroup(group);
     }
     return (
       <PreventClickOnDrag clickTolerance={clickTolerance} onClick={onClick}>
@@ -55,21 +55,21 @@ class GroupRow extends Component {
           onContextMenu={onContextMenu}
           onDoubleClick={onDoubleClick}
           className={
-            'rct-hl ' +
-            (isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd ') +
-            (classNamesForGroup ? classNamesForGroup.join(' ') : '')
+            `rct-hl ${
+              isEvenRow ? 'rct-hl-even ' : 'rct-hl-odd '
+            }${classNamesForGroup ? classNamesForGroup.join(' ') : ''}`
           }
           style={{
             width: canvasWidth,
             height: groupHeight,
-            position: 'relative'
+            position: 'relative',
           }}
           data-groupid={_get(group, keys.groupIdKey)}
         >
           {children}
         </div>
       </PreventClickOnDrag>
-    )
+    );
   }
 }
 
@@ -78,7 +78,7 @@ class GroupRowWrapper extends PureComponent {
     return (
       <TimelineStateConsumer>
         {({ getTimelineState }) => {
-          const { canvasWidth, keys } = getTimelineState()
+          const { canvasWidth, keys } = getTimelineState();
           return (
             <GroupRowConsumer>
               {props => (
@@ -91,11 +91,11 @@ class GroupRowWrapper extends PureComponent {
                 />
               )}
             </GroupRowConsumer>
-          )
+          );
         }}
       </TimelineStateConsumer>
-    )
+    );
   }
 }
 
-export default GroupRowWrapper
+export default GroupRowWrapper;

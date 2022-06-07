@@ -1,4 +1,4 @@
-import { calculateInteractionNewTimes } from 'lib/utility/calendar'
+import { calculateInteractionNewTimes } from 'lib/utility/calendar';
 
 describe('calculateInteractionNewTimes', () => {
   it('should return the original time start and end if no interaction', () => {
@@ -10,10 +10,10 @@ describe('calculateInteractionNewTimes', () => {
         isDragging: false,
         isResizing: false,
         resizingEdge: false,
-        resizeTime: false
-      })
-    ).toMatchObject([200, 300])
-  })
+        resizeTime: false,
+      }),
+    ).toMatchObject([200, 300]);
+  });
   it('should calculate new time start and end if being moved', () => {
     expect(
       calculateInteractionNewTimes({
@@ -23,10 +23,10 @@ describe('calculateInteractionNewTimes', () => {
         isDragging: true,
         isResizing: false,
         resizingEdge: false,
-        resizeTime: false
-      })
-    ).toMatchObject([192, 292])
-  })
+        resizeTime: false,
+      }),
+    ).toMatchObject([192, 292]);
+  });
   it('should calculate new time start and end if being resized right', () => {
     expect(
       calculateInteractionNewTimes({
@@ -36,10 +36,10 @@ describe('calculateInteractionNewTimes', () => {
         isDragging: false,
         isResizing: true,
         resizingEdge: 'right',
-        resizeTime: 250
-      })
-    ).toMatchObject([200, 250])
-  })
+        resizeTime: 250,
+      }),
+    ).toMatchObject([200, 250]);
+  });
   it('should calculate new time start and end if being resized left', () => {
     expect(
       calculateInteractionNewTimes({
@@ -49,9 +49,9 @@ describe('calculateInteractionNewTimes', () => {
         isDragging: false,
         isResizing: true,
         resizingEdge: 'left',
-        resizeTime: 210
-      })
-    ).toMatchObject([210, 300])
-  })
-  xit('the item is moved and snapped to the grid', () => {})
-})
+        resizeTime: 210,
+      }),
+    ).toMatchObject([210, 300]);
+  });
+  xit('the item is moved and snapped to the grid', () => {});
+});
