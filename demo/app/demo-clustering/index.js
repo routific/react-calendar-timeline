@@ -1,17 +1,21 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import moment from 'moment';
-
+// eslint-disable-next-line import/no-extraneous-dependencies
+import faker from 'faker';
+// eslint-disable-next-line import/no-unresolved
 import Timeline from 'react-calendar-timeline';
+// import generateFakeData from '../generate-fake-data';
+import timelineData from '../fake-timeline-data';
 
-import generateFakeData from '../generate-fake-data';
 
-const minTime = moment()
-  .add(-6, 'months')
+const minTime = moment('2022-MAY-12')
+  .add(-12, 'hours')
   .valueOf();
-const maxTime = moment()
-  .add(6, 'months')
+const maxTime = moment('2022-MAY-12')
+  .add(36, 'hours')
   .valueOf();
+
 
 const keys = {
   groupIdKey: 'id',
@@ -29,13 +33,45 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    const { groups, items } = generateFakeData(100, 10000);
-    const defaultTimeStart = moment()
-      .startOf('month')
+    // const { groups, items } = generateFakeData(10, 1500);
+
+    const items = timelineData;
+
+    const groups = [{
+      id: '30',
+      title: faker.name.firstName(),
+      rightTitle: faker.name.lastName(),
+      label: `Label ${faker.name.firstName()}`,
+      bgColor: 'red',
+    },
+    {
+      id: '31',
+      title: faker.name.firstName(),
+      rightTitle: faker.name.lastName(),
+      label: `Label ${faker.name.firstName()}`,
+    }, {
+      id: '32',
+      title: faker.name.firstName(),
+      rightTitle: faker.name.lastName(),
+      label: `Label ${faker.name.firstName()}`,
+    }, {
+      id: '33',
+      title: faker.name.firstName(),
+      rightTitle: faker.name.lastName(),
+      label: `Label ${faker.name.firstName()}`,
+    }, {
+      id: '34',
+      title: faker.name.firstName(),
+      rightTitle: faker.name.lastName(),
+      label: `Label ${faker.name.firstName()}`,
+    }];
+    const defaultTimeStart = moment('2022-MAY-12')
+      .startOf('day')
       .toDate();
-    const defaultTimeEnd = moment()
-      .endOf('month')
+    const defaultTimeEnd = moment('2022-MAY-12')
+      .endOf('day')
       .toDate();
+
 
     groups[0].stackItems = false;
     groups[0].height = 300;
@@ -91,24 +127,6 @@ export default class App extends Component {
     console.log('Moved', itemId, dragTime, newGroupId);
   }
 
-  handleItemResize = (itemId, time, edge) => {
-    const { items } = this.state;
-
-    this.setState({
-      items: items.map(
-        item => (item.id === itemId
-          ? Object.assign({}, item, {
-            start: edge === 'left' ? time : item.start,
-            end: edge === 'left' ? item.end : time,
-          })
-          : item),
-      ),
-    });
-
-    console.log('Resized', itemId, time, edge);
-  }
-
-  // this limits the timeline to -6 months ... +6 months
   handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
     if (visibleTimeStart < minTime && visibleTimeEnd > maxTime) {
       updateScrollCanvas(minTime, maxTime);
@@ -120,32 +138,6 @@ export default class App extends Component {
       updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
     }
   }
-
-  moveResizeValidator = (action, item, time) => {
-    if (time < new Date().getTime()) {
-      const newTime = Math.ceil(new Date().getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000);
-      return newTime;
-    }
-
-    return time;
-  }
-
-  // itemRenderer = ({ item }) => {
-  //   return (
-  //     <div className='custom-item'>
-  //       <span className='title'>{item.title}</span>
-  //       <p className='tip'>{item.itemProps['data-tip']}</p>
-  //     </div>
-  //   )
-  // }
-
-  // groupRenderer = ({ group }) => {
-  //   return (
-  //     <div className='custom-group'>
-  //       {group.title}
-  //     </div>
-  //   )
-  // }
 
   render() {
     const {
@@ -159,30 +151,24 @@ export default class App extends Component {
         keys={keys}
         sidebarWidth={150}
         sidebarContent={<div>Above The Left</div>}
-        // rightSidebarWidth={150}
-        // rightSidebarContent={<div>Above The Right</div>}
-
         canMove
         canResize="right"
         canSelect
-        itemsSorted
         itemTouchSendsClick={false}
-        stackItems
+        clusterSettings={{
+          tinyItemSize: 0.4,
+          clusteringRange: 0.5,
+          sequencialClusterTinyItemsOnly: true,
+        }}
         itemHeightRatio={0.75}
-        // resizeDetector={containerResizeDetector}
-
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}
-        // itemRenderer={this.itemRenderer}
-        // groupRenderer={this.groupRenderer}
-
         onCanvasClick={this.handleCanvasClick}
         onCanvasContextMenu={this.handleCanvasContextMenu}
         onItemClick={this.handleItemClick}
         onItemSelect={this.handleItemSelect}
         onItemContextMenu={this.handleItemContextMenu}
         onItemMove={this.handleItemMove}
-        onItemResize={this.handleItemResize}
         onItemDoubleClick={this.handleItemDoubleClick}
         onTimeChange={this.handleTimeChange}
         moveResizeValidator={this.moveResizeValidator}

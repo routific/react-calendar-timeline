@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
 const defaultContextState = {
   clickTolerance: undefined,
@@ -9,12 +9,12 @@ const defaultContextState = {
   isEvenRow: undefined,
   group: undefined,
   horizontalLineClassNamesForGroup: undefined,
-  groupHeight: undefined
-}
+  groupHeight: undefined,
+};
 
-const GroupRowContext = React.createContext(defaultContextState)
+const GroupRowContext = React.createContext(defaultContextState);
 
-const { Consumer, Provider } = GroupRowContext
+const { Consumer, Provider } = GroupRowContext;
 
 export class GroupRowContextProvider extends PureComponent {
   static propTypes = {
@@ -28,26 +28,32 @@ export class GroupRowContextProvider extends PureComponent {
     groupHeight: PropTypes.number.isRequired,
     groupIndex: PropTypes.number.isRequired,
   }
+
   handleContextMenu = (e) => {
-    this.props.onContextMenu(e, this.props.groupIndex)
+    this.props.onContextMenu(e, this.props.groupIndex);
   }
+
   handleClick = (e) => {
-    this.props.onClick(e, this.props.groupIndex)
+    this.props.onClick(e, this.props.groupIndex);
   }
+
   handleDoubleClick = (e) => {
-    this.props.onDoubleClick(e, this.props.groupIndex)
+    this.props.onDoubleClick(e, this.props.groupIndex);
   }
+
   render() {
-    const { children, onContextMenu, onClick, onDoubleClick, ...rest } = this.props
+    const {
+      children, onContextMenu, onClick, onDoubleClick, ...rest
+    } = this.props;
     const value = {
       ...rest,
       onContextMenu: this.handleContextMenu,
       onClick: this.handleClick,
-      onDoubleClick: this.handleDoubleClick
-    }
-    return <Provider value={value}>{children}</Provider>
+      onDoubleClick: this.handleDoubleClick,
+    };
+    return <Provider value={value}>{children}</Provider>;
   }
 }
 
-export const GroupRowConsumer = Consumer
-export default GroupRowContext
+export const GroupRowConsumer = Consumer;
+export default GroupRowContext;

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import React, { Component } from 'react'
-import moment from 'moment'
+import React, { Component } from 'react';
+import moment from 'moment';
 
 import Timeline, {
   TimelineMarkers,
@@ -10,19 +10,19 @@ import Timeline, {
   SidebarHeader,
   CustomHeader,
   TimelineHeaders,
-  DateHeader
-} from 'react-calendar-timeline'
+  DateHeader,
+} from 'react-calendar-timeline';
 
-import generateFakeData from '../generate-fake-data'
+import generateFakeData from '../generate-fake-data';
 
-var minTime = moment()
+const minTime = moment()
   .add(-6, 'months')
-  .valueOf()
-var maxTime = moment()
+  .valueOf();
+const maxTime = moment()
   .add(6, 'months')
-  .valueOf()
+  .valueOf();
 
-var keys = {
+const keys = {
   groupIdKey: 'id',
   groupTitleKey: 'title',
   groupRightTitleKey: 'rightTitle',
@@ -31,21 +31,21 @@ var keys = {
   itemDivTitleKey: 'title',
   itemGroupKey: 'group',
   itemTimeStartKey: 'start',
-  itemTimeEndKey: 'end'
-}
+  itemTimeEndKey: 'end',
+};
 
 export default class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    const { groups, items } = generateFakeData()
+    const { groups, items } = generateFakeData();
     const defaultTimeStart = moment()
       .startOf('day')
-      .toDate()
+      .toDate();
     const defaultTimeEnd = moment()
       .startOf('day')
       .add(1, 'day')
-      .toDate()
+      .toDate();
 
     this.state = {
       groups,
@@ -53,111 +53,111 @@ export default class App extends Component {
       defaultTimeStart,
       defaultTimeEnd,
       format: false,
-      showHeaders: false
-    }
+      showHeaders: false,
+    };
   }
 
   handleClick = () => {
-    this.setState({ format: true })
+    this.setState({ format: true });
   }
 
   handleCanvasClick = (groupId, time) => {
-    console.log('Canvas clicked', groupId, moment(time).format())
+    console.log('Canvas clicked', groupId, moment(time).format());
   }
 
   handleCanvasDoubleClick = (groupId, time) => {
-    console.log('Canvas double clicked', groupId, moment(time).format())
+    console.log('Canvas double clicked', groupId, moment(time).format());
   }
 
   handleCanvasContextMenu = (group, time) => {
-    console.log('Canvas context menu', group, moment(time).format())
+    console.log('Canvas context menu', group, moment(time).format());
   }
 
   handleItemClick = (itemId, _, time) => {
-    console.log('Clicked: ' + itemId, moment(time).format())
+    console.log(`Clicked: ${itemId}`, moment(time).format());
   }
 
   handleItemSelect = (itemId, _, time) => {
-    console.log('Selected: ' + itemId, moment(time).format())
+    console.log(`Selected: ${itemId}`, moment(time).format());
   }
 
   handleItemDoubleClick = (itemId, _, time) => {
-    console.log('Double Click: ' + itemId, moment(time).format())
+    console.log(`Double Click: ${itemId}`, moment(time).format());
   }
 
   handleItemContextMenu = (itemId, _, time) => {
-    console.log('Context Menu: ' + itemId, moment(time).format())
+    console.log(`Context Menu: ${itemId}`, moment(time).format());
   }
 
   handleItemMove = (itemId, dragTime, newGroupId) => {
-    const { items, groups } = this.state
+    const { items, groups } = this.state;
 
-    const group = groups.find(i => i.id === newGroupId)
+    const group = groups.find(i => i.id === newGroupId);
 
     this.setState({
       items: items.map(
-        item =>
-          item.id === itemId
-            ? Object.assign({}, item, {
-                start: dragTime,
-                end: dragTime + (item.end - item.start),
-                group: group.id
-              })
-            : item
-      )
-    })
+        item => (item.id === itemId
+          ? Object.assign({}, item, {
+            start: dragTime,
+            end: dragTime + (item.end - item.start),
+            group: group.id,
+          })
+          : item),
+      ),
+    });
 
-    console.log('Moved', itemId, dragTime, newGroupId)
+    console.log('Moved', itemId, dragTime, newGroupId);
   }
+
   handleItemResize = (itemId, time, edge) => {
-    const { items } = this.state
+    const { items } = this.state;
 
     this.setState({
       items: items.map(
-        item =>
-          item.id === itemId
-            ? Object.assign({}, item, {
-                start: edge === 'left' ? time : item.start,
-                end: edge === 'left' ? item.end : time
-              })
-            : item
-      )
-    })
+        item => (item.id === itemId
+          ? Object.assign({}, item, {
+            start: edge === 'left' ? time : item.start,
+            end: edge === 'left' ? item.end : time,
+          })
+          : item),
+      ),
+    });
 
-    console.log('Resized', itemId, time, edge)
+    console.log('Resized', itemId, time, edge);
   }
 
   // this limits the timeline to -6 months ... +6 months
   handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
     if (visibleTimeStart < minTime && visibleTimeEnd > maxTime) {
-      updateScrollCanvas(minTime, maxTime)
+      updateScrollCanvas(minTime, maxTime);
     } else if (visibleTimeStart < minTime) {
-      updateScrollCanvas(minTime, minTime + (visibleTimeEnd - visibleTimeStart))
+      updateScrollCanvas(minTime, minTime + (visibleTimeEnd - visibleTimeStart));
     } else if (visibleTimeEnd > maxTime) {
-      updateScrollCanvas(maxTime - (visibleTimeEnd - visibleTimeStart), maxTime)
+      updateScrollCanvas(maxTime - (visibleTimeEnd - visibleTimeStart), maxTime);
     } else {
-      updateScrollCanvas(visibleTimeStart, visibleTimeEnd)
+      updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
     }
   }
 
   moveResizeValidator = (action, item, time) => {
     if (time < new Date().getTime()) {
-      var newTime =
-        Math.ceil(new Date().getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000)
-      return newTime
+      const newTime = Math.ceil(new Date().getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000);
+      return newTime;
     }
 
-    return time
+    return time;
   }
 
   handleClickChangeHeaders = () => {
     this.setState(state => ({
-      showHeaders: !state.showHeaders
-    }))
+      showHeaders: !state.showHeaders,
+    }));
   }
 
   render() {
-    const { groups, items, defaultTimeStart, defaultTimeEnd } = this.state
+    const {
+      groups, items, defaultTimeStart, defaultTimeEnd,
+    } = this.state;
 
     return (
       <div>
@@ -208,9 +208,9 @@ export default class App extends Component {
                   showPeriod,
                   data,
                 },
-                
+
               ) => {
-                console.log('props', data)
+                console.log('props', data);
                 return (
                   <div {...getRootProps()}>
                     {intervals.map(interval => {
@@ -220,26 +220,26 @@ export default class App extends Component {
                         borderLeft: '1px solid black',
                         cursor: 'pointer',
                         backgroundColor: 'Turquoise',
-                        color: 'white'
-                      }
+                        color: 'white',
+                      };
                       return (
                         <div
                           onClick={() => {
-                            showPeriod(interval.startTime, interval.endTime)
+                            showPeriod(interval.startTime, interval.endTime);
                           }}
                           {...getIntervalProps({
                             interval,
-                            style: intervalStyle
+                            style: intervalStyle,
                           })}
                         >
                           <div className="sticky">
                             {interval.startTime.format('YYYY')}
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
-                )
+                );
               }}
             </CustomHeader>
             <CustomHeader unit="week">
@@ -247,9 +247,8 @@ export default class App extends Component {
                 headerContext: { intervals },
                 getRootProps,
                 getIntervalProps,
-                showPeriod
-              }) => {
-                return (
+                showPeriod,
+              }) => (
                   <div {...getRootProps()}>
                     {intervals.map(interval => {
                       const intervalStyle = {
@@ -258,61 +257,58 @@ export default class App extends Component {
                         borderLeft: '1px solid black',
                         cursor: 'pointer',
                         backgroundColor: 'indianred',
-                        color: 'white'
-                      }
+                        color: 'white',
+                      };
                       return (
                         <div
                           onClick={() => {
-                            showPeriod(interval.startTime, interval.endTime)
+                            showPeriod(interval.startTime, interval.endTime);
                           }}
                           {...getIntervalProps({
                             interval,
-                            style: intervalStyle
+                            style: intervalStyle,
                           })}
                         >
                           <div className="sticky">
                             {interval.startTime.format('MM/DD')}
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
-                )
-              }}
+              )}
             </CustomHeader>
             <CustomHeader>
               {({
                 headerContext: { intervals },
                 getRootProps,
                 getIntervalProps,
-                showPeriod
-              }) => {
-                return (
+                showPeriod,
+              }) => (
                   <div {...getRootProps()}>
                     {intervals.map(interval => {
                       const intervalStyle = {
                         lineHeight: '30px',
                         textAlign: 'center',
                         borderLeft: '1px solid black',
-                        cursor: 'pointer'
-                      }
+                        cursor: 'pointer',
+                      };
                       return (
                         <div
                           onClick={() => {
-                            showPeriod(interval.startTime, interval.endTime)
+                            showPeriod(interval.startTime, interval.endTime);
                           }}
                           {...getIntervalProps({
                             interval,
-                            style: intervalStyle
+                            style: intervalStyle,
                           })}
                         >
                           {interval.startTime.format('HH')}
                         </div>
-                      )
+                      );
                     })}
                   </div>
-                )
-              }}
+              )}
             </CustomHeader>
             <DateHeader
               unit="week"
@@ -321,14 +317,14 @@ export default class App extends Component {
               headerData={{ hey: 'date header' }}
               intervalRenderer={(
                 { getIntervalProps, intervalContext, data },
-                
+
               ) => {
-                console.log('intervalRenderer props', data)
+                console.log('intervalRenderer props', data);
                 return (
                   <div {...getIntervalProps()}>
                     {intervalContext.intervalText}
                   </div>
-                )
+                );
               }}
             />
             {this.state.showHeaders
@@ -337,8 +333,8 @@ export default class App extends Component {
                     labelFormat={this.state.format ? 'd' : undefined}
                     unit = "primaryHeader"
                   />,
-                  <DateHeader height={50} />
-                ]
+                  <DateHeader height={50} />,
+              ]
               : null}
           </TimelineHeaders>
           <TimelineMarkers>
@@ -347,8 +343,8 @@ export default class App extends Component {
               date={
                 moment()
                   .startOf('day')
-                  .valueOf() +
-                1000 * 60 * 60 * 2
+                  .valueOf()
+                + 1000 * 60 * 60 * 2
               }
             />
             <CustomMarker
@@ -357,14 +353,14 @@ export default class App extends Component {
                 .valueOf()}
             >
               {({ styles }) => {
-                const newStyles = { ...styles, backgroundColor: 'blue' }
-                return <div style={newStyles} />
+                const newStyles = { ...styles, backgroundColor: 'blue' };
+                return <div style={newStyles} />;
               }}
             </CustomMarker>
             <CursorMarker />
           </TimelineMarkers>
         </Timeline>
       </div>
-    )
+    );
   }
 }

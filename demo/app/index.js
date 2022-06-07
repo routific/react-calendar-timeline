@@ -1,11 +1,13 @@
-import './styles.scss'
+import './styles.scss';
 
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import { HashRouter as Router, Route, Link, withRouter } from 'react-router-dom'
-import { DndProvider } from 'react-dnd'
-import HTML5Backend from 'react-dnd-html5-backend'
+import {
+  HashRouter as Router, Route, Link, withRouter,
+} from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 
 const demos = {
   main: require('./demo-main').default,
@@ -18,20 +20,21 @@ const demos = {
   customItems: require('./demo-custom-items').default,
   customHeaders: require('./demo-headers').default,
   customInfoLabel: require('./demo-custom-info-label').default,
-  controledSelect: require('./demo-controlled-select').default
-}
+  controledSelect: require('./demo-controlled-select').default,
+  clusteringItems: require('./demo-clustering').default,
+};
 
 // A simple component that shows the pathname of the current location
 class Menu extends Component {
   static propTypes = {
-    location: PropTypes.object.isRequired
+    location: PropTypes.object.isRequired,
   }
 
   render() {
-    let pathname = (this.props.location || {}).pathname
+    let pathname = (this.props.location || {}).pathname;
 
     if (!pathname || pathname === '/') {
-      pathname = `/${Object.keys(demos)[0]}`
+      pathname = `/${Object.keys(demos)[0]}`;
     }
 
     return (
@@ -51,11 +54,11 @@ class Menu extends Component {
           </Link>
         ))}
       </div>
-    )
+    );
   }
 }
 
-const MenuWithRouter = withRouter(Menu)
+const MenuWithRouter = withRouter(Menu);
 
 class App extends Component {
   render() {
@@ -73,8 +76,8 @@ class App extends Component {
           </DndProvider>
         </div>
       </Router>
-    )
+    );
   }
 }
 
-export default App
+export default App;

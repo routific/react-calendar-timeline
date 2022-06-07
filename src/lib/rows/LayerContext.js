@@ -1,28 +1,29 @@
-import React, { PureComponent } from 'react'
-import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 
 const defaultContextState = {
-    itemsWithInteractions: undefined,
-    getLayerRootProps: undefined,
-}
+  itemsWithInteractions: undefined,
+  getLayerRootProps: undefined,
+};
 
-const LayerContext = React.createContext(defaultContextState)
+const LayerContext = React.createContext(defaultContextState);
 
-const { Consumer, Provider } = LayerContext
+const { Consumer, Provider } = LayerContext;
 
 export class LayerContextProvider extends PureComponent {
   static propTypes = {
     itemsWithInteractions: PropTypes.array.isRequired,
     getLayerRootProps: PropTypes.func.isRequired,
   }
+
   render() {
-    const { children, ...rest } = this.props
+    const { children, ...rest } = this.props;
     const value = {
       ...rest,
-    }
-    return <Provider value={value}>{children}</Provider>
+    };
+    return <Provider value={value}>{children}</Provider>;
   }
 }
 
-export const LayerConsumer = Consumer
-export default LayerContext
+export const LayerConsumer = Consumer;
+export default LayerContext;

@@ -1,11 +1,11 @@
-import React from 'react'
-import TimelineMarkersRenderer from 'lib/markers/TimelineMarkersRenderer'
-import { TimelineMarkersProvider } from 'lib/markers/TimelineMarkersContext'
-import { TimelineStateProvider } from 'lib/timeline/TimelineStateContext'
-import { state } from '../../__fixtures__/stateAndProps'
-import jest from 'jest'
-import { defaultTimeSteps, defaultKeys } from '../../src/lib/default-config'
-import { TimelineHeadersProvider } from '../../src/lib/headers/HeadersContext'
+import React from 'react';
+import TimelineMarkersRenderer from 'lib/markers/TimelineMarkersRenderer';
+import { TimelineMarkersProvider } from 'lib/markers/TimelineMarkersContext';
+import { TimelineStateProvider } from 'lib/timeline/TimelineStateContext';
+import jest from 'jest';
+import { state } from '../../__fixtures__/stateAndProps';
+import { defaultTimeSteps, defaultKeys } from '../../src/lib/default-config';
+import { TimelineHeadersProvider } from '../../src/lib/headers/HeadersContext';
 
 // eslint-disable-next-line
 export const RenderHeadersWrapper = ({
@@ -13,7 +13,7 @@ export const RenderHeadersWrapper = ({
   timelineState = {},
   headersState = {},
   showPeriod = () => {},
-  registerScroll = () => {}
+  registerScroll = () => {},
 }) => {
   const defaultTimelineState = {
     visibleTimeStart: state.visibleTimeStart,
@@ -21,24 +21,24 @@ export const RenderHeadersWrapper = ({
     canvasTimeStart: state.canvasTimeStart,
     canvasTimeEnd: state.canvasTimeEnd,
     canvasWidth: 2000,
-    showPeriod: showPeriod,
+    showPeriod,
     timelineUnit: 'day',
     timelineWidth: 1000,
-    keys: defaultKeys
-  }
+    keys: defaultKeys,
+  };
 
   const timelineStateProps = {
     ...defaultTimelineState,
-    ...timelineState
-  }
+    ...timelineState,
+  };
 
   const headersStateProps = {
-    registerScroll: registerScroll,
+    registerScroll,
     timeSteps: defaultTimeSteps,
     leftSidebarWidth: 150,
     rightSidebarWidth: 0,
-    ...headersState
-  }
+    ...headersState,
+  };
 
   return (
     <div>
@@ -50,5 +50,5 @@ export const RenderHeadersWrapper = ({
         </div>
       </TimelineStateProvider>
     </div>
-  )
-}
+  );
+};

@@ -1,15 +1,15 @@
-import React from 'react'
-import { _get, _length } from '../utility/generic'
-import { ItemsContextProvider } from '../items/ItemsContext'
-import { GroupRowContextProvider } from './GroupRowContext'
-import { LayerContextProvider, LayerConsumer } from './LayerContext'
+import React from 'react';
+import { _get, _length } from '../utility/generic';
+import { ItemsContextProvider } from '../items/ItemsContext';
+import { GroupRowContextProvider } from './GroupRowContext';
+import { LayerContextProvider, LayerConsumer } from './LayerContext';
 
 class Rows extends React.PureComponent {
   initState = {
     dragging: false,
     resizing: false,
     dragOffset: 0,
-    interactingItemId: undefined
+    interactingItemId: undefined,
   }
 
   state = this.initState
@@ -18,37 +18,35 @@ class Rows extends React.PureComponent {
     this.setState({
       dragging,
       dragOffset,
-      interactingItemId: itemId
-    })
+      interactingItemId: itemId,
+    });
   }
 
   clearState = () => {
-    this.setState(this.initState)
+    this.setState(this.initState);
   }
 
   handleResizeEnd = (itemId, resizeTime, resizeEdge, timeDelta) => {
-    this.props.itemResized(itemId, resizeTime, resizeEdge, timeDelta)
-    this.clearState()
+    this.props.itemResized(itemId, resizeTime, resizeEdge, timeDelta);
+    this.clearState();
   }
 
   handleDragEnd = () => {
-    this.clearState()
+    this.clearState();
   }
 
   handleResizeStart = (resizing, itemId) => {
     this.setState({
       resizing,
-      interactingItemId: itemId
-    })
+      interactingItemId: itemId,
+    });
   }
 
-  getLayerRootProps = () => {
-    return {
-      style: {
-        // height: '100%'
-      }
-    }
-  }
+  getLayerRootProps = () => ({
+    style: {
+      // height: '100%'
+    },
+  })
 
   render() {
     const {
@@ -75,7 +73,7 @@ class Rows extends React.PureComponent {
       rowRenderer: Layers,
       rowData,
       groupsWithItemsDimensions,
-      //row props
+      // row props
       clickTolerance,
       onRowClick,
       onRowDoubleClick,
@@ -83,8 +81,8 @@ class Rows extends React.PureComponent {
       onRowContextClick,
       items,
       keys,
-      resizeEdge
-    } = this.props
+      resizeEdge,
+    } = this.props;
     return (
       <LayerContextProvider
         itemsWithInteractions={items}
@@ -92,8 +90,8 @@ class Rows extends React.PureComponent {
       >
         <div className="rct-horizontal-lines">
           {groupHeights.map((groupHeight, i) => {
-            const groupId = _get(groups[i], keys.groupIdKey)
-            const group = groupsWithItemsDimensions[groupId]
+            const groupId = _get(groups[i], keys.groupIdKey);
+            const group = groupsWithItemsDimensions[groupId];
             return (
               <Group
                 key={`horizontal-line-${groupId}`}
@@ -138,11 +136,11 @@ class Rows extends React.PureComponent {
                 dragOffset={this.state.dragOffset}
                 interactingItemId={this.state.interactingItemId}
               />
-            )
+            );
           })}
         </div>
       </LayerContextProvider>
-    )
+    );
   }
 }
 
@@ -186,8 +184,8 @@ class Group extends React.PureComponent {
       dragging,
       resizing,
       dragOffset,
-      interactingItemId
-    } = this.props
+      interactingItemId,
+    } = this.props;
 
     return (
       <GroupRowContextProvider
@@ -234,7 +232,7 @@ class Group extends React.PureComponent {
           interactingItemId={interactingItemId}
         >
           <LayerConsumer>
-            {({getLayerRootProps, itemsWithInteractions}) => (
+            {({ getLayerRootProps, itemsWithInteractions }) => (
               <Layers
                 getLayerRootProps={getLayerRootProps}
                 rowData={rowData}
@@ -245,8 +243,8 @@ class Group extends React.PureComponent {
           </LayerConsumer>
         </ItemsContextProvider>
       </GroupRowContextProvider>
-    )
+    );
   }
 }
 
-export default Rows
+export default Rows;
