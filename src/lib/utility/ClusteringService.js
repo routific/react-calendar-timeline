@@ -90,7 +90,7 @@ export default class ClusteringService {
         const item = this.#getItemAtIndex(this.#currentItemIndex);
         const nextItem = this.#getItemAtIndex(this.#currentItemIndex + 1);
 
-        if (nextItem && nextItem.start) {
+        if (nextItem && nextItem.start && nextItem.canCluster) {
           sequencialClusterFound = this.#isWithinClusteringRange(nextItem.start - item.end) && (this.#sequencialClusterTinyItemsOnly === true ? this.#isTinyItem(nextItem) : true);
 
           if (sequencialClusterFound) {
@@ -137,7 +137,6 @@ export default class ClusteringService {
 
       while (this.#currentItemIndex < _length(currentItems)) {
         const currentItem = this.#getItemAtIndex(this.#currentItemIndex);
-
         if (currentItem.canCluster && this.#isTinyItem(currentItem)) {
           const leftItem = this.#getItemAtIndex(this.#currentItemIndex - 1);
           const rightItem = this.#getItemAtIndex(this.#currentItemIndex + 1);

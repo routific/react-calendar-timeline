@@ -711,7 +711,7 @@ export function groupItemsByKey(items, key) {
   }, {});
 }
 
-function shouldCluster(clusterSettings, canvasTimeSpan) {
+export function shouldCluster(clusterSettings, canvasTimeSpan) {
   if (!clusterSettings) {
     return false;
   }
@@ -730,7 +730,6 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
   const groupKeys = Object.keys(groupOrders);
   const groupedItems = groupItemsByKey(items, keys.itemGroupKey);
 
-  console.time('Cluster'); // Keeping in for the review so we can measure clustering performance. Will remove for final PR.
   // Initialize with result object for each group
   for (const element of groupKeys) {
     const groupOrder = groupOrders[element];
@@ -749,7 +748,6 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
       items: _groupedItems,
     };
   }
-  console.timeEnd('Cluster');
   return groupsWithItems;
 }
 
