@@ -1,8 +1,8 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function CustomInfoLabel(props) {
-  const { time, groupTitle, heading } = props
+  const { time, groupTitle, heading } = props;
 
   return (
     <div
@@ -16,7 +16,7 @@ export default function CustomInfoLabel(props) {
         fontSize: '16px',
         borderRadius: '8px',
         boxShadow:
-          '0 1px 3px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.05)'
+          '0 1px 3px rgba(0, 0, 0, 0.2), 0 10px 20px rgba(0, 0, 0, 0.05)',
       }}
     >
       <div
@@ -24,7 +24,7 @@ export default function CustomInfoLabel(props) {
           fontWeight: 'bold',
           borderBottom: '1px solid #ccc',
           paddingBottom: '3px',
-          marginBottom: '3px'
+          marginBottom: '3px',
         }}
       >
         <span>
@@ -33,11 +33,11 @@ export default function CustomInfoLabel(props) {
       </div>
       {time}
     </div>
-  )
+  );
 }
 
 CustomInfoLabel.propTypes = {
   time: PropTypes.string,
   groupTitle: PropTypes.string,
-  heading: PropTypes.string
-}
+  heading: PropTypes.string,
+};

@@ -1,12 +1,12 @@
-import { isEqualItemWithDimensions } from 'lib/utility/calendar'
-import { items } from '../../../__fixtures__/itemsAndGroups'
-import { props, state } from '../../../__fixtures__/stateAndProps'
+import { isEqualItemWithDimensions } from 'lib/utility/calendar';
+import { items } from '../../../__fixtures__/itemsAndGroups';
+import { props, state } from '../../../__fixtures__/stateAndProps';
 
 describe('isEqualItemWithDimensions', () => {
   it('should return true when same old and new args', () => {
     const groupWithItems = {
-      items
-    }
+      items,
+    };
     const newArgs = [
       groupWithItems,
       props.keys,
@@ -15,8 +15,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
+      props.stackItems,
+    ];
     const oldArgs = [
       groupWithItems,
       props.keys,
@@ -25,14 +25,14 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
-    expect(isEqualItemWithDimensions(newArgs, oldArgs)).toBeTruthy()
-  })
+      props.stackItems,
+    ];
+    expect(isEqualItemWithDimensions(newArgs, oldArgs)).toBeTruthy();
+  });
   it('should return false when changing something other than groupWithItems', () => {
     const groupWithItems = {
-      items
-    }
+      items,
+    };
     const newArgsChangeCanvasStart = [
       groupWithItems,
       props.keys,
@@ -41,8 +41,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
+      props.stackItems,
+    ];
     const newArgsChangeCanvasEnd = [
       groupWithItems,
       props.keys,
@@ -51,8 +51,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
+      props.stackItems,
+    ];
     const newArgsChangeStackItems = [
       groupWithItems,
       props.keys,
@@ -61,8 +61,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      !props.stackItems
-    ]
+      !props.stackItems,
+    ];
     const oldArgs = [
       groupWithItems,
       props.keys,
@@ -71,23 +71,23 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
+      props.stackItems,
+    ];
     expect(
-      isEqualItemWithDimensions(newArgsChangeCanvasStart, oldArgs)
-    ).toBeFalsy()
+      isEqualItemWithDimensions(newArgsChangeCanvasStart, oldArgs),
+    ).toBeFalsy();
     expect(
-      isEqualItemWithDimensions(newArgsChangeCanvasEnd, oldArgs)
-    ).toBeFalsy()
+      isEqualItemWithDimensions(newArgsChangeCanvasEnd, oldArgs),
+    ).toBeFalsy();
     expect(
-      isEqualItemWithDimensions(newArgsChangeStackItems, oldArgs)
-    ).toBeFalsy()
-  })
+      isEqualItemWithDimensions(newArgsChangeStackItems, oldArgs),
+    ).toBeFalsy();
+  });
   it('should return false when groupWithItems is different', () => {
     const groupWithItems = {
-      items
-    }
-    const otherGroupWithItems = { items: [items[1]] }
+      items,
+    };
+    const otherGroupWithItems = { items: [items[1]] };
     const newArgs = [
       otherGroupWithItems,
       props.keys,
@@ -96,8 +96,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
+      props.stackItems,
+    ];
     const oldArgs = [
       groupWithItems,
       props.keys,
@@ -106,8 +106,8 @@ describe('isEqualItemWithDimensions', () => {
       state.width * 3,
       props.lineHeight,
       props.itemHeightRatio,
-      props.stackItems
-    ]
-    expect(isEqualItemWithDimensions(newArgs, oldArgs)).toBeFalsy()
-  })
-})
+      props.stackItems,
+    ];
+    expect(isEqualItemWithDimensions(newArgs, oldArgs)).toBeFalsy();
+  });
+});

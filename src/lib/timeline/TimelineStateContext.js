@@ -1,10 +1,10 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import createReactContext from 'create-react-context'
+import React from 'react';
+import PropTypes from 'prop-types';
+import createReactContext from 'create-react-context';
 import {
   calculateXPositionForTime,
-  calculateTimeForXPosition
-} from '../utility/calendar'
+  calculateTimeForXPosition,
+} from '../utility/calendar';
 
 /* this context will hold all information regarding timeline state:
   1. timeline width
@@ -16,23 +16,23 @@ import {
 /* eslint-disable no-console */
 const defaultContextState = {
   getTimelineState: () => {
-    console.warn('"getTimelineState" default func is being used')
+    console.warn('"getTimelineState" default func is being used');
   },
   getLeftOffsetFromDate: () => {
-    console.warn('"getLeftOffsetFromDate" default func is being used')
+    console.warn('"getLeftOffsetFromDate" default func is being used');
   },
   getDateFromLeftOffsetPosition: () => {
-    console.warn('"getDateFromLeftOffsetPosition" default func is being used')
+    console.warn('"getDateFromLeftOffsetPosition" default func is being used');
   },
   showPeriod: () => {
-    console.warn('"showPeriod" default func is being used')
-  }
-}
+    console.warn('"showPeriod" default func is being used');
+  },
+};
 /* eslint-enable */
 
-const TimelineStateContext = createReactContext(defaultContextState)
+const TimelineStateContext = createReactContext(defaultContextState);
 
-const { Consumer, Provider } = TimelineStateContext
+const { Consumer, Provider } = TimelineStateContext;
 
 export class TimelineStateProvider extends React.Component {
   /* eslint-disable react/no-unused-prop-types */
@@ -46,11 +46,11 @@ export class TimelineStateProvider extends React.Component {
     showPeriod: PropTypes.func.isRequired,
     timelineUnit: PropTypes.string.isRequired,
     timelineWidth: PropTypes.number.isRequired,
-    keys: PropTypes.object.isRequired
+    keys: PropTypes.object.isRequired,
   }
 
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       timelineContext: {
@@ -58,8 +58,8 @@ export class TimelineStateProvider extends React.Component {
         getLeftOffsetFromDate: this.getLeftOffsetFromDate,
         getDateFromLeftOffsetPosition: this.getDateFromLeftOffsetPosition,
         showPeriod: this.props.showPeriod,
-      }
-    }
+      },
+    };
   }
 
   getTimelineState = () => {
@@ -72,7 +72,7 @@ export class TimelineStateProvider extends React.Component {
       timelineUnit,
       timelineWidth,
       keys,
-    } = this.props
+    } = this.props;
     return {
       visibleTimeStart,
       visibleTimeEnd,
@@ -82,27 +82,27 @@ export class TimelineStateProvider extends React.Component {
       timelineUnit,
       timelineWidth,
       keys,
-    } // REVIEW,
+    }; // REVIEW,
   }
 
   getLeftOffsetFromDate = date => {
-    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props
+    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props;
     return calculateXPositionForTime(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
-      date
-    )
+      date,
+    );
   }
 
   getDateFromLeftOffsetPosition = leftOffset => {
-    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props
+    const { canvasTimeStart, canvasTimeEnd, canvasWidth } = this.props;
     return calculateTimeForXPosition(
       canvasTimeStart,
       canvasTimeEnd,
       canvasWidth,
-      leftOffset
-    )
+      leftOffset,
+    );
   }
 
   render() {
@@ -110,9 +110,9 @@ export class TimelineStateProvider extends React.Component {
       <Provider value={this.state.timelineContext}>
         {this.props.children}
       </Provider>
-    )
+    );
   }
 }
 
-export const TimelineStateConsumer = Consumer
+export const TimelineStateConsumer = Consumer;
 export default TimelineStateContext;

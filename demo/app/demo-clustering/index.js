@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import React, { Component } from 'react';
 import moment from 'moment';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import faker from 'faker';
 // eslint-disable-next-line import/no-unresolved
 import Timeline from 'react-calendar-timeline';

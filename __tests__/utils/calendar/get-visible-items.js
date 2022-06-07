@@ -1,20 +1,20 @@
-import { getVisibleItems } from 'lib/utility/calendar'
-import moment from 'moment'
+import { getVisibleItems } from 'lib/utility/calendar';
+import moment from 'moment';
 
-const itemTimeStartKey = 'start'
-const itemTimeEndKey = 'end'
+const itemTimeStartKey = 'start';
+const itemTimeEndKey = 'end';
 
 const keys = {
   itemTimeStartKey,
-  itemTimeEndKey
-}
+  itemTimeEndKey,
+};
 
 describe('getVisibleItems', () => {
   it('returns items within date range - both dates', () => {
     const startRange = moment()
       .add(-1, 'day')
-      .valueOf()
-    const endRange = moment(startRange).add(1, 'day')
+      .valueOf();
+    const endRange = moment(startRange).add(1, 'day');
     const items = [
       {
         [itemTimeStartKey]: moment(startRange)
@@ -23,20 +23,20 @@ describe('getVisibleItems', () => {
         [itemTimeEndKey]: moment(startRange)
           .add(20, 'minute')
           .valueOf(),
-        id: 1
-      }
-    ]
+        id: 1,
+      },
+    ];
 
-    const result = getVisibleItems(items, startRange, endRange, keys)
+    const result = getVisibleItems(items, startRange, endRange, keys);
 
-    expect(result).toMatchObject(items)
-  })
+    expect(result).toMatchObject(items);
+  });
 
   it('returns items within date range - start date', () => {
     const startRange = moment()
       .add(-1, 'day')
-      .valueOf()
-    const endRange = moment(startRange).add(1, 'day')
+      .valueOf();
+    const endRange = moment(startRange).add(1, 'day');
     const items = [
       {
         [itemTimeStartKey]: moment(endRange)
@@ -45,20 +45,20 @@ describe('getVisibleItems', () => {
         [itemTimeEndKey]: moment(endRange)
           .add(20, 'minute')
           .valueOf(),
-        id: 1
-      }
-    ]
+        id: 1,
+      },
+    ];
 
-    const result = getVisibleItems(items, startRange, endRange, keys)
+    const result = getVisibleItems(items, startRange, endRange, keys);
 
-    expect(result).toMatchObject(items)
-  })
+    expect(result).toMatchObject(items);
+  });
 
   it('returns items within date range - end date', () => {
     const startRange = moment()
       .add(-1, 'day')
-      .valueOf()
-    const endRange = moment(startRange).add(1, 'day')
+      .valueOf();
+    const endRange = moment(startRange).add(1, 'day');
     const items = [
       {
         [itemTimeStartKey]: moment(startRange)
@@ -67,20 +67,20 @@ describe('getVisibleItems', () => {
         [itemTimeEndKey]: moment(startRange)
           .add(10, 'minute')
           .valueOf(),
-        id: 1
-      }
-    ]
+        id: 1,
+      },
+    ];
 
-    const result = getVisibleItems(items, startRange, endRange, keys)
+    const result = getVisibleItems(items, startRange, endRange, keys);
 
-    expect(result).toMatchObject(items)
-  })
+    expect(result).toMatchObject(items);
+  });
 
   it('does not return items outside of date range - before start date', () => {
     const startRange = moment()
       .add(-1, 'day')
-      .valueOf()
-    const endRange = moment(startRange).add(1, 'day')
+      .valueOf();
+    const endRange = moment(startRange).add(1, 'day');
     const items = [
       {
         [itemTimeStartKey]: moment(startRange)
@@ -89,20 +89,20 @@ describe('getVisibleItems', () => {
         [itemTimeEndKey]: moment(startRange)
           .add(-1, 'day')
           .valueOf(),
-        id: 1
-      }
-    ]
+        id: 1,
+      },
+    ];
 
-    const result = getVisibleItems(items, startRange, endRange, keys)
+    const result = getVisibleItems(items, startRange, endRange, keys);
 
-    expect(result).toMatchObject([])
-  })
+    expect(result).toMatchObject([]);
+  });
 
   it('does not return items outside of date range - after end date', () => {
     const startRange = moment()
       .add(-1, 'day')
-      .valueOf()
-    const endRange = moment(startRange).add(1, 'day')
+      .valueOf();
+    const endRange = moment(startRange).add(1, 'day');
     const items = [
       {
         [itemTimeStartKey]: moment(endRange)
@@ -111,12 +111,12 @@ describe('getVisibleItems', () => {
         [itemTimeEndKey]: moment(endRange)
           .add(2, 'day')
           .valueOf(),
-        id: 1
-      }
-    ]
+        id: 1,
+      },
+    ];
 
-    const result = getVisibleItems(items, startRange, endRange, keys)
+    const result = getVisibleItems(items, startRange, endRange, keys);
 
-    expect(result).toMatchObject([])
-  })
-})
+    expect(result).toMatchObject([]);
+  });
+});

@@ -1,15 +1,15 @@
-import React, { Component } from 'react'
-import moment from 'moment'
+import React, { Component } from 'react';
+import moment from 'moment';
 
-import Timeline from 'react-calendar-timeline'
-import containerResizeDetector from '../../../src/resize-detector/container'
+import Timeline from 'react-calendar-timeline';
+import containerResizeDetector from '../../../src/resize-detector/container';
 
 // you would use this in real life:
 // import containerResizeDetector from 'react-calendar-timeline/lib/resize-detector/container'
 
-import generateFakeData from '../generate-fake-data'
+import generateFakeData from '../generate-fake-data';
 
-var keys = {
+const keys = {
   groupIdKey: 'id',
   groupTitleKey: 'title',
   groupRightTitleKey: 'rightTitle',
@@ -18,30 +18,30 @@ var keys = {
   itemDivTitleKey: 'title',
   itemGroupKey: 'group',
   itemTimeStartKey: 'start',
-  itemTimeEndKey: 'end'
-}
+  itemTimeEndKey: 'end',
+};
 
 export default class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    const { groups, items } = generateFakeData(10, 200)
+    const { groups, items } = generateFakeData(10, 200);
     const defaultTimeStart = moment()
       .startOf('day')
-      .toDate()
+      .toDate();
     const defaultTimeEnd = moment()
       .startOf('day')
       .add(1, 'day')
-      .toDate()
-    const width = 80
+      .toDate();
+    const width = 80;
 
     this.state = {
       groups,
       items,
       defaultTimeStart,
       defaultTimeEnd,
-      width
-    }
+      width,
+    };
   }
 
   render() {
@@ -50,8 +50,8 @@ export default class App extends Component {
       items,
       defaultTimeStart,
       defaultTimeEnd,
-      width
-    } = this.state
+      width,
+    } = this.state;
 
     return (
       <div>
@@ -90,7 +90,7 @@ export default class App extends Component {
                 style={{
                   cursor: 'pointer',
                   marginLeft: 10,
-                  textDecoration: p === width ? 'underline' : 'none'
+                  textDecoration: p === width ? 'underline' : 'none',
                 }}
               >
                 {p}%
@@ -99,6 +99,6 @@ export default class App extends Component {
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
