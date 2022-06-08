@@ -6,10 +6,12 @@ import moment from 'moment';
 import { _get, deepObjectCompare } from '../utility/generic';
 import { composeEvents } from '../utility/events';
 import { defaultItemRenderer } from './defaultItemRenderer';
+import defaultClusterItemRenderer from './defaultClusterItemRenderer';
 import { coordinateToTimeRatio } from '../utility/calendar';
 import { getSumScroll, getSumOffset } from '../utility/dom-helpers';
 import {
   overridableStyles,
+  overridableClusterStyles,
   selectedStyle,
   selectedAndCanMove,
   selectedAndCanResizeLeft,
@@ -53,7 +55,7 @@ export default class Item extends Component {
     onResized: PropTypes.func,
     onContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
-
+    itemRendererCluster: PropTypes.func,
     itemProps: PropTypes.object,
     canSelect: PropTypes.bool,
     dimensions: PropTypes.object,
@@ -77,6 +79,7 @@ export default class Item extends Component {
   static defaultProps = {
     selected: false,
     itemRenderer: defaultItemRenderer,
+    itemRendererCluster: defaultClusterItemRenderer,
   }
 
   constructor(props) {
@@ -491,7 +494,7 @@ export default class Item extends Component {
 
     const finalStyle = Object.assign(
       {},
-      overridableStyles,
+      this.props.item.isCluster ? overridableClusterStyles : overridableStyles,
       this.props.selected ? selectedStyle : {},
       this.props.selected & this.canMove(this.props) ? selectedAndCanMove : {},
       this.props.selected & this.canResizeLeft(this.props)
@@ -551,7 +554,11 @@ export default class Item extends Component {
       width: this.props.dimensions.width,
     };
 
-    return this.props.itemRenderer({
+    const { itemRenderer, itemRendererCluster } = this.props;
+
+    const renderer = this.props.item.isCluster ? itemRendererCluster : itemRenderer;
+
+    return renderer({
       item: this.props.item,
       timelineContext,
       itemContext,

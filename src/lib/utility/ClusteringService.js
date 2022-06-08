@@ -3,7 +3,7 @@
 
 import PropTypes from 'prop-types';
 import Cluster from './Cluster';
-import { _get, _length } from './generic';
+import { _get, _length, _pop } from './generic';
 
 export default class ClusteringService {
     #items;
@@ -35,6 +35,7 @@ export default class ClusteringService {
       if (!items || !timeRange || !tinyItemSize || !clusteringRange) {
         throw new Error('Missing Clusterings Settings');
       }
+
       this.#items = items;
       this.#timeRange = timeRange;
       this.#tinyItemSize = tinyItemSize;
@@ -45,6 +46,7 @@ export default class ClusteringService {
 
     #isTinyItem(item) {
       let itemLength = 0;
+
       if (item.start !== undefined && item.end !== undefined) {
         itemLength = (item.end - item.start) || 0;
       }
@@ -55,6 +57,7 @@ export default class ClusteringService {
       if (index > _length(this.#items) || index < 0) {
         return undefined;
       }
+
       return _get(this.#items, index);
     }
 
@@ -106,6 +109,7 @@ export default class ClusteringService {
       cluster.setStart(currentItem.start);
 
       if (leftItem === nearestItem) {
+        _pop(this.#itemsWithClustering);
         cluster.setStart(leftItem.start);
         cluster.add(leftItem);
         cluster.add(currentItem);

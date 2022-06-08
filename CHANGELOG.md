@@ -16,6 +16,43 @@ and this project adheres (more or less) to [Semantic Versioning](http://semver.o
 
 ### New features
 
+### [throttle zoom]
+When you start to add a large number of items to the timeline, the performance dramatically shuts down. The zoom control, before this update, would try and fire as fast as it could to give you a buttery smooth experience. The issue with this is when dealing with a larger number of items, these event's fire and pile up and freeze your timeline. You can now pass in a zoomThrottle option into the timeline. (number: in milliseconds). This will make sure the zoom is throttled to only being called every X milliseconds. This improves the zoom/scroll performance when a larger number of items being are on the visible canvas. The cost of doing this is the smoothness when zooming and you need to find the right number for your items. ~50-100ms is a good place to start for > 1,000 items. Example: <Timeline zoomThrottle={75}>. 
+
+#### [clusterItems]
+This API gives the ability for users to cluster items together based on settings passed in via <Timeline clusterSettings={...}>. This helps reduce the visual noise when there are lots of items and also improves performance in most cases; This is due to the reduced number of items rendered on the page.
+
+The cluster is basically just another item on the timeline, but has items that contain everything clustered within it. It is just an item, with it's own renderer. Note: Dragging and resizing is disabled on clustering.
+
+The basic concept of clustering is based on the canvas size. We will only cluster items if their duration is less than a certain percentage that you set in the settings. This will allow items to cluster when zooming and stay consitent accross screen sizes. 
+
+Definitions: 
+-> clusterSettings:
+.This is an object passed onto the timeline with settings to enable clustering. This is what triggers the library to cluster: <Timeline clusterSettings={...}>. 
+
+-> tinyItemSize: (number: default 0.4)
+. The maximum size of the item we want to cluster in percentage of the canvas size.
+
+-> clusteringRange: (number: default 2.2)
+. The distance between an item we want to cluster and it's surrounding items. We will only cluster items within this range.
+
+-> sequencialClusterTinyItemsOnly: (boolean: default True)
+. After the initial clustering, by default, we will only cluster to other tinyItem's. If you set this value to false in the settings, we will cluster any item within the clustering range, no matter the size. This helps performance with larger items.
+
+-> disableClusteringBelowTime: (number:):
+.If you would like to disable clustering when the canvas is certain size, pass in the ms duration that you would like to disable clustering below. For example, say you wanted to disable clustering when the canvas size is disaplaying a duration that is less than 5 hours. you would pass in. 18000000: (1000 * 60 * 60 * 5) = 5 hours. When the canvas duration is below these 5 hours, clustering will be disabled. 
+
+-> itemRendererCluster
+.If you want to control how a cluster is rendered on the timeline, pass in your own render function into the timeline, just like itemRender. Example <Timeline  clusterSettings={} itemRendererCluster={clusterItemRenderer}> The item returned will have all the items inside of the cluster accessable via .items. See the tool tip example inside of demo-clustering-custom-render/ItemRenderCluster.js.
+
+
+The current clustering algorithm works as such:
+-> Go through all items from left to right
+-> If an item is a tiny item, search for any item, to the left or right, that is within clustering range. 
+-> If an item is found, create a cluster with those two items.
+-> Continue searching to the right for a tinyItem within the clustering range and add it to the cluster.(Repeat). **Note: sequencialClusterTinyItemsOnly can be set to false to only check for items within clustering range.
+-> When we get to the point where there is no item within clustering range that is a tinyItem. Then return a new item that contains all the items within it. AKA a cluster.
+
 #### [rowRenderer](https://github.com/namespace-ee/react-calendar-timeline/tree/rowRenderer#row-renderer)
 
 This API would give you control to add custom UI on calendar rows using a render prop. You can control what is rendered by default with the library like Items and Vertical/Horizontal lines, and the renderer will provide you the ability to render custom backgrounds and droppable layers for custom dnd.

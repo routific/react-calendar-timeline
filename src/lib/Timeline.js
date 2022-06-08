@@ -47,6 +47,7 @@ export default class ReactCalendarTimeline extends Component {
 
     minZoom: PropTypes.number,
     maxZoom: PropTypes.number,
+    zoomThrottle: PropTypes.number,
 
     clickTolerance: PropTypes.number,
 
@@ -81,6 +82,7 @@ export default class ReactCalendarTimeline extends Component {
     moveResizeValidator: PropTypes.func,
 
     itemRenderer: PropTypes.func,
+    itemRendererCluster: PropTypes.func,
     groupRenderer: PropTypes.func,
 
     clusterSettings: PropTypes.object,
@@ -116,6 +118,7 @@ export default class ReactCalendarTimeline extends Component {
 
     zoomTimeStart: number,
     zoomTimeEnd: number,
+    zoomThrottle: number,
 
     visibleTimeStart: PropTypes.number,
     visibleTimeEnd: PropTypes.number,
@@ -180,7 +183,7 @@ export default class ReactCalendarTimeline extends Component {
 
     minZoom: 60 * 60 * 1000, // 1 hour
     maxZoom: 5 * 365.24 * 86400 * 1000, // 5 years
-
+    zoomThrottle: 1,
     clickTolerance: 3, // how many pixels can we drag for it to be still considered a click?
 
     canChangeGroup: true,
@@ -618,7 +621,7 @@ export default class ReactCalendarTimeline extends Component {
 
   throttleChangeZoom = _.throttle((scale, offset) => {
     this.changeZoom(scale, offset);
-  }, 100);
+  }, this.props.zoomThrottle);
 
   handleWheelZoom = (speed, xPosition, deltaY) => {
     this.throttleChangeZoom(1.0 + speed * deltaY / 500, xPosition / this.state.width);
@@ -929,6 +932,7 @@ export default class ReactCalendarTimeline extends Component {
       timeSteps,
       traditionalZoom,
       itemRenderer,
+      itemRendererCluster,
       keys,
       hideHorizontalLines,
     } = this.props;
@@ -1030,6 +1034,7 @@ export default class ReactCalendarTimeline extends Component {
                         items={isInteractingWithItem ? itemsWithInteractions : items}
                         groupHeights={groupHeights}
                         itemRenderer={itemRenderer}
+                        itemRendererCluster={itemRendererCluster}
                         itemResized={this.resizedItem}
                         itemResizing={this.resizingItem}
                         itemSelect={this.selectItem}
