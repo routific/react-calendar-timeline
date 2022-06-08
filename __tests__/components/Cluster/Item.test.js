@@ -5,16 +5,17 @@ import { noop } from 'test-utility/index';
 import { defaultItemRenderer } from 'lib/items/defaultItemRenderer';
 import defaultClusterItemRenderer from 'lib/items/defaultClusterItemRenderer';
 import render from '../../test-utility/renderWithTimelineStateAndHelpers';
-import { items } from '../../../__fixtures__/itemsAndGroups';
+import { clusterData } from '../../../__fixtures__/clusterItems';
 import { props, state } from '../../../__fixtures__/stateAndProps';
 import { orderedGroups } from '../../../__fixtures__/groupOrderAndItemDimentions';
 
-describe('Item', () => {
+describe('Cluster Item', () => {
   it('should render', () => {
     const container = document.createElement('div');
+
     const { } = render(
       <Item
-        item={items[0]}
+        item={clusterData[0]}
         keys={props.keys}
         order={orderedGroups['1']}
         dimensions={{

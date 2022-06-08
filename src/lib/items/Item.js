@@ -56,6 +56,7 @@ export default class Item extends Component {
     onContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
     itemRendererCluster: PropTypes.func,
+
     itemProps: PropTypes.object,
     canSelect: PropTypes.bool,
     dimensions: PropTypes.object,
