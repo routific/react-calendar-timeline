@@ -711,7 +711,9 @@ export function groupItemsByKey(items, key) {
   }, {});
 }
 
+
 export function shouldCluster(clusterSettings, canvasTimeSpan) {
+
   if (!clusterSettings) {
     return false;
   }

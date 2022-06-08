@@ -157,7 +157,6 @@ export default class App extends Component {
           clusteringRange: 0.5,
           sequencialClusterTinyItemsOnly: true,
           disableClusteringBelowTime: SIXTEEN_HOURS_IN_MS,
-          zoomThrottle: 75,
         }}
         itemSorted
         itemRendererCluster={clusterItemRenderer}
