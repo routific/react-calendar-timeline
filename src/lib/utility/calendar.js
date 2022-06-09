@@ -711,20 +711,34 @@ export function groupItemsByKey(items, key) {
   }, {});
 }
 
+
+export function shouldCluster(clusterSettings, canvasTimeSpan) {
+
+  if (!clusterSettings) {
+    return false;
+  }
+
+  if (clusterSettings.disableClusteringBelowTime) {
+    if (canvasTimeSpan < clusterSettings.disableClusteringBelowTime) {
+      return false;
+    }
+  }
+
+  return true;
+}
 export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, canvasTimeStart, canvasTimeEnd) {
   const groupOrders = getGroupOrders(groups, keys);
   const groupsWithItems = {};
   const groupKeys = Object.keys(groupOrders);
   const groupedItems = groupItemsByKey(items, keys.itemGroupKey);
 
-  console.time('Cluster'); // Keeping in for the review so we can measure clustering performance. Will remove for final PR.
   // Initialize with result object for each group
   for (const element of groupKeys) {
     const groupOrder = groupOrders[element];
 
     let _groupedItems = groupedItems[_get(groupOrder.group, keys.groupIdKey)] || [];
 
-    if (clusterSettings) {
+    if (shouldCluster(clusterSettings, canvasTimeEnd - canvasTimeStart)) {
       const clusterService = new ClusteringService(_groupedItems, canvasTimeEnd - canvasTimeStart, clusterSettings, _get(groupOrder.group, keys.groupIdKey));
       clusterService.cluster();
       _groupedItems = clusterService.items;
@@ -736,7 +750,6 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
       items: _groupedItems,
     };
   }
-  console.timeEnd('Cluster');
   return groupsWithItems;
 }
 

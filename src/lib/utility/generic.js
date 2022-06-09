@@ -8,16 +8,19 @@ export function _get(object, key) {
   return typeof object.get === 'function' ? object.get(key) : object[key];
 }
 
-// TODO: Make sure support is added for immutable.js
 export function _sort(object) {
-  // return typeof object.get === 'function' ? object._sort(object.s) : object.
-  return object.sort((a, b) => a.start - b.start);
+  return typeof object.get === 'function' ? object.sortBy(
+    (f) => f.get('start'),
+  ) : object.sort((a, b) => a.start - b.start);
 }
 
 export function _length(object) {
   return typeof object.count === 'function' ? object.count() : object.length;
 }
 
+export function _pop(object) {
+  return typeof object.get === 'function' ? object.slice(0, -1) : object.pop();
+}
 export function arraysEqual(array1, array2) {
   return (
     _length(array1) === _length(array2)

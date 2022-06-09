@@ -6,6 +6,16 @@ export const overridableStyles = {
   border: '1px solid #1a6fb3',
   zIndex: 80,
 };
+
+export const overridableClusterStyles = {
+  fontSize: 12,
+  color: 'white',
+  cursor: 'pointer',
+  background: '#2196f3',
+  border: '2px dashed #1a6fb3',
+  zIndex: 80,
+};
+
 export const selectedStyle = {
   background: '#ffc107',
   border: '1px solid #ff9800',

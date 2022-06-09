@@ -48,6 +48,7 @@ export class Items extends Component {
     onItemContextMenu: PropTypes.func,
 
     itemRenderer: PropTypes.func,
+    itemRendererCluster: PropTypes.func,
     selected: PropTypes.array,
 
     groupDimensions: PropTypes.object,
@@ -153,6 +154,7 @@ export class Items extends Component {
             onContextMenu={this.props.onItemContextMenu}
             onSelect={this.props.itemSelect}
             itemRenderer={this.props.itemRenderer}
+            itemRendererCluster={this.props.itemRendererCluster}
             scrollRef={this.props.scrollRef}
             dragging={isInteractingItem && this.props.dragging}
             resizing={isInteractingItem && this.props.resizing}

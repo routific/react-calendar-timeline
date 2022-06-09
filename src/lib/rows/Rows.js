@@ -53,6 +53,7 @@ class Rows extends React.PureComponent {
       groupHeights,
       groups,
       itemRenderer,
+      itemRendererCluster,
       canChangeGroup,
       canMove,
       canResize,
@@ -121,6 +122,7 @@ class Rows extends React.PureComponent {
                 onItemDoubleClick={onItemDoubleClick}
                 onItemContextMenu={onItemContextMenu}
                 itemRenderer={itemRenderer}
+                itemRendererCluster={itemRendererCluster}
                 selected={selected}
                 useResizeHandle={useResizeHandle}
                 scrollRef={scrollRef}
@@ -171,6 +173,7 @@ class Group extends React.PureComponent {
       onItemDoubleClick,
       onItemContextMenu,
       itemRenderer,
+      itemRendererCluster,
       selected,
       useResizeHandle,
       scrollRef,
@@ -218,6 +221,7 @@ class Group extends React.PureComponent {
           onItemDoubleClick={onItemDoubleClick}
           onItemContextMenu={onItemContextMenu}
           itemRenderer={itemRenderer}
+          itemRendererCluster={itemRendererCluster}
           selected={selected}
           useResizeHandle={useResizeHandle}
           scrollRef={scrollRef}

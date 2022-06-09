@@ -22,6 +22,7 @@ const demos = {
   customInfoLabel: require('./demo-custom-info-label').default,
   controledSelect: require('./demo-controlled-select').default,
   clusteringItems: require('./demo-clustering').default,
+  clusteringItemsCustomRender: require('./demo-clustering-custom-render').default,
 };
 
 // A simple component that shows the pathname of the current location
