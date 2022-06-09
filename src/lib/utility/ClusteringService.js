@@ -22,6 +22,10 @@ export default class ClusteringService {
 
     #sequencialClusterTinyItemsOnly;
 
+    #startKey;
+
+    #endKey;
+
     static propTypes = {
       items: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
       timeRange: PropTypes.number.isRequired,
@@ -29,9 +33,11 @@ export default class ClusteringService {
       clusteringRange: PropTypes.number.isRequired,
       groupNumber: PropTypes.number.isRequired,
       sequencialClusterTinyItemsOnly: PropTypes.bool,
+      startKey: PropTypes.string,
+      endKey: PropTypes.string,
     }
 
-    constructor(items, timeRange, { tinyItemSize = 0.4, clusteringRange = 2.2, sequencialClusterTinyItemsOnly = true }, groupNumber) {
+    constructor(items, timeRange, { tinyItemSize = 0.4, clusteringRange = 2.2, sequencialClusterTinyItemsOnly = true }, groupNumber, startKey, endKey) {
       if (!items || !timeRange || !tinyItemSize || !clusteringRange) {
         throw new Error('Missing Clusterings Settings');
       }
@@ -42,13 +48,23 @@ export default class ClusteringService {
       this.#clusteringRange = clusteringRange;
       this.#groupNumber = groupNumber;
       this.#sequencialClusterTinyItemsOnly = sequencialClusterTinyItemsOnly;
+      this.#startKey = startKey;
+      this.#endKey = endKey;
+    }
+
+    #getItemStart(item) {
+      return _get(item, this.#startKey);
+    }
+
+    #getItemEnd(item) {
+      return _get(item, this.#endKey);
     }
 
     #isTinyItem(item) {
       let itemLength = 0;
 
-      if (item.start !== undefined && item.end !== undefined) {
-        itemLength = (item.end - item.start) || 0;
+      if (this.#getItemStart(item) !== undefined && this.#getItemEnd(item) !== undefined) {
+        itemLength = (this.#getItemEnd(item) - this.#getItemStart(item)) || 0;
       }
       return (itemLength / this.#timeRange) * 100 <= this.#tinyItemSize;
     }
@@ -67,18 +83,18 @@ export default class ClusteringService {
 
     #getNearestItemWithinClusteringRange(currentItem, leftItem, rightItem) {
       if (leftItem && leftItem.canCluster && rightItem && rightItem.canCluster) {
-        const leftDistance = currentItem.start - leftItem.end;
-        const rightDistance = rightItem.start - currentItem.end;
-
+        const leftDistance = this.#getItemStart(currentItem) - this.#getItemEnd(leftItem);
+        const rightDistance = this.#getItemStart(rightItem) - this.#getItemEnd(currentItem);
+        //* * LOOK INTO THE MATH */
         if (leftDistance <= rightDistance && this.#isWithinClusteringRange(leftDistance)) {
           return leftItem;
         }
         if (this.#isWithinClusteringRange(rightDistance)) {
           return rightItem;
         }
-      } else if (leftItem && leftItem.canCluster && this.#isWithinClusteringRange(currentItem.start - leftItem.end)) {
+      } else if (leftItem && leftItem.canCluster && this.#isWithinClusteringRange(this.#getItemStart(currentItem) - this.#getItemEnd(leftItem))) {
         return leftItem;
-      } else if (rightItem && rightItem.canCluster && this.#isWithinClusteringRange(rightItem.start - currentItem.end)) {
+      } else if (rightItem && rightItem.canCluster && this.#isWithinClusteringRange(this.#getItemStart(rightItem) - this.#getItemEnd(currentItem))) {
         return rightItem;
       }
       return undefined;
@@ -90,8 +106,8 @@ export default class ClusteringService {
         const item = this.#getItemAtIndex(this.#currentItemIndex);
         const nextItem = this.#getItemAtIndex(this.#currentItemIndex + 1);
 
-        if (nextItem && nextItem.start && nextItem.canCluster) {
-          sequencialClusterFound = this.#isWithinClusteringRange(nextItem.start - item.end) && (this.#sequencialClusterTinyItemsOnly === true ? this.#isTinyItem(nextItem) : true);
+        if (nextItem && this.#getItemStart(nextItem) && nextItem.canCluster) {
+          sequencialClusterFound = this.#isWithinClusteringRange(this.#getItemStart(nextItem) - this.#getItemEnd(item)) && (this.#sequencialClusterTinyItemsOnly === true ? this.#isTinyItem(nextItem) : true);
 
           if (sequencialClusterFound) {
             cluster.add(nextItem);
@@ -104,13 +120,13 @@ export default class ClusteringService {
     }
 
     #startClustering(nearestItem, currentItem, leftItem, rightItem) {
-      const cluster = new Cluster(this.#groupNumber);
+      const cluster = new Cluster(this.#groupNumber, this.#startKey, this.#endKey);
 
-      cluster.setStart(currentItem.start);
+      cluster.setStart(this.#getItemStart(currentItem));
 
       if (leftItem === nearestItem) {
         _pop(this.#itemsWithClustering);
-        cluster.setStart(leftItem.start);
+        cluster.setStart(this.#getItemStart(leftItem));
         cluster.add(leftItem);
         cluster.add(currentItem);
       } else {
@@ -134,7 +150,6 @@ export default class ClusteringService {
 
     cluster() {
       const currentItems = this.#items;
-
       while (this.#currentItemIndex < _length(currentItems)) {
         const currentItem = this.#getItemAtIndex(this.#currentItemIndex);
         if (currentItem.canCluster && this.#isTinyItem(currentItem)) {

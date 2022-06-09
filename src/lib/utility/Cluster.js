@@ -1,3 +1,5 @@
+import { _get } from './generic';
+
 export default class Cluster {
     #items = [];
 
@@ -5,8 +7,14 @@ export default class Cluster {
 
     #startTime;
 
-    constructor(group) {
+    #startTimeKey;
+
+    #endTimeKey;
+
+    constructor(group, startTimeKey, endTimeKey) {
       this.#group = group;
+      this.#startTimeKey = startTimeKey;
+      this.#endTimeKey = endTimeKey;
     }
 
     add(item) {
@@ -50,8 +58,8 @@ export default class Cluster {
           id: `Cluster ${this.#group}-${items[0].id}-${items[items.length - 1].id}`,
           group: this.#group,
           title: `Cluster of ${items.length} items`,
-          start: this.#startTime,
-          end: items[items.length - 1].end,
+          [this.#startTimeKey]: this.#startTime,
+          [this.#endTimeKey]: _get(items[items.length - 1], this.#endTimeKey),
           canMove: false,
           canResize: false,
           isCluster: true,
