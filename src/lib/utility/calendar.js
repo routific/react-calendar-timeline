@@ -713,7 +713,6 @@ export function groupItemsByKey(items, key) {
 
 
 export function shouldCluster(clusterSettings, canvasTimeSpan) {
-
   if (!clusterSettings) {
     return false;
   }
@@ -731,7 +730,7 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
   const groupsWithItems = {};
   const groupKeys = Object.keys(groupOrders);
   const groupedItems = groupItemsByKey(items, keys.itemGroupKey);
-
+  const { itemTimeStartKey, itemTimeEndKey } = keys;
   // Initialize with result object for each group
   for (const element of groupKeys) {
     const groupOrder = groupOrders[element];
@@ -739,7 +738,14 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
     let _groupedItems = groupedItems[_get(groupOrder.group, keys.groupIdKey)] || [];
 
     if (shouldCluster(clusterSettings, canvasTimeEnd - canvasTimeStart)) {
-      const clusterService = new ClusteringService(_groupedItems, canvasTimeEnd - canvasTimeStart, clusterSettings, _get(groupOrder.group, keys.groupIdKey));
+      const clusterService = new ClusteringService(
+        _groupedItems,
+        canvasTimeEnd - canvasTimeStart,
+        clusterSettings,
+        _get(groupOrder.group, keys.groupIdKey),
+        itemTimeStartKey,
+        itemTimeEndKey,
+      );
       clusterService.cluster();
       _groupedItems = clusterService.items;
     }
