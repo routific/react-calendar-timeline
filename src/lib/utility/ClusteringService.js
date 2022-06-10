@@ -85,7 +85,7 @@ export default class ClusteringService {
       if (leftItem && leftItem.canCluster && rightItem && rightItem.canCluster) {
         const leftDistance = this.#getItemStart(currentItem) - this.#getItemEnd(leftItem);
         const rightDistance = this.#getItemStart(rightItem) - this.#getItemEnd(currentItem);
-        //* * LOOK INTO THE MATH */
+
         if (leftDistance <= rightDistance && this.#isWithinClusteringRange(leftDistance)) {
           return leftItem;
         }
