@@ -14,7 +14,7 @@ const Item = ({
     setIsHovering(false);
   };
 
-    // Setting the background color just so you can visually see the hover affordance area.
+  // Setting the background color just so you can visually see the hover affordance area.
   const tinyItemBufferProps = getTinyItemBufferProps({
     style: {
       background: isHovering ? 'red' : 'green',
@@ -26,7 +26,6 @@ const Item = ({
       color: 'white',
       borderColor: item.color,
       border: 'double 3px',
-      height: '200px !important',
       borderRadius: 6,
       borderLeftWidth: itemContext.selected ? 3 : 1,
       borderRightWidth: itemContext.selected ? 3 : 1,

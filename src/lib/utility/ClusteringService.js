@@ -52,6 +52,7 @@ export default class ClusteringService {
       this.#sequencialClusterTinyItemsOnly = sequencialClusterTinyItemsOnly;
       this.#startKey = startKey;
       this.#endKey = endKey;
+      console.log('I have', items, timeRange, tinyItemSize, clusteringRange, sequencialClusterTinyItemsOnly, groupNumber, startKey, endKey);
     }
 
     #getItemStart(item) {
