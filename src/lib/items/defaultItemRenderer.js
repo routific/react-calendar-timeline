@@ -5,9 +5,11 @@ export const defaultItemRenderer = ({
   item,
   itemContext,
   getItemProps,
+  getTinyItemBufferProps,
   getResizeProps,
 }) => {
   const { left: leftResizeProps, right: rightResizeProps } = getResizeProps();
+
   return (
     <div {...getItemProps(item.itemProps)}>
       {itemContext.useResizeHandle ? <div {...leftResizeProps} /> : ''}
@@ -30,5 +32,6 @@ defaultItemRenderer.propTypes = {
   item: PropTypes.any,
   itemContext: PropTypes.any,
   getItemProps: PropTypes.any,
+  getTinyItemBufferProps: PropTypes.any,
   getResizeProps: PropTypes.any,
 };

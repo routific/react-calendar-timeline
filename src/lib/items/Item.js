@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import interact from 'interactjs';
 import moment from 'moment';
 
-import { _get, deepObjectCompare } from '../utility/generic';
+import { _get, deepObjectCompare, isTinyItem } from '../utility/generic';
 import { composeEvents } from '../utility/events';
 import { defaultItemRenderer } from './defaultItemRenderer';
 import defaultClusterItemRenderer from './defaultClusterItemRenderer';
-import { coordinateToTimeRatio } from '../utility/calendar';
+import { calculateDimensions, coordinateToTimeRatio } from '../utility/calendar';
 import { getSumScroll, getSumOffset } from '../utility/dom-helpers';
 import {
   overridableStyles,
@@ -56,6 +56,7 @@ export default class Item extends Component {
     onContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
     itemRendererCluster: PropTypes.func,
+    clusterSettings: PropTypes.object,
 
     itemProps: PropTypes.object,
     canSelect: PropTypes.bool,
@@ -85,7 +86,6 @@ export default class Item extends Component {
 
   constructor(props) {
     super(props);
-
     this.cacheDataFromProps(props);
   }
 
@@ -258,7 +258,7 @@ export default class Item extends Component {
       .on('resizemove', e => {
         e.stopPropagation();
         if (this.props.resizing) {
-          let resizeEdge = this.props.resizeEdge;
+          let { resizeEdge } = this.props;
 
           if (!resizeEdge) {
             resizeEdge = e.deltaRect.left !== 0 ? 'left' : 'right';
@@ -481,19 +481,19 @@ export default class Item extends Component {
   }
 
   getItemStyle(props) {
-    const dimensions = this.props.dimensions;
+    const { dimensions, item: { isTinyItem } } = this.props;
 
     const baseStyles = {
-      position: 'absolute',
+      position: isTinyItem ? 'relative' : 'absolute',
       boxSizing: 'border-box',
-      left: `${dimensions.left}px`,
-      top: `${dimensions.top}px`,
-      width: `${dimensions.width}px`,
+      left: isTinyItem ? '0px' : `${dimensions.left}px`,
+      top: isTinyItem ? '0px' : `${dimensions.top}px`,
+      width: props?.style?.width ? props.style.width : `${dimensions.width}px`,
       height: `${dimensions.height}px`,
       lineHeight: `${dimensions.height}px`,
     };
 
-    const finalStyle = Object.assign(
+    return Object.assign(
       {},
       this.props.item.isCluster ? overridableClusterStyles : overridableStyles,
       this.props.selected ? selectedStyle : {},
@@ -515,7 +515,58 @@ export default class Item extends Component {
       props.style,
       baseStyles,
     );
-    return finalStyle;
+  }
+
+  setTinyItemStatus = () => {
+    const { itemTimeStartKey, itemTimeEndKey } = this.props.keys;
+    this.props.item.isTinyItem = isTinyItem(this.props.item, itemTimeStartKey, itemTimeEndKey, this.props.canvasTimeEnd - this.props.canvasTimeStart, this.props.clusterSettings.tinyItemSize);
+  }
+
+  getTinyItemBufferProps = (props = {}) => {
+    const { item } = this.props;
+    const percentOfClusteringRange = 0.49;
+    if (item.isTinyItem) {
+      const { dimensions } = this.props;
+      const leftBuffer = item.start - ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
+      const rightBuffer = item.end + ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
+
+      const position = calculateDimensions(
+        {
+          itemTimeStart: leftBuffer,
+          itemTimeEnd: rightBuffer,
+          canvasTimeStart: this.props.canvasTimeStart,
+          canvasTimeEnd: this.props.canvasTimeEnd,
+          canvasWidth: this.props.canvasWidth,
+        },
+      );
+      console.log('The props are', props.style);
+      const test = {
+        id: `${this.itemId}-buffer`,
+        key: `${this.itemId}-buffer`,
+        style: {
+          background: 'purple',
+          position: 'absolute',
+          boxSizing: 'border-box',
+          left: `${position.left}px`,
+          top: `${dimensions.top}px`,
+          width: `${position.width}px`,
+          height: `${dimensions.height}px`,
+          lineHeight: `${dimensions.height}px`,
+          paddingLeft: `${((position.width - dimensions.width) / 2)}px`,
+          cursor: 'pointer',
+          ...props.style,
+
+        },
+      };
+      return test;
+    }
+    return {
+      id: `${this.itemId}-buffer`,
+      key: `${this.itemId}-buffer`,
+      style: {
+        ...props.style,
+      },
+    };
   }
 
   render() {
@@ -529,10 +580,10 @@ export default class Item extends Component {
       visibleTimeEnd: this.props.visibleTimeEnd,
       visibleTimeStart: this.props.visibleTimeStart,
       timelineWidth: this.props.timelineWidth,
-
     };
 
     const itemContext = {
+      item: this.props.item,
       dimensions: this.props.dimensions,
       useResizeHandle: this.props.useResizeHandle,
       title: this.itemTitle,
@@ -555,15 +606,21 @@ export default class Item extends Component {
       width: this.props.dimensions.width,
     };
 
-    const { itemRenderer, itemRendererCluster } = this.props;
-
+    const {
+      item, itemRenderer, itemRendererCluster, clusterSettings,
+    } = this.props;
     const renderer = this.props.item.isCluster ? itemRendererCluster : itemRenderer;
 
+    if (clusterSettings && clusterSettings.enableIncreasedHoverOnTinyItem) {
+      this.setTinyItemStatus();
+    }
+
     return renderer({
-      item: this.props.item,
+      item,
       timelineContext,
       itemContext,
       getItemProps: this.getItemProps,
+      getTinyItemBufferProps: this.getTinyItemBufferProps,
       getResizeProps: this.getResizeProps,
     });
   }

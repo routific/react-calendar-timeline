@@ -42,4 +42,11 @@ export function keyBy(value, key) {
   return obj;
 }
 
+export function isTinyItem(item, startKey, endKey, timeRange, tinyItemSize) {
+  let itemLength = 0;
+  if (_get(item, startKey) !== undefined && _get(item, endKey) !== undefined) {
+    itemLength = (_get(item, endKey) - _get(item, startKey)) || 0;
+  }
+  return (itemLength / timeRange) * 100 <= tinyItemSize;
+}
 export function noop() {}

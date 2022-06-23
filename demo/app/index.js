@@ -23,6 +23,7 @@ const demos = {
   controledSelect: require('./demo-controlled-select').default,
   clusteringItems: require('./demo-clustering').default,
   clusteringItemsCustomRender: require('./demo-clustering-custom-render').default,
+  clusteringHoverAffordance: require('./demo-clustering-increased-hover-affordance').default,
 };
 
 // A simple component that shows the pathname of the current location

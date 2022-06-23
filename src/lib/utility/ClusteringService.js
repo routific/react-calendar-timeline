@@ -3,7 +3,9 @@
 
 import PropTypes from 'prop-types';
 import Cluster from './Cluster';
-import { _get, _length, _pop } from './generic';
+import {
+  isTinyItem, _get, _length, _pop,
+} from './generic';
 
 export default class ClusteringService {
     #items;
@@ -61,12 +63,7 @@ export default class ClusteringService {
     }
 
     #isTinyItem(item) {
-      let itemLength = 0;
-
-      if (this.#getItemStart(item) !== undefined && this.#getItemEnd(item) !== undefined) {
-        itemLength = (this.#getItemEnd(item) - this.#getItemStart(item)) || 0;
-      }
-      return (itemLength / this.#timeRange) * 100 <= this.#tinyItemSize;
+      return isTinyItem(item, this.#startKey, this.#endKey, this.#timeRange, this.#tinyItemSize);
     }
 
     #getItemAtIndex(index) {
