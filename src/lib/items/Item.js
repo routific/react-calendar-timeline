@@ -525,6 +525,7 @@ export default class Item extends Component {
   getTinyItemBufferProps = (props = {}) => {
     const { item } = this.props;
     const percentOfClusteringRange = 0.49;
+
     if (item.isTinyItem) {
       const { dimensions } = this.props;
       const leftBuffer = item.start - ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
@@ -539,8 +540,8 @@ export default class Item extends Component {
           canvasWidth: this.props.canvasWidth,
         },
       );
-      console.log('The props are', props.style);
-      const test = {
+
+      return {
         id: `${this.itemId}-buffer`,
         key: `${this.itemId}-buffer`,
         style: {
@@ -558,8 +559,8 @@ export default class Item extends Component {
 
         },
       };
-      return test;
     }
+
     return {
       id: `${this.itemId}-buffer`,
       key: `${this.itemId}-buffer`,
