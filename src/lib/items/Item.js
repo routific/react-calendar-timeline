@@ -528,9 +528,9 @@ export default class Item extends Component {
 
     if (item.isTinyItem) {
       const { dimensions } = this.props;
-      const leftBuffer = item.start - ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
-      const rightBuffer = item.end + ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
-
+      const buffer = ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
+      const leftBuffer = item.start - buffer;
+      const rightBuffer = item.end + buffer;
       const position = calculateDimensions(
         {
           itemTimeStart: leftBuffer,
