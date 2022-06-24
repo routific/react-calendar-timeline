@@ -519,18 +519,25 @@ export default class Item extends Component {
 
   setTinyItemStatus = () => {
     const { itemTimeStartKey, itemTimeEndKey } = this.props.keys;
-    this.props.item.isTinyItem = isTinyItem(this.props.item, itemTimeStartKey, itemTimeEndKey, this.props.canvasTimeEnd - this.props.canvasTimeStart, this.props.clusterSettings.tinyItemSize);
+    this.props.item.isTinyItem = isTinyItem(
+      this.props.item,
+      itemTimeStartKey, itemTimeEndKey,
+      this.props.canvasTimeEnd - this.props.canvasTimeStart,
+      this.props.clusterSettings.tinyItemSize,
+    );
   }
 
   getTinyItemBufferProps = (props = {}) => {
     const { item } = this.props;
+    const { itemTimeStartKey, itemTimeEndKey } = this.props.keys;
+
     const percentOfClusteringRange = 0.49;
 
     if (item.isTinyItem) {
       const { dimensions } = this.props;
       const buffer = ((this.props.clusterSettings?.clusteringRange * percentOfClusteringRange) / 100) * (this.props.canvasTimeEnd - this.props.canvasTimeStart);
-      const leftBuffer = item.start - buffer;
-      const rightBuffer = item.end + buffer;
+      const leftBuffer = _get(item, itemTimeStartKey) - buffer;
+      const rightBuffer = _get(item, itemTimeEndKey) + buffer;
       const position = calculateDimensions(
         {
           itemTimeStart: leftBuffer,
@@ -545,7 +552,6 @@ export default class Item extends Component {
         id: `${this.itemId}-buffer`,
         key: `${this.itemId}-buffer`,
         style: {
-          background: 'purple',
           position: 'absolute',
           boxSizing: 'border-box',
           left: `${position.left}px`,
@@ -556,7 +562,6 @@ export default class Item extends Component {
           paddingLeft: `${((position.width - dimensions.width) / 2)}px`,
           cursor: 'pointer',
           ...props.style,
-
         },
       };
     }
@@ -612,7 +617,7 @@ export default class Item extends Component {
     } = this.props;
     const renderer = this.props.item.isCluster ? itemRendererCluster : itemRenderer;
 
-    if (clusterSettings && clusterSettings.enableIncreasedHoverOnTinyItem) {
+    if (clusterSettings && clusterSettings.enableIncreasedHoverOnTinyItem && item.canCluster) {
       this.setTinyItemStatus();
     }
 
