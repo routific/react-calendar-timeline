@@ -110,6 +110,7 @@ export class Items extends Component {
       items,
     } = this.props;
     const { itemIdKey } = keys;
+
     return (
       <div className="rct-items">
         {items.map((item, i) => {
@@ -143,6 +144,7 @@ export class Items extends Component {
             canvasTimeStart={this.props.canvasTimeStart}
             canvasTimeEnd={this.props.canvasTimeEnd}
             canvasWidth={this.props.canvasWidth}
+            clusterSettings={this.props.clusterSettings}
             dragSnap={this.props.dragSnap}
             minResizeWidth={this.props.minResizeWidth}
             onResizing={this.props.itemResizing}

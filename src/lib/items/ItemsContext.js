@@ -59,6 +59,7 @@ export class ItemsContextProvider extends PureComponent {
     onItemContextMenu: PropTypes.func,
     itemRenderer: PropTypes.func,
     itemRendererCluster: PropTypes.func,
+    clusteringRange: PropTypes.object,
     selected: PropTypes.array,
     groupDimensions: PropTypes.object,
     useResizeHandle: PropTypes.bool,

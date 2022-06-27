@@ -1056,6 +1056,7 @@ export default class ReactCalendarTimeline extends Component {
                         canMove={this.props.canMove}
                         canResize={this.props.canResize}
                         canSelect={this.props.canSelect}
+                        clusterSettings={this.props.clusterSettings}
                         useResizeHandle={this.props.useResizeHandle}
                         dragSnap={this.props.dragSnap}
                         minResizeWidth={this.props.minResizeWidth}

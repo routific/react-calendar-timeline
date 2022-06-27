@@ -47,7 +47,7 @@ describe('getGroupWithItemDimensions', () => {
     const expectedItemCount = 5;
     const result = getOrderedGroupsWithItems(clusterGroup, itemsToCluster, props.keys, clusterSettingsLgDisableBelow23Hours, canvasSize.msBeginingOfDay, canvasSize.msEndOfDay);
 
-    expect(result['1'].items.length).toEqual(expectedItemCount);
+    expect(result['1'].items.length).toBe(expectedItemCount);
   });
 
   it('When an item is has canCluster = false, it should not cluster', () => {

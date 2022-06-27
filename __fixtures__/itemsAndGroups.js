@@ -1,3 +1,12 @@
+export const tinyItem = {
+  id: '0',
+  group: '1',
+  start_time: 1540540000000,
+  end_time: 154054000005,
+  canMove: false,
+  canResize: false,
+  title: 'title 0',
+};
 
 export const items = [
   {
@@ -57,7 +66,7 @@ export const items = [
     canResize: false,
     className: '',
     title: 'title 3',
-  }
-]
+  },
+];
 
-export const groups = [{ id: '1' }, { id: '2' }, { id: '3' }]
+export const groups = [{ id: '1' }, { id: '2' }, { id: '3' }];

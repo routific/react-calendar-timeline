@@ -211,6 +211,9 @@ Can items be dragged around? Can be overridden in the `items` array. Defaults to
 
 Can items be moved between groups? Can be overridden in the `items` array. Defaults to `true`
 
+## canCluster
+When clustering is enabled, you will need to have this property on your items. canCluster: true for items that you wish to be included in the clusterin. canCluster: false for items that you don't want to be included in the clustering.
+
 ## canResize
 
 Can items be resized? Can be overridden in the `items` array. Accepted values: `false`, `"left"`, `"right"`, `"both"`. Defaults to `"right"`. If you pass `true`, it will be treated as `"right"` to not break compatibility with versions 0.9 and below.
@@ -367,18 +370,34 @@ Called when the bounds in the calendar's canvas change. Use it for example to lo
 
 Boolean to hide or show HorizontalLines. `true` by default. Hiding the horizontalLines will have a good impact on performance.
 
+## clusterSettings
+
+An object to enable clustering of items on the timeline. If your items are pre sorted, pass in itemsSorted: true into the timeline to save a double sort.
+
+clusterSettings:{
+  tinyItemSize?: (number: default 0.4),
+  clusteringRange?: (number: default 2.2),
+  sequencialClusterTinyItemsOnly?: (boolean: default True),
+  disableClusteringBelowTime?: (number:):
+  enableIncreasedHoverOnTinyItem?:(boolea)
+}
+
+Look at the demo-clustering || demo-clustering-custom-render || demo-clustering-increased-hover-affordance for examples. Changelog goes into further detail on how it works.
+
 ## itemRenderer
 
 Render prop function used to render a customized item. The function provides multiple parameters that can be used to render each item.
 
 Parameters provided to the function has two types: context params which have the state of the item and timeline, and prop getters functions
 
+## itemRendererCluster
+Render prop function used to render a custom cluster item.  The function provides multiple parameters that can be used to render each item. All items inside of the cluster are available via item.items.
+
 #### Render props params
 
 ##### context
 
 * `item` has the item we passed as a prop to the calendar.
-
 * `timelineContext`
 
 | property           | type     | description                                          |
@@ -396,7 +415,10 @@ Parameters provided to the function has two types: context params which have the
 | `dimensions`      | `object`        | returns the dimensions of the item which includes `collisionLeft`, `collisionWidth`, `height`, `isDragging`, `left`, `order`, `originalLeft`, `stack`, `top`, and `width` |
 | `useResizeHandle` | `boolean`       | returns the prop `useResizeHandle` from calendar root component                                                                                                           |
 | `title`           | `string`        | returns title to render in content element.                                                                                                                               |
-| `canMove`         | `boolean`       | returns if the item is movable.                                                                                                                                           |
+| `canMove`         | `boolean`       | returns if the item is 
+movable.     
+
+| `canCluster`         | `boolean`       | returns if the item is clusterable.                                                                                                                           |
 | `canResizeLeft`   | `boolean`       | returns if the item can resize from the left                                                                                                                              |
 | `canResizeRight`  | `boolean`       | returns if the item can resize from the right.                                                                                                                            |
 | `selected`        | `boolean`       | returns if the item is selected.                                                                                                                                          |
@@ -583,6 +605,9 @@ horizontalLineClassNamesForGroup={(group) => group.root ? ["row-root"] : []}
 
 Data to be passed to `rowRenderer`'s  `rowData` param. Changing this prop will cause rerender of the `rowRenderer`
 
+## 'getRowItems'
+
+Function to get all items inside of the group for this specific row.
 # Helpers
 
 Helpers are methods provided by `HelperContext`. These helpers power most of the rendered UI in the timeline like: Headers, Markers, Items and row renderers. 

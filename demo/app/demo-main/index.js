@@ -317,9 +317,12 @@ export default class App extends Component {
     getLayerRootProps,
     group,
     itemsWithInteractions,
+    getRowItems, // Function you can call to get all items in this specific row.
   }) => {
     const helpers = React.useContext(HelpersContext);
+
     const { itemsToDrag, unavailableSlots, timelineLinks } = rowData;
+
     const groupUnavailableSlots = unavailableSlots[group.id]
       ? unavailableSlots[group.id]
       : [];
