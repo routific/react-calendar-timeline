@@ -21,7 +21,6 @@ import * as d3 from 'd3';
 
 import generateFakeData from '../generate-fake-data';
 
-console.log('row Items', RowItems);
 const minTime = moment()
   .add(-6, 'months')
   .valueOf();
