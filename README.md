@@ -605,6 +605,9 @@ horizontalLineClassNamesForGroup={(group) => group.root ? ["row-root"] : []}
 
 Data to be passed to `rowRenderer`'s  `rowData` param. Changing this prop will cause rerender of the `rowRenderer`
 
+## 'getRowItems'
+
+Function to get all items inside of the group for this specific row.
 # Helpers
 
 Helpers are methods provided by `HelperContext`. These helpers power most of the rendered UI in the timeline like: Headers, Markers, Items and row renderers. 

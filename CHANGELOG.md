@@ -10,6 +10,7 @@ and this project adheres (more or less) to [Semantic Versioning](http://semver.o
 ### New features
 - Added enableIncreasedHoverOnTinyItem:(boolean) inside of cluster settings. This setting adds a div behind a tinyItem to make it easy to interact with. The size of this div is based on the item + a left and right buffer. This buffer is equal to 49% of the clusteringRange to make sure it does not collide with other items and their clustering ranges. Take a look at the new demo under demo-clustering-increased-hover-affordance. Note: Also added a new prop to your custom render called getTinyItemBufferProps. This returns props for the buffer div you need have which wraps your item. This will also change the position of getItemProps to relative vs absolute automatically and add padding to keep your item in the exact same space it is supposed to be.
 
+- Added a new function, getRowItems, inside of rowRender to return all items inside of that row. This will include all items inside of a cluster.
 ## 0.30.5 
 
 ### Fixes and Improvements
