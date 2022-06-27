@@ -246,6 +246,7 @@ class Group extends React.PureComponent {
                 rowData={rowData}
                 group={group.group}
                 itemsWithInteractions={itemsWithInteractions}
+                getRowItems={() => group.items}
               />
             )}
           </LayerConsumer>

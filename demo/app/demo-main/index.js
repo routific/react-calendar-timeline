@@ -21,6 +21,7 @@ import * as d3 from 'd3';
 
 import generateFakeData from '../generate-fake-data';
 
+console.log('row Items', RowItems);
 const minTime = moment()
   .add(-6, 'months')
   .valueOf();
@@ -317,9 +318,12 @@ export default class App extends Component {
     getLayerRootProps,
     group,
     itemsWithInteractions,
+    getRowItems, // Function you can call to get all items in this specific row.
   }) => {
     const helpers = React.useContext(HelpersContext);
+
     const { itemsToDrag, unavailableSlots, timelineLinks } = rowData;
+
     const groupUnavailableSlots = unavailableSlots[group.id]
       ? unavailableSlots[group.id]
       : [];
