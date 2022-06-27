@@ -617,7 +617,7 @@ export default class Item extends Component {
     } = this.props;
     const renderer = this.props.item.isCluster ? itemRendererCluster : itemRenderer;
 
-    if (clusterSettings && clusterSettings.enableIncreasedHoverOnTinyItem && item.canCluster) {
+    if (clusterSettings && clusterSettings.enableIncreasedHoverOnTinyItem && (item.canCluster || item.isCluster)) {
       this.setTinyItemStatus();
     }
 
