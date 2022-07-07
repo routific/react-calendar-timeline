@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres (more or less) to [Semantic Versioning](http://semver.org/).
+Change log
+## 0.30.9
+- Added zoomControl to the timeline. This is a boolean, default false, that will show a floating zoom control in the library. This control allows you to drag it around the screen, zoom in/out and reset. Zoom scale is set to 70%.
+
+- Added the following libraries
+--> styled-componets
+--> antd and antd icons
+--> draggable
+
+- Added Custom zoom renderer to the timeline so you can pass in your own zoom control. 
+
+- Updated Demos:
+--> main: Added default zoom control to showcase zoom
+--> clusteringItemsCustomRender: Added custom zoom renderer to showcase setting custom zoom in/out/reset values and using a customer renderer
+
+## 0.30.8
+version bump
 
 ## 0.30.7 
 

@@ -371,6 +371,7 @@ export default class App extends Component {
         itemsSorted
         itemTouchSendsClick={false}
         stackItems
+        zoomControl
         itemHeightRatio={0.75}
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}

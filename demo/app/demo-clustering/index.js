@@ -33,8 +33,6 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    // const { groups, items } = generateFakeData(10, 1500);
-
     const items = timelineData;
 
     const groups = [{
@@ -160,6 +158,7 @@ export default class App extends Component {
           clusteringRange: 0.5,
           sequencialClusterTinyItemsOnly: true,
         }}
+        itemSorted
         itemHeightRatio={0.75}
         defaultTimeStart={defaultTimeStart}
         defaultTimeEnd={defaultTimeEnd}

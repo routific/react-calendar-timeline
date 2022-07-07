@@ -7,6 +7,7 @@ import faker from 'faker';
 import Timeline from 'react-calendar-timeline';
 import timelineData from '../fake-timeline-data';
 import clusterItemRenderer from './ItemRenderCluster';
+import ZoomRenderer from './ZoomRenderer';
 
 const minTime = moment('2022-MAY-12')
   .add(-12, 'hours')
@@ -149,6 +150,7 @@ export default class App extends Component {
         sidebarWidth={150}
         sidebarContent={<div>Above The Left</div>}
         canMove
+        zoomRenderer={ZoomRenderer}
         canResize="right"
         canSelect
         itemTouchSendsClick={false}

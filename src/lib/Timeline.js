@@ -6,6 +6,7 @@ import Sidebar from './layout/Sidebar';
 import ScrollElement from './scroll/ScrollElement';
 import MarkerCanvas from './markers/MarkerCanvas';
 import Rows from './rows/Rows';
+import ZoomControl from './zoom';
 
 import windowResizeDetector from '../resize-detector/window';
 
@@ -48,7 +49,7 @@ export default class ReactCalendarTimeline extends Component {
     minZoom: PropTypes.number,
     maxZoom: PropTypes.number,
     zoomThrottle: PropTypes.number,
-
+    zoomControl: PropTypes.bool,
     clickTolerance: PropTypes.number,
 
     canChangeGroup: PropTypes.bool,
@@ -84,7 +85,7 @@ export default class ReactCalendarTimeline extends Component {
     itemRenderer: PropTypes.func,
     itemRendererCluster: PropTypes.func,
     groupRenderer: PropTypes.func,
-
+    zoomRenderer: PropTypes.func,
     clusterSettings: PropTypes.object,
     // className: PropTypes.string,
     style: PropTypes.object,
@@ -118,7 +119,6 @@ export default class ReactCalendarTimeline extends Component {
 
     zoomTimeStart: number,
     zoomTimeEnd: number,
-    zoomThrottle: number,
 
     visibleTimeStart: PropTypes.number,
     visibleTimeEnd: PropTypes.number,
@@ -180,7 +180,7 @@ export default class ReactCalendarTimeline extends Component {
     stickyHeader: true,
     lineHeight: 30,
     itemHeightRatio: 0.65,
-
+    zoomControl: false,
     minZoom: 60 * 60 * 1000, // 1 hour
     maxZoom: 5 * 365.24 * 86400 * 1000, // 5 years
     zoomThrottle: 1,
@@ -311,12 +311,19 @@ export default class ReactCalendarTimeline extends Component {
     let visibleTimeStart = null;
     let visibleTimeEnd = null;
 
+    let initialTimeStart = null;
+    let initialTimeEnd = null;
+
     if (this.props.defaultTimeStart && this.props.defaultTimeEnd) {
       visibleTimeStart = this.props.defaultTimeStart.valueOf();
       visibleTimeEnd = this.props.defaultTimeEnd.valueOf();
+      initialTimeStart = this.props.defaultTimeStart.valueOf();
+      initialTimeEnd = this.props.defaultTimeEnd.valueOf();
     } else if (this.props.visibleTimeStart && this.props.visibleTimeEnd) {
       visibleTimeStart = this.props.visibleTimeStart;
       visibleTimeEnd = this.props.visibleTimeEnd;
+      initialTimeStart = this.props.visibleTimeStart;
+      initialTimeEnd = this.props.visibleTimeEnd;
     } else {
       // throwing an error because neither default or visible time props provided
       throw new Error(
@@ -333,6 +340,10 @@ export default class ReactCalendarTimeline extends Component {
       width: 1000,
       zoomTimeStart: this.props.zoomTimeStart,
       zoomTimeEnd: this.props.zoomTimeEnd,
+      zoomControl: this.props.zoomControl,
+      zoomScalePercent: 0.7,
+      initialTimeStart,
+      initialTimeEnd,
       visibleTimeStart,
       visibleTimeEnd,
       canvasTimeStart,
@@ -933,6 +944,7 @@ export default class ReactCalendarTimeline extends Component {
       traditionalZoom,
       itemRenderer,
       itemRendererCluster,
+      zoomRenderer,
       keys,
       hideHorizontalLines,
     } = this.props;
@@ -984,6 +996,23 @@ export default class ReactCalendarTimeline extends Component {
     const outerComponentStyle = {
       height: `${height}px`,
     };
+
+    const zoomControl = () => {
+      if (zoomRenderer) {
+        return zoomRenderer({
+          onZoomIn: ({ value }) => this.changeZoom(value || 1 * this.state.zoomScalePercent),
+          onZoomOut: ({ value }) => this.changeZoom(value || 1 / this.state.zoomScalePercent),
+          onZoomReset: ({ canvasTimeStartZoom, canvasTimeEndZoom }) => this.showPeriod(canvasTimeStartZoom || this.state.initialTimeStart, canvasTimeEndZoom || this.state.initialTimeEnd),
+        });
+      }
+      if (this.props.zoomControl) {
+        return <ZoomControl
+        onZoomIn={() => this.changeZoom(1 * this.state.zoomScalePercent)}
+        onZoomOut={() => this.changeZoom(1 / this.state.zoomScalePercent)}
+        onZoomReset={() => this.showPeriod(this.state.initialTimeStart, this.state.initialTimeEnd)}/>;
+      }
+      return undefined;
+    };
     return (
       <TimelineStateProvider
         visibleTimeStart={visibleTimeStart}
@@ -1015,6 +1044,7 @@ export default class ReactCalendarTimeline extends Component {
                 ref={el => (this.container = el)}
                 className="react-calendar-timeline"
               >
+                 {zoomControl()}
                 {this.renderHeaders()}
                 <div style={outerComponentStyle} className="rct-outer">
                   {sidebarWidth > 0 ? this.sidebar(height, groupHeights) : null}

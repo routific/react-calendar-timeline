@@ -393,6 +393,26 @@ Parameters provided to the function has two types: context params which have the
 ## itemRendererCluster
 Render prop function used to render a custom cluster item.  The function provides multiple parameters that can be used to render each item. All items inside of the cluster are available via item.items.
 
+## zoomControl
+Boolean with a default of false. If you pass in zoomControl into the timeline, the library will render a floating zoom control on the right. This zoom control will alow you to drag it around your page, zoom in, zoom out and reset zoom. Zoom in/out is set at a scale percentage of 70%. Controls have the following class names:
+
+-> Zoom control container: zoom-control
+-> Drag icon: zoom-drag-icon
+-> Zoom In icon: zoom-in-icon
+-> Zoom out icon: zoom-out-icon
+-> Zoom reset icon: zoom-reset-icon
+
+## zoomRenderer
+Function you can pass into the timeline to render a custom zoom control. The function gets passed 3 paramaters:
+
+
+@param onZoomIn:      a function that zooms in the canvas by a scale of 30%. To change this value, pass in
+                      {value:x} where x is a percent of the current view that you would like to scale.
+@param onZoomOut:     a function that zooms out the canvas by a scale of 30%.
+@param onZoomReset:   a function that sets the timeline to a specific left and right time. Bydefault, it will
+                      reset to the defaultStart/EndTime || visibleStartTime that you passed into the library. If you wish the reset to be something other than this, you can pass
+                        in {canvasTimeStartZoom: x, canvasTimeEndZoom: x} into the onZoomReset to set it to a specific time range.
+
 #### Render props params
 
 ##### context
