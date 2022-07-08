@@ -1000,9 +1000,9 @@ export default class ReactCalendarTimeline extends Component {
     const zoomControl = () => {
       if (zoomRenderer) {
         return zoomRenderer({
-          onZoomIn: ({ value }) => this.changeZoom(value || 1 * this.state.zoomScalePercent),
-          onZoomOut: ({ value }) => this.changeZoom(value || 1 / this.state.zoomScalePercent),
-          onZoomReset: ({ canvasTimeStartZoom, canvasTimeEndZoom }) => this.showPeriod(canvasTimeStartZoom || this.state.initialTimeStart, canvasTimeEndZoom || this.state.initialTimeEnd),
+          onZoomIn: ({ value } = {}) => this.changeZoom(value || 1 * this.state.zoomScalePercent),
+          onZoomOut: ({ value } = {}) => this.changeZoom(value || 1 / this.state.zoomScalePercent),
+          onZoomReset: ({ canvasTimeStartZoom, canvasTimeEndZoom } = {}) => this.showPeriod(canvasTimeStartZoom || this.state.initialTimeStart, canvasTimeEndZoom || this.state.initialTimeEnd),
         });
       }
       if (this.props.zoomControl) {
