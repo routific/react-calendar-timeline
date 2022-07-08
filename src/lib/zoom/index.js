@@ -49,19 +49,19 @@ const ButtonContainer = styled.div`
 `;
 
 const ZoomControl = ({ onZoomIn, onZoomOut, onZoomReset }) => (
-  <Draggable handle="#handle">
-  <StyledZoomControl className='zoom-control'>
+  <Draggable handle="#handle" >
+  <StyledZoomControl className='zoom-control' data-testid="zoom-control">
     <StyledDragControl id="handle" >
       <DragOutlined className="zoom-drag-icon"/>
     </StyledDragControl>
     <StyledButtons>
-      <ButtonContainer onClick={() => onZoomIn()}>
+      <ButtonContainer data-testid="zoom-in" onClick={() => onZoomIn()}>
         <ZoomInOutlined className="zoom-in-icon"/>
       </ButtonContainer>
-      <ButtonContainer onClick={() => onZoomOut()}>
+      <ButtonContainer data-testid="zoom-out" onClick={() => onZoomOut()}>
         <ZoomOutOutlined className="zoom-out-icon"/>
       </ButtonContainer>
-      <ButtonContainer onClick={() => onZoomReset()}>
+      <ButtonContainer data-testid="zoom-reset" onClick={() => onZoomReset()}>
         <RetweetOutlined className="zoom-reset-icon"/>
       </ButtonContainer>
     </StyledButtons>
