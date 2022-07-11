@@ -1,6 +1,6 @@
 {
   "name": "@routific/react-calendar-timeline",
-  "version": "0.30.9-beta.0",
+  "version": "0.30.10",
   "description": "react calendar timeline",
   "main": "lib/index.js",
   "scripts": {
