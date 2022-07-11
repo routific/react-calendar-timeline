@@ -250,6 +250,28 @@ Default:
   year: 1
 }
 ```
+You can also pass in an array of timestamps if you want to display different intervals at different zoom levels. You need to pass in timespanInMS otherwise it will default to the first value in your array.
+```js
+ [
+  {
+    timespanInMS: 172800000, // 48hrs
+    hour: 4,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 115200000, // 32hrs
+    hour: 2,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  },
+ ]
+```
 
 ## scrollRef
 

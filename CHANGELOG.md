@@ -17,7 +17,9 @@ Change log
 
 - Updated Demos:
 --> main: Added default zoom control to showcase zoom
---> clusteringItemsCustomRender: Added custom zoom renderer to showcase setting custom zoom in/out/reset values and using a customer renderer
+--> clusteringItemsCustomRender: Added custom zoom renderer to showcase setting custom zoom in/out/reset values and using a customer renderer. Added array of timesteps to show different timesteps and different zoom levels.
+
+- Updated timeSteps to accept either a single object or an array of objects. You can now pass in an array of timestamps that you want at different zoom levels. Look at demo-clustering-custom-render at the variable zoomStepTimeWindows for an example.
 
 ## 0.30.8
 version bump

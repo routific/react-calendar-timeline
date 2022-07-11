@@ -28,6 +28,83 @@ const keys = {
   itemTimeEndKey: 'end',
 };
 
+export const zoomStepTimeWindows = [
+  {
+    timespanInMS: 172800000, // 48hrs
+    hour: 4,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 115200000, // 32hrs
+    hour: 4,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 86400000, // 24hrs
+    hour: 4,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 57600000, // 16hrs
+    hour: 4,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 43200000, // 12hrs
+    hour: 2,
+    minute: 1,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 28800000, // 8hrs
+    hour: 1,
+    minute: 30,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 14400000, // 4hrs
+    hour: 1,
+    minute: 30,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 7200000, // 2hrs
+    hour: 1,
+    minute: 10,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  }, {
+    timespanInMS: 3600000, // 1hrs
+    hour: 1,
+    minute: 5,
+    second: 1,
+    day: 1,
+    month: 1,
+    year: 1,
+  },
+];
+
+
 const SIXTEEN_HOURS_IN_MS = 1000 * 60 * 60 * 16;
 
 export default class App extends Component {
@@ -160,6 +237,7 @@ export default class App extends Component {
           sequencialClusterTinyItemsOnly: true,
           disableClusteringBelowTime: SIXTEEN_HOURS_IN_MS,
         }}
+        timeSteps={zoomStepTimeWindows}
         itemSorted
         itemRendererCluster={clusterItemRenderer}
         itemHeightRatio={0.75}

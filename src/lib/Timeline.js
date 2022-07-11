@@ -105,14 +105,29 @@ export default class ReactCalendarTimeline extends Component {
     headerRef: PropTypes.func,
     scrollRef: PropTypes.func,
 
-    timeSteps: PropTypes.shape({
-      second: PropTypes.number,
-      minute: PropTypes.number,
-      hour: PropTypes.number,
-      day: PropTypes.number,
-      month: PropTypes.number,
-      year: PropTypes.number,
-    }),
+    timeSteps: PropTypes.oneOfType([
+      PropTypes.shape({
+        second: PropTypes.number,
+        minute: PropTypes.number,
+        hour: PropTypes.number,
+        day: PropTypes.number,
+        month: PropTypes.number,
+        year: PropTypes.number,
+      }),
+      PropTypes.arrayOf(
+        PropTypes.shape(
+          {
+            timespanInMS: PropTypes.number,
+            second: PropTypes.number,
+            minute: PropTypes.number,
+            hour: PropTypes.number,
+            day: PropTypes.number,
+            month: PropTypes.number,
+            year: PropTypes.number,
+          },
+        ),
+      ),
+    ]),
 
     defaultTimeStart: PropTypes.object,
     defaultTimeEnd: PropTypes.object,
@@ -262,6 +277,21 @@ export default class ReactCalendarTimeline extends Component {
     getTimelineContext: PropTypes.func,
   }
 
+  getTimeStep = (timeSteps) => {
+    if (Array.isArray(timeSteps) && timeSteps.length > 0) {
+      const { visibleTimeStart, visibleTimeEnd } = this.state;
+      const visibleTime = visibleTimeEnd - visibleTimeStart;
+      let timeStepToReturn = timeSteps[0];
+      for (let i = 1; i < timeSteps.length; i += 1) {
+        if (timeSteps[i].timespanInMS >= visibleTime) {
+          timeStepToReturn = timeSteps[i];
+        }
+      }
+      return timeStepToReturn;
+    }
+    return timeSteps;
+  }
+
   getChildContext() {
     return {
       getTimelineContext: () => this.getTimelineContext(),
@@ -294,9 +324,8 @@ export default class ReactCalendarTimeline extends Component {
     } = this.state;
 
     const { timeSteps } = this.props;
-
     const zoom = visibleTimeEnd - visibleTimeStart;
-    const minUnit = getMinUnit(zoom, width, timeSteps);
+    const minUnit = getMinUnit(zoom, width, this.getTimeStep(timeSteps));
 
     return minUnit;
   }
@@ -551,9 +580,6 @@ export default class ReactCalendarTimeline extends Component {
       this.state.newGroupId,
       props.clusterSettings,
     );
-
-    // this is needed by dragItem since it uses pageY from the drag events
-    // if this was in the context of the scrollElement, this would not be necessary
 
     this.setState({
       width,
@@ -963,7 +989,7 @@ export default class ReactCalendarTimeline extends Component {
 
     const zoom = visibleTimeEnd - visibleTimeStart;
     const canvasWidth = getCanvasWidth(width);
-    const minUnit = getMinUnit(zoom, width, timeSteps);
+    const minUnit = getMinUnit(zoom, width, this.getTimeStep(timeSteps));
 
     const isInteractingWithItem = !!draggingItem || !!resizingItem;
 
@@ -1028,7 +1054,7 @@ export default class ReactCalendarTimeline extends Component {
         <TimelineMarkersProvider>
           <TimelineHeadersProvider
             registerScroll={this.handleHeaderRef}
-            timeSteps={timeSteps}
+            timeSteps={this.getTimeStep(timeSteps)}
             leftSidebarWidth={this.props.sidebarWidth}
             rightSidebarWidth={this.props.rightSidebarWidth}
           >
@@ -1102,7 +1128,7 @@ export default class ReactCalendarTimeline extends Component {
                       {hideHorizontalLines ? null : <Columns
                         lineCount={_length(groups)}
                         minUnit={minUnit}
-                        timeSteps={timeSteps}
+                        timeSteps={this.getTimeStep(timeSteps)}
                         verticalLineClassNamesForTime={this.props.verticalLineClassNamesForTime}
                         canvasTimeStart={canvasTimeStart}
                         canvasTimeEnd={canvasTimeEnd}
