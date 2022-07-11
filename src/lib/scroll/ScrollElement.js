@@ -42,7 +42,6 @@ class ScrollElement extends Component {
   handleWheel = e => {
     // const { traditionalZoom } = this.props
 
-
     // zoom in the time dimension
     if (e.ctrlKey || e.metaKey || e.altKey) {
       e.preventDefault();
@@ -58,6 +57,10 @@ class ScrollElement extends Component {
       // shift+scroll event from a touchpad has deltaY property populated; shift+scroll event from a mouse has deltaX
       this.props.onScroll(this.scrollComponent.scrollLeft + (e.deltaY || e.deltaX));
       // no modifier pressed? we prevented the default event, so scroll or zoom as needed
+    } else {
+      // Trackpad Support for scrolling.
+      const scrollX = this.scrollComponent.scrollLeft;
+      this.props.onScroll(scrollX + e.deltaX);
     }
   }
 
@@ -181,6 +184,7 @@ class ScrollElement extends Component {
       height: `${height + 20}px`, // 20px to push the scroll element down off screen...?
       cursor: isDragging ? 'move' : 'default',
       position: 'relative',
+      overflow: 'hidden', // required for trackpad support
     };
 
     return (
@@ -197,6 +201,7 @@ class ScrollElement extends Component {
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
         onScroll={this.handleScroll}
+        onWheel={this.handleWheel}
       >
         {children}
       </div>
