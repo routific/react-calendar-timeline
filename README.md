@@ -250,7 +250,7 @@ Default:
   year: 1
 }
 ```
-You can also pass in an array of timestamps if you want to display different intervals at different zoom levels. You need to pass in timespanInMS otherwise it will default to the first value in your array.
+You can also pass in an array of timestamps if you want to display different intervals at different zoom levels. You need to pass in timespanInMS otherwise it will default to the first value in your array. You need to make sure your items are ordered from the largest timespan to the smallest.
 ```js
  [
   {
