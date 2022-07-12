@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres (more or less) to [Semantic Versioning](http://semver.org/).
+Change log
+## 0.30.9
+- Added zoomControl to the timeline. This is a boolean, default false, that will show a floating zoom control in the library. This control allows you to drag it around the screen, zoom in/out and reset. Zoom scale is set to 70%.
+
+- Added the following libraries
+--> styled-componets
+--> antd and antd icons
+--> draggable
+
+- Added Custom zoom renderer to the timeline so you can pass in your own zoom control. 
+
+- Updated Demos:
+--> main: Added default zoom control to showcase zoom
+--> clusteringItemsCustomRender: Added custom zoom renderer to showcase setting custom zoom in/out/reset values and using a customer renderer. Added array of timesteps to show different timesteps and different zoom levels.
+
+- Updated timeSteps to accept either a single object or an array of objects. You can now pass in an array of timestamps that you want at different zoom levels. The array of timeSteps has a variable called timespanInMS. You need to make sure your items are ordered from the largest timespan to the smallest. Look at demo-clustering-custom-render at the variable zoomStepTimeWindows for an example.
+  
+
+## 0.30.8
+version bump
 
 ## 0.30.7 
 

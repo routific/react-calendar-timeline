@@ -5,6 +5,7 @@ export const tinyItem = {
   end_time: 154054000005,
   canMove: false,
   canResize: false,
+  canCluster: true,
   title: 'title 0',
 };
 

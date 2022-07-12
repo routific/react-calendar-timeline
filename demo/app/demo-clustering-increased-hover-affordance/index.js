@@ -158,6 +158,7 @@ export default class App extends Component {
         canMove
         canResize="right"
         canSelect
+        zoomControl
         itemTouchSendsClick={false}
         clusterSettings={{
           tinyItemSize: 0.2,
