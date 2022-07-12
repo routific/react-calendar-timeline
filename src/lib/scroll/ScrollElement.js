@@ -171,7 +171,7 @@ class ScrollElement extends Component {
 
   componentWillUnmount() {
     if (this.scrollComponent) {
-      this.scrollComponent.removeEventListener('wheel', this.handleWheel);
+      this.scrollComponent.removeEventListener('wheel', this.handleWheel, { passive: false });
     }
   }
 
@@ -201,7 +201,6 @@ class ScrollElement extends Component {
         onTouchMove={this.handleTouchMove}
         onTouchEnd={this.handleTouchEnd}
         onScroll={this.handleScroll}
-        onWheel={this.handleWheel}
       >
         {children}
       </div>

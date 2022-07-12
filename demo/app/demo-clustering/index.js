@@ -128,15 +128,11 @@ export default class App extends Component {
   handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas) => {
     if (visibleTimeStart < minTime && visibleTimeEnd > maxTime) {
       updateScrollCanvas(minTime, maxTime);
-      console.log('d');
     } else if (visibleTimeStart < minTime) {
       updateScrollCanvas(minTime, minTime + (visibleTimeEnd - visibleTimeStart));
-      console.log('c');
     } else if (visibleTimeEnd > maxTime) {
       updateScrollCanvas(maxTime - (visibleTimeEnd - visibleTimeStart), maxTime);
-      console.log('b');
     } else {
-      console.log('a');
       updateScrollCanvas(visibleTimeStart, visibleTimeEnd);
     }
   }
@@ -154,6 +150,7 @@ export default class App extends Component {
         sidebarWidth={150}
         sidebarContent={<div>Above The Left</div>}
         canMove
+        zoomControl
         canResize="right"
         canSelect
         itemTouchSendsClick={false}
