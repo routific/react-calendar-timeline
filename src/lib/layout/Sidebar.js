@@ -13,7 +13,6 @@ export default class Sidebar extends Component {
     groupRenderer: PropTypes.func,
     isRightSidebar: PropTypes.bool,
     sidebarRef: PropTypes.func,
-    selectedRowId: PropTypes.number,
   }
 
   shouldComponentUpdate(nextProps) {
@@ -21,7 +20,6 @@ export default class Sidebar extends Component {
       nextProps.keys === this.props.keys
       && nextProps.width === this.props.width
       && nextProps.height === this.props.height
-      && nextProps.selectedRowId === this.selectedRowId
       && arraysEqual(nextProps.groups, this.props.groups)
       && arraysEqual(nextProps.groupHeights, this.props.groupHeights)
     );
@@ -39,7 +37,7 @@ export default class Sidebar extends Component {
 
   render() {
     const {
-      width, groupHeights, height, isRightSidebar, sidebarRef, selectedRowId,
+      width, groupHeights, height, isRightSidebar, sidebarRef,
     } = this.props;
 
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys;
@@ -51,11 +49,6 @@ export default class Sidebar extends Component {
 
     const groupsStyle = {
       width: `${width}px`,
-    };
-
-    const getRowRef = (id) => {
-      const isSelectedRouteEvent = selectedRowId === Number(id);
-      return isSelectedRouteEvent ? sidebarRef : null;
     };
 
     const groupLines = this.props.groups.map((group, index) => {
@@ -71,7 +64,7 @@ export default class Sidebar extends Component {
             `rct-sidebar-row rct-sidebar-row-${index % 2 === 0 ? 'even' : 'odd'}`
           }
           style={elementStyle}
-          ref={getRowRef(group.id)}
+          ref={sidebarRef(group.id)}
         >
           {this.renderGroupContent(
             group,

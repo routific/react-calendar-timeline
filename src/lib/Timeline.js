@@ -143,7 +143,6 @@ export default class ReactCalendarTimeline extends Component {
     onBoundsChange: PropTypes.func,
 
     selected: PropTypes.array,
-    selectedRowId: PropTypes.number,
 
     headerLabelFormats: PropTypes.shape({
       yearShort: PropTypes.string,
@@ -272,7 +271,6 @@ export default class ReactCalendarTimeline extends Component {
     subHeaderLabelFormats: defaultSubHeaderLabelFormats,
 
     selected: null,
-    selectedRowId: null,
 
     rowRenderer: DefaultLayer,
     rowData: {},
@@ -877,7 +875,6 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRef={this.props.sidebarRef}
-          selectedRowId={this.props.selectedRowId}
         />
       )
     );
@@ -896,7 +893,6 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRef={this.props.sidebarRef}
-          selectedRowId={this.props.selectedRowId}
         />
       )
     );
