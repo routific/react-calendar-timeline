@@ -875,6 +875,7 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRowRef={this.props.sidebarRowRef}
+          selected={this.props.selected}
         />
       )
     );
@@ -893,6 +894,7 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRowRef={this.props.sidebarRowRef}
+          selected={this.props.selected}
         />
       )
     );
