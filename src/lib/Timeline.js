@@ -104,6 +104,8 @@ export default class ReactCalendarTimeline extends Component {
     }),
     headerRef: PropTypes.func,
     scrollRef: PropTypes.func,
+    containerRef: PropTypes.func,
+    sidebarRowRef: PropTypes.func,
 
     timeSteps: PropTypes.oneOfType([
       PropTypes.shape({
@@ -247,6 +249,8 @@ export default class ReactCalendarTimeline extends Component {
     timeSteps: defaultTimeSteps,
     headerRef: () => {},
     scrollRef: () => {},
+    sidebarRowRef: () => {},
+    containerRef: () => {},
 
     // if you pass in visibleTimeStart and visibleTimeEnd, you must also pass onTimeChange(visibleTimeStart, visibleTimeEnd),
     // which needs to update the props visibleTimeStart and visibleTimeEnd to the ones passed
@@ -870,6 +874,7 @@ export default class ReactCalendarTimeline extends Component {
           width={sidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          sidebarRowRef={this.props.sidebarRowRef}
         />
       )
     );
@@ -887,6 +892,7 @@ export default class ReactCalendarTimeline extends Component {
           width={rightSidebarWidth}
           groupHeights={groupHeights}
           height={height}
+          sidebarRowRef={this.props.sidebarRowRef}
         />
       )
     );
@@ -1072,7 +1078,7 @@ export default class ReactCalendarTimeline extends Component {
               >
                  {zoomControl()}
                 {this.renderHeaders()}
-                <div style={outerComponentStyle} className="rct-outer">
+                <div style={outerComponentStyle} className="rct-outer" ref={this.props.containerRef}>
                   {sidebarWidth > 0 ? this.sidebar(height, groupHeights) : null}
                   <ScrollElement
                     scrollRef={this.getScrollElementRef}
@@ -1099,6 +1105,7 @@ export default class ReactCalendarTimeline extends Component {
                         onItemDoubleClick={this.doubleClickItem}
                         onItemContextMenu={this.contextMenuClickItem}
                         scrollRef={this.scrollComponent}
+                        headerElementRef={this.scrollRef}
                         selectedItem={this.state.selectedItem}
                         onRowClick={this.handleRowClick}
                         onRowDoubleClick={this.handleRowDoubleClick}
