@@ -13,7 +13,6 @@ export default class Sidebar extends Component {
     groupRenderer: PropTypes.func,
     isRightSidebar: PropTypes.bool,
     sidebarRowRef: PropTypes.func,
-    selected: PropTypes.array,
   }
 
   shouldComponentUpdate(nextProps) {
@@ -23,7 +22,7 @@ export default class Sidebar extends Component {
       && nextProps.height === this.props.height
       && arraysEqual(nextProps.groups, this.props.groups)
       && arraysEqual(nextProps.groupHeights, this.props.groupHeights)
-      && nextProps.selected === this.props.selected
+      && nextProps.sidebarRowRef === this.props.sidebarRowRef
     );
   }
 
