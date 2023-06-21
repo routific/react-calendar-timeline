@@ -184,7 +184,10 @@ export default class ReactCalendarTimeline extends Component {
 
     children: PropTypes.node,
 
-    rowRenderer: PropTypes.func,
+    rowRenderer: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.object,
+    ]),
     rowData: PropTypes.object,
     hideHorizontalLines: PropTypes.bool,
   }

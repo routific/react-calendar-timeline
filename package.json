@@ -1,6 +1,6 @@
 {
   "name": "@routific/react-calendar-timeline",
-  "version": "0.31.0",
+  "version": "0.31.1",
   "description": "react calendar timeline",
   "main": "lib/index.js",
   "scripts": {
@@ -114,6 +114,7 @@
     "@babel/core": "^7.5.0",
     "@babel/plugin-proposal-class-properties": "^7.5.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.5.2",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/preset-env": "^7.5.2",
     "@babel/preset-react": "^7.0.0",
     "@testing-library/jest-dom": "^4.2.0",
