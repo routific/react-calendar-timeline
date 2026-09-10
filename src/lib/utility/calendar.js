@@ -251,6 +251,36 @@ export function getVisibleItems(items, canvasTimeStart, canvasTimeEnd, keys) {
   ));
 }
 
+/**
+ * Whether an item overlaps the React mount window (visible time ± buffer).
+ * Used to avoid mounting off-screen Item trees while keeping canvas layout intact.
+ */
+export function isItemInRenderWindow(
+  item,
+  keys,
+  renderTimeStart,
+  renderTimeEnd,
+) {
+  const { itemTimeStartKey, itemTimeEndKey } = keys;
+  return (
+    _get(item, itemTimeStartKey) <= renderTimeEnd
+    && _get(item, itemTimeEndKey) >= renderTimeStart
+  );
+}
+
+export function getItemRenderWindow(
+  visibleTimeStart,
+  visibleTimeEnd,
+  itemRenderBuffer = 0.5,
+) {
+  const visibleDuration = Math.max(visibleTimeEnd - visibleTimeStart, 0);
+  const bufferMs = visibleDuration * itemRenderBuffer;
+  return {
+    renderTimeStart: visibleTimeStart - bufferMs,
+    renderTimeEnd: visibleTimeEnd + bufferMs,
+  };
+}
+
 const EPSILON = 0.001;
 
 export function collision(a, b, lineHeight, collisionPadding = EPSILON) {
@@ -396,16 +426,19 @@ export function stackTimelineItems(
   newGroupId,
   clusterSettings,
 ) {
-  const itemsWithInteractions = items.map(item => getItemWithInteractions({
-    item,
-    keys,
-    draggingItem,
-    resizingItem,
-    dragTime,
-    resizingEdge,
-    resizeTime,
-    newGroupId,
-  }));
+  const isInteracting = Boolean(draggingItem || resizingItem);
+  const itemsWithInteractions = isInteracting
+    ? items.map(item => getItemWithInteractions({
+      item,
+      keys,
+      draggingItem,
+      resizingItem,
+      dragTime,
+      resizingEdge,
+      resizeTime,
+      newGroupId,
+    }))
+    : items;
 
   const visibleItemsWithInteraction = getVisibleItems(
     itemsWithInteractions,

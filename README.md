@@ -1610,7 +1610,7 @@ You can switch the order between `RowColumns`, `RowItems` and custom layers. Thi
 
 ## My timeline is unstyled
 
-You need to include the `Timeline.css` file, either via static file reference or webpack stylesheet bundling. The file is located at `lib/Timeline.css`
+You need to include the `Timeline.css` file (static import or bundler). Prefer `@routific/react-calendar-timeline/lib/Timeline.css` (or `./style.css`).
 
 ## How can I have items with different colors?
 
