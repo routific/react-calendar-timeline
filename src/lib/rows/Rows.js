@@ -84,6 +84,8 @@ class Rows extends React.PureComponent {
       items,
       keys,
       resizeEdge,
+      itemRenderBuffer,
+      itemRenderCull,
     } = this.props;
     return (
       <LayerContextProvider
@@ -139,6 +141,8 @@ class Rows extends React.PureComponent {
                 resizing={this.state.resizing}
                 dragOffset={this.state.dragOffset}
                 interactingItemId={this.state.interactingItemId}
+                itemRenderBuffer={itemRenderBuffer}
+                itemRenderCull={itemRenderCull}
               />
             );
           })}
@@ -191,6 +195,8 @@ class Group extends React.PureComponent {
       resizing,
       dragOffset,
       interactingItemId,
+      itemRenderBuffer,
+      itemRenderCull,
     } = this.props;
 
     return (
@@ -238,6 +244,8 @@ class Group extends React.PureComponent {
           resizing={resizing}
           dragOffset={dragOffset}
           interactingItemId={interactingItemId}
+          itemRenderBuffer={itemRenderBuffer}
+          itemRenderCull={itemRenderCull}
         >
           <LayerConsumer>
             {({ getLayerRootProps, itemsWithInteractions }) => (
