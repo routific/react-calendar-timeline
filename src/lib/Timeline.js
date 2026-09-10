@@ -422,7 +422,7 @@ export default class ReactCalendarTimeline extends Component {
       this.props.resizeDetector.addListener(this);
     }
 
-    windowResizeDetector.addListener(this);
+    windowResizeDetector.addListener(this, this.container);
 
     this.lastTouchDistance = null;
   }
@@ -546,10 +546,17 @@ export default class ReactCalendarTimeline extends Component {
     }
   }
 
-  resize = (props = this.props) => {
-    const { width: containerWidth } = this.container.getBoundingClientRect();
+  resize = (props, containerWidthFromObserver) => {
+    const resolvedProps = props || this.props;
+    let containerWidth = containerWidthFromObserver;
+    if (containerWidth == null && this.container) {
+      containerWidth = this.container.getBoundingClientRect().width;
+    }
+    if (containerWidth == null) {
+      return;
+    }
 
-    const width = containerWidth - props.sidebarWidth - props.rightSidebarWidth;
+    const width = containerWidth - resolvedProps.sidebarWidth - resolvedProps.rightSidebarWidth;
     const canvasWidth = getCanvasWidth(width);
     const {
       groupsWithItemsDimensions,
@@ -557,22 +564,22 @@ export default class ReactCalendarTimeline extends Component {
       groupHeights,
       groupTops,
     } = stackTimelineItems(
-      props.items,
-      props.groups,
+      resolvedProps.items,
+      resolvedProps.groups,
       canvasWidth,
       this.state.canvasTimeStart,
       this.state.canvasTimeEnd,
-      props.keys,
-      props.lineHeight,
-      props.itemHeightRatio,
-      props.stackItems,
+      resolvedProps.keys,
+      resolvedProps.lineHeight,
+      resolvedProps.itemHeightRatio,
+      resolvedProps.stackItems,
       this.state.draggingItem,
       this.state.resizingItem,
       this.state.dragTime,
       this.state.resizingEdge,
       this.state.resizeTime,
       this.state.newGroupId,
-      props.clusterSettings,
+      resolvedProps.clusterSettings,
     );
 
     this.setState({
@@ -584,7 +591,9 @@ export default class ReactCalendarTimeline extends Component {
     });
 
     this.scrollComponent.scrollLeft = width;
-    this.scrollHeaderRef.scrollLeft = width;
+    if (this.scrollHeaderRef) {
+      this.scrollHeaderRef.scrollLeft = width;
+    }
   }
 
   onScroll = scrollX => {

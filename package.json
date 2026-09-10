@@ -2,11 +2,21 @@
   "name": "@routific/react-calendar-timeline",
   "version": "0.31.0",
   "description": "react calendar timeline",
-  "main": "lib/index.js",
+  "main": "dist/react-calendar-timeline.cjs.js",
+  "module": "dist/react-calendar-timeline.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/react-calendar-timeline.es.js",
+      "require": "./dist/react-calendar-timeline.cjs.js"
+    },
+    "./lib/Timeline.css": "./dist/Timeline.css",
+    "./style.css": "./dist/Timeline.css",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "npm run build:lib",
     "build:demo": "echo '!!! Building Demo' && cross-env NODE_ENV=production webpack --progress",
-    "build:lib": "echo '!!! Building Library' && rimraf lib && cross-env NODE_ENV=production babel src --out-dir lib && sass src/lib/Timeline.scss lib/Timeline.css --no-source-map && sed -i'.bak' 's/Timeline\\.scss/Timeline\\.css/g' lib/lib/Timeline.js && rm lib/lib/Timeline.js.bak",
+    "build:lib": "echo '!!! Building Library with Vite' && rimraf dist lib && vite build && sass src/lib/Timeline.scss dist/Timeline.css --no-source-map && mkdir -p lib && cp dist/Timeline.css lib/Timeline.css && node ./scripts/write-lib-shim.js",
     "lint": "eslint --ext .js --ext .jsx ./src",
     "lint:fix": "prettier-eslint --parser babylon --write \"src/**/*.js\"",
     "prepublish": "npm run build:lib",
@@ -15,6 +25,7 @@
     "test:watch": "jest --watch"
   },
   "files": [
+    "dist",
     "lib",
     "src"
   ],
@@ -98,7 +109,6 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "classnames": "^2.2.6",
-    "element-resize-detector": "^1.1.12",
     "lodash.isequal": "^4.5.0",
     "lodash.throttle": "^4.1.1",
     "memoize-one": "^5.1.1",
@@ -127,6 +137,7 @@
     "@testing-library/user-event": "14.5.2",
     "@types/jest": "29.5.14",
     "@typescript-eslint/parser": "^5.27.0",
+    "@vitejs/plugin-react": "4.3.4",
     "babel-eslint": "^7.1.1",
     "babel-jest": "29.7.0",
     "babel-loader": "^8.0.6",
@@ -167,6 +178,7 @@
     "sass-loader": "7.3.1",
     "style-loader": "~0.13.0",
     "typescript": "^4.7.2",
+    "vite": "5.4.11",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5"

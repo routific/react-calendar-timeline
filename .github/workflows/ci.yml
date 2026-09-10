@@ -21,3 +21,5 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build:lib
       - run: yarn test --ci --maxWorkers=2
+      - name: Verify CSS compatibility path
+        run: test -f dist/Timeline.css && test -f lib/Timeline.css && test -f dist/react-calendar-timeline.es.js
