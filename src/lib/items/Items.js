@@ -4,6 +4,10 @@ import Item from './Item';
 import { TimelineStateConsumer } from '../timeline/TimelineStateContext';
 import { ItemsConsumer } from './ItemsContext';
 import { _get, arraysEqual } from '../utility/generic';
+import {
+  getItemRenderWindow,
+  isItemInRenderWindow,
+} from '../utility/calendar';
 
 const canResizeLeft = (item, canResize) => {
   const value = _get(item, 'canResize') !== undefined ? _get(item, 'canResize') : canResize;
@@ -63,10 +67,18 @@ export class Items extends Component {
     dragOffset: PropTypes.number.isRequired,
     interactingItemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     resizeEdge: PropTypes.oneOf(['right', 'left']),
+    /**
+     * Fraction of visible duration buffered on each side for React item mounts.
+     * Layout still uses the 3× canvas; this only skips mounting off-window items.
+     */
+    itemRenderBuffer: PropTypes.number,
+    itemRenderCull: PropTypes.bool,
   }
 
   static defaultProps = {
     selected: [],
+    itemRenderBuffer: 0.5,
+    itemRenderCull: true,
   }
 
   shouldComponentUpdate(nextProps) {
@@ -77,8 +89,12 @@ export class Items extends Component {
       && nextProps.canvasTimeStart === this.props.canvasTimeStart
       && nextProps.canvasTimeEnd === this.props.canvasTimeEnd
       && nextProps.canvasWidth === this.props.canvasWidth
+      && nextProps.visibleTimeStart === this.props.visibleTimeStart
+      && nextProps.visibleTimeEnd === this.props.visibleTimeEnd
+      && nextProps.itemRenderBuffer === this.props.itemRenderBuffer
+      && nextProps.itemRenderCull === this.props.itemRenderCull
       && nextProps.selectedItem === this.props.selectedItem
-      && nextProps.selected === this.props.selected
+      && arraysEqual(nextProps.selected || [], this.props.selected || [])
       && nextProps.dragSnap === this.props.dragSnap
       && nextProps.minResizeWidth === this.props.minResizeWidth
       && nextProps.canChangeGroup === this.props.canChangeGroup
@@ -102,26 +118,63 @@ export class Items extends Component {
 
   isInteractingItem = (item) => this.props.interactingItemId === _get(item, this.props.keys.itemIdKey)
 
+  shouldMountItem(item, isInteractingItem, renderTimeStart, renderTimeEnd) {
+    if (!this.props.itemRenderCull) {
+      return true;
+    }
+    if (isInteractingItem) {
+      return true;
+    }
+    return isItemInRenderWindow(
+      item,
+      this.props.keys,
+      renderTimeStart,
+      renderTimeEnd,
+    );
+  }
+
   render() {
     const {
       keys,
       groupDimensions,
       order,
       items,
+      visibleTimeStart,
+      visibleTimeEnd,
+      itemRenderBuffer,
     } = this.props;
     const { itemIdKey } = keys;
+    const { renderTimeStart, renderTimeEnd } = getItemRenderWindow(
+      visibleTimeStart,
+      visibleTimeEnd,
+      itemRenderBuffer,
+    );
 
     return (
       <div className="rct-items">
         {items.map((item, i) => {
           const isInteractingItem = this.isInteractingItem(item);
+          if (!this.shouldMountItem(
+            item,
+            isInteractingItem,
+            renderTimeStart,
+            renderTimeEnd,
+          )) {
+            return null;
+          }
+
+          const itemDimension = groupDimensions.itemDimensions[i];
+          if (!itemDimension) {
+            return null;
+          }
+
           return (
           <Item
             key={_get(item, itemIdKey)}
             item={item}
             keys={this.props.keys}
             order={order}
-            dimensions={groupDimensions.itemDimensions[i].dimensions}
+            dimensions={itemDimension.dimensions}
             selected={this.isSelected(item, itemIdKey)}
             canChangeGroup={
               _get(item, 'canChangeGroup') !== undefined

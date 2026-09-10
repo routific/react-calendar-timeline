@@ -7,7 +7,6 @@ class ScrollElement extends Component {
     children: PropTypes.element.isRequired,
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    // traditionalZoom: PropTypes.bool.isRequired,
     scrollRef: PropTypes.func.isRequired,
     isInteractingWithItem: PropTypes.bool.isRequired,
     onZoom: PropTypes.func.isRequired,
@@ -20,14 +19,44 @@ class ScrollElement extends Component {
     this.state = {
       isDragging: false,
     };
+    this.rafId = null;
+    this.pendingScrollLeft = null;
   }
 
   /**
-   * needed to handle scrolling with trackpad
+   * Coalesce scroll updates onto a single animation frame (upstream-inspired).
+   * Keeps the existing scrollLeft model — no transform rewrite.
    */
+  scheduleScroll = (scrollLeft) => {
+    this.pendingScrollLeft = scrollLeft;
+    if (this.rafId == null) {
+      this.rafId = requestAnimationFrame(() => {
+        this.rafId = null;
+        if (this.pendingScrollLeft != null) {
+          this.props.onScroll(this.pendingScrollLeft);
+          this.pendingScrollLeft = null;
+        }
+      });
+    }
+  }
+
+  /**
+   * Normalize wheel deltas across browsers/devices (upstream #929 / #975).
+   */
+  normalizeWheelDelta = (e) => {
+    let delta = e.deltaY || e.deltaX;
+    if (e.deltaMode === 1) {
+      delta *= 15;
+    } else if (e.deltaMode === 2) {
+      delta *= 800;
+    }
+    const MAX_DELTA = 120;
+    return Math.max(-MAX_DELTA, Math.min(MAX_DELTA, delta));
+  }
+
   handleScroll = () => {
     const scrollX = this.scrollComponent.scrollLeft;
-    this.props.onScroll(scrollX);
+    this.scheduleScroll(scrollX);
   }
 
   refHandler = el => {
@@ -38,29 +67,21 @@ class ScrollElement extends Component {
     }
   }
 
-
   handleWheel = e => {
-    // const { traditionalZoom } = this.props
-
-    // zoom in the time dimension
     if (e.ctrlKey || e.metaKey || e.altKey) {
       e.preventDefault();
       const parentPosition = getParentPosition(e.currentTarget);
       const xPosition = e.clientX - parentPosition.x;
-
       const speed = e.ctrlKey ? 10 : e.metaKey ? 3 : 1;
-
-      // convert vertical zoom to horiziontal
-      this.props.onWheelZoom(speed, xPosition, e.deltaY);
+      const normalizedDelta = this.normalizeWheelDelta(e);
+      this.props.onWheelZoom(speed, xPosition, normalizedDelta);
     } else if (e.shiftKey) {
       e.preventDefault();
-      // shift+scroll event from a touchpad has deltaY property populated; shift+scroll event from a mouse has deltaX
-      this.props.onScroll(this.scrollComponent.scrollLeft + (e.deltaY || e.deltaX));
-      // no modifier pressed? we prevented the default event, so scroll or zoom as needed
+      const normalizedDelta = this.normalizeWheelDelta(e);
+      this.scheduleScroll(this.scrollComponent.scrollLeft + normalizedDelta);
     } else {
-      // Trackpad Support for scrolling.
       const scrollX = this.scrollComponent.scrollLeft;
-      this.props.onScroll(scrollX + e.deltaX);
+      this.scheduleScroll(scrollX + e.deltaX);
     }
   }
 
@@ -75,10 +96,8 @@ class ScrollElement extends Component {
   }
 
   handleMouseMove = e => {
-    // this.props.onMouseMove(e)
-    // why is interacting with item important?
     if (this.state.isDragging && !this.props.isInteractingWithItem) {
-      this.props.onScroll(this.scrollComponent.scrollLeft + this.dragLastPosition - e.pageX);
+      this.scheduleScroll(this.scrollComponent.scrollLeft + this.dragLastPosition - e.pageX);
       this.dragLastPosition = e.pageX;
     }
   }
@@ -93,7 +112,6 @@ class ScrollElement extends Component {
   }
 
   handleMouseLeave = () => {
-    // this.props.onMouseLeave(e)
     this.dragStartPosition = null;
     this.dragLastPosition = null;
     this.setState({
@@ -148,7 +166,7 @@ class ScrollElement extends Component {
       const moveX = Math.abs(deltaX0) * 3 > Math.abs(deltaY0);
       const moveY = Math.abs(deltaY0) * 3 > Math.abs(deltaX0);
       if (deltaX !== 0 && moveX) {
-        this.props.onScroll(this.scrollComponent.scrollLeft - deltaX);
+        this.scheduleScroll(this.scrollComponent.scrollLeft - deltaX);
       }
       if (moveY) {
         window.scrollTo(
@@ -170,6 +188,10 @@ class ScrollElement extends Component {
   }
 
   componentWillUnmount() {
+    if (this.rafId != null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     if (this.scrollComponent) {
       this.scrollComponent.removeEventListener('wheel', this.handleWheel, { passive: false });
     }
@@ -181,10 +203,10 @@ class ScrollElement extends Component {
 
     const scrollComponentStyle = {
       width: `${width}px`,
-      height: `${height + 20}px`, // 20px to push the scroll element down off screen...?
+      height: `${height + 20}px`,
       cursor: isDragging ? 'move' : 'default',
       position: 'relative',
-      overflow: 'hidden', // required for trackpad support
+      overflow: 'hidden',
     };
 
     return (

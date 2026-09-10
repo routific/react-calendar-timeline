@@ -12,5 +12,6 @@ export { default as CustomHeader } from './lib/headers/CustomHeader';
 export { default as DateHeader } from './lib/headers/DateHeader';
 export { default as RowItems } from './lib/items/Items';
 export { default as GroupRow } from './lib/rows/GroupRow';
+export { default as RowColumns } from './lib/columns/Columns';
 export { default as HelpersContext } from './lib/timeline/HelpersContext';
 export default Timeline;

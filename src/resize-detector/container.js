@@ -1,24 +1,6 @@
-import elementResizeDetectorMaker from 'element-resize-detector';
-
-function addListener(component) {
-  component._erd = elementResizeDetectorMaker({
-    strategy: 'scroll',
-  });
-
-  component._erdWidth = component.container.offsetWidth;
-
-  component._erd.listenTo(component.container, element => {
-    const width = element.offsetWidth;
-
-    if (component._erdWidth !== width) {
-      component.resize(component.props);
-      component._erdWidth = width;
-    }
-  });
-}
-
-function removeListener(component) {
-  component._erd.removeAllListeners(component.container);
-}
-
-export default { addListener, removeListener };
+/**
+ * Container resize detector — same ResizeObserver implementation as window.js.
+ * Kept as a separate module for consumers that previously imported
+ * `resize-detector/container` with element-resize-detector.
+ */
+export { default } from './window';
