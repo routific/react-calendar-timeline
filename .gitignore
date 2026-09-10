@@ -9,7 +9,6 @@ build
 gh-pages
 /lib
 /dist
-package-lock.json
 # vscode stuff
 .vscode
 

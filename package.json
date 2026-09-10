@@ -15,12 +15,13 @@
   },
   "scripts": {
     "build": "npm run build:lib",
-    "build:demo": "echo '!!! Building Demo' && cross-env NODE_ENV=production webpack --progress",
+    "build:demo": "echo '!!! Building Demo' && vite build --config vite.demo.config.js",
     "build:lib": "echo '!!! Building Library with Vite' && rimraf dist lib && vite build && sass src/lib/Timeline.scss dist/Timeline.css --no-source-map && mkdir -p lib && cp dist/Timeline.css lib/Timeline.css && node ./scripts/write-lib-shim.js",
     "lint": "eslint --ext .js --ext .jsx ./src",
     "lint:fix": "prettier-eslint --parser babylon --write \"src/**/*.js\"",
     "prepublish": "npm run build:lib",
-    "start": "webpack-dev-server --hot --host 0.0.0.0 --display-modules",
+    "start": "vite --config vite.demo.config.js",
+    "start:webpack": "webpack-dev-server --hot --host 0.0.0.0 --display-modules",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -40,7 +41,7 @@
   "author": "Marius Andra <marius.andra@gmail.com>",
   "contributors": [
     {
-      "name": "Stanisław Chmiela",
+      "name": "Stanis\u0142aw Chmiela",
       "email": "sjchmiela@gmail.com"
     },
     {
@@ -136,7 +137,6 @@
     "@testing-library/react": "14.3.1",
     "@testing-library/user-event": "14.5.2",
     "@types/jest": "29.5.14",
-    "@typescript-eslint/parser": "^5.27.0",
     "@vitejs/plugin-react": "4.3.4",
     "babel-eslint": "^7.1.1",
     "babel-jest": "29.7.0",
@@ -177,7 +177,6 @@
     "sass": "1.69.5",
     "sass-loader": "7.3.1",
     "style-loader": "~0.13.0",
-    "typescript": "^4.7.2",
     "vite": "5.4.11",
     "webpack": "^4.16.3",
     "webpack-cli": "^3.1.0",
