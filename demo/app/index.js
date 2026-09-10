@@ -1,16 +1,6 @@
 import './styles.scss'
 
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-
-import {
-  HashRouter as Router,
-  Route,
-  Link,
-  Switch,
-  Redirect,
-  withRouter,
-} from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
 import { DndProvider } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
@@ -47,70 +37,67 @@ const demos = {
 }
 
 const demoKeys = Object.keys(demos)
+const defaultDemo = demoKeys[0]
 
-class Menu extends Component {
-  static propTypes = {
-    location: PropTypes.object.isRequired,
+function getDemoKeyFromHash() {
+  const key = window.location.hash.replace(/^#\/?/, '')
+  return demos[key] ? key : defaultDemo
+}
+
+function setDemoHash(key) {
+  const next = `#/${key}`
+  if (window.location.hash !== next) {
+    window.location.hash = next
   }
+}
 
-  render() {
-    let pathname = (this.props.location || {}).pathname
+export default function App() {
+  const [activeDemo, setActiveDemo] = useState(getDemoKeyFromHash)
 
-    if (!pathname || pathname === '/') {
-      pathname = `/${demoKeys[0]}`
+  useEffect(() => {
+    const syncFromHash = () => {
+      const key = getDemoKeyFromHash()
+      setActiveDemo(key)
+      if (window.location.hash.replace(/^#\/?/, '') !== key) {
+        setDemoHash(key)
+      }
     }
 
-    return (
-      <div
-        className={`demo-row${
-          pathname.indexOf('sticky') >= 0 ? ' sticky' : ''
-        }`}
-      >
-        Choose the demo:
-        {demoKeys.map(key => (
-          <Link
-            key={key}
-            className={pathname === `/${key}` ? 'selected' : ''}
-            to={`/${key}`}
-          >
-            {key}
-          </Link>
-        ))}
-      </div>
-    )
-  }
-}
+    syncFromHash()
+    window.addEventListener('hashchange', syncFromHash)
+    return () => window.removeEventListener('hashchange', syncFromHash)
+  }, [])
 
-const MenuWithRouter = withRouter(Menu)
+  const ActiveDemo = demos[activeDemo]
 
-class App extends Component {
-  render() {
-    return (
-      <Router>
-        <div>
-          <DndProvider backend={HTML5Backend}>
-            <MenuWithRouter />
-            <div className="demo-demo">
-              <Switch>
-                <Route
-                  exact
-                  path="/"
-                  render={() => <Redirect to={`/${demoKeys[0]}`} />}
-                />
-                {demoKeys.map(key => (
-                  <Route
-                    key={key}
-                    path={`/${key}`}
-                    component={demos[key]}
-                  />
-                ))}
-              </Switch>
-            </div>
-          </DndProvider>
+  return (
+    <DndProvider backend={HTML5Backend}>
+      <div>
+        <div
+          className={`demo-row${
+            activeDemo.indexOf('sticky') >= 0 ? ' sticky' : ''
+          }`}
+        >
+          Choose the demo:
+          {demoKeys.map(key => (
+            <a
+              key={key}
+              href={`#/${key}`}
+              className={activeDemo === key ? 'selected' : ''}
+              onClick={event => {
+                event.preventDefault()
+                setDemoHash(key)
+                setActiveDemo(key)
+              }}
+            >
+              {key}
+            </a>
+          ))}
         </div>
-      </Router>
-    )
-  }
+        <div className="demo-demo">
+          <ActiveDemo />
+        </div>
+      </div>
+    </DndProvider>
+  )
 }
-
-export default App
