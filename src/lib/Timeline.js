@@ -1,6 +1,6 @@
 import PropTypes, { number } from 'prop-types';
 import React, { Component } from 'react';
-import _ from 'lodash';
+import throttle from 'lodash.throttle';
 
 import Sidebar from './layout/Sidebar';
 import ScrollElement from './scroll/ScrollElement';
@@ -660,7 +660,7 @@ export default class ReactCalendarTimeline extends Component {
     );
   }
 
-  throttleChangeZoom = _.throttle((scale, offset) => {
+  throttleChangeZoom = throttle((scale, offset) => {
     this.changeZoom(scale, offset);
   }, this.props.zoomThrottle);
 

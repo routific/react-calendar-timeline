@@ -24,7 +24,16 @@ const config = {
     rules: [
       {
         test: /\.scss$/,
-        loader: 'style-loader!css-loader!sass-loader',
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('sass'),
+            },
+          },
+        ],
       },
       {
         test: /\.(js|jsx)$/,

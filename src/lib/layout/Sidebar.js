@@ -65,7 +65,7 @@ export default class Sidebar extends Component {
             `rct-sidebar-row rct-sidebar-row-${index % 2 === 0 ? 'even' : 'odd'}`
           }
           style={elementStyle}
-          ref={sidebarRowRef(group.id)}
+          ref={sidebarRowRef ? sidebarRowRef(group.id) : undefined}
         >
           {this.renderGroupContent(
             group,
