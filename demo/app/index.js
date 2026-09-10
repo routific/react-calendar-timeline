@@ -1,28 +1,33 @@
-import './styles.scss';
+import './styles.scss'
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import {
-  HashRouter as Router, Route, Link, withRouter,
-} from 'react-router-dom';
-import { DndProvider } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+  HashRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect,
+  withRouter,
+} from 'react-router-dom'
+import { DndProvider } from 'react-dnd'
+import HTML5Backend from 'react-dnd-html5-backend'
 
-import DemoMain from './demo-main';
-import DemoPerformance from './demo-performance';
-import DemoTreeGroups from './demo-tree-groups';
-import DemoLinkedTimelines from './demo-linked-timelines';
-import DemoElementResize from './demo-element-resize';
-import DemoRenderers from './demo-renderers';
-import DemoVerticalClasses from './demo-vertical-classes';
-import DemoCustomItems from './demo-custom-items';
-import DemoHeaders from './demo-headers';
-import DemoCustomInfoLabel from './demo-custom-info-label';
-import DemoControlledSelect from './demo-controlled-select';
-import DemoClustering from './demo-clustering';
-import DemoClusteringCustomRender from './demo-clustering-custom-render';
-import DemoClusteringIncreasedHoverAffordance from './demo-clustering-increased-hover-affordance';
+import DemoMain from './demo-main'
+import DemoPerformance from './demo-performance'
+import DemoTreeGroups from './demo-tree-groups'
+import DemoLinkedTimelines from './demo-linked-timelines'
+import DemoElementResize from './demo-element-resize'
+import DemoRenderers from './demo-renderers'
+import DemoVerticalClasses from './demo-vertical-classes'
+import DemoCustomItems from './demo-custom-items'
+import DemoHeaders from './demo-headers'
+import DemoCustomInfoLabel from './demo-custom-info-label'
+import DemoControlledSelect from './demo-controlled-select'
+import DemoClustering from './demo-clustering'
+import DemoClusteringCustomRender from './demo-clustering-custom-render'
+import DemoClusteringIncreasedHoverAffordance from './demo-clustering-increased-hover-affordance'
 
 const demos = {
   main: DemoMain,
@@ -39,19 +44,20 @@ const demos = {
   clusteringItems: DemoClustering,
   clusteringItemsCustomRender: DemoClusteringCustomRender,
   clusteringHoverAffordance: DemoClusteringIncreasedHoverAffordance,
-};
+}
 
-// A simple component that shows the pathname of the current location
+const demoKeys = Object.keys(demos)
+
 class Menu extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
   }
 
   render() {
-    let pathname = (this.props.location || {}).pathname;
+    let pathname = (this.props.location || {}).pathname
 
     if (!pathname || pathname === '/') {
-      pathname = `/${Object.keys(demos)[0]}`;
+      pathname = `/${demoKeys[0]}`
     }
 
     return (
@@ -61,7 +67,7 @@ class Menu extends Component {
         }`}
       >
         Choose the demo:
-        {Object.keys(demos).map(key => (
+        {demoKeys.map(key => (
           <Link
             key={key}
             className={pathname === `/${key}` ? 'selected' : ''}
@@ -71,11 +77,11 @@ class Menu extends Component {
           </Link>
         ))}
       </div>
-    );
+    )
   }
 }
 
-const MenuWithRouter = withRouter(Menu);
+const MenuWithRouter = withRouter(Menu)
 
 class App extends Component {
   render() {
@@ -85,16 +91,26 @@ class App extends Component {
           <DndProvider backend={HTML5Backend}>
             <MenuWithRouter />
             <div className="demo-demo">
-              <Route path="/" exact component={demos[Object.keys(demos)[0]]} />
-              {Object.keys(demos).map(key => (
-                <Route key={key} path={`/${key}`} component={demos[key]} />
-              ))}
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={() => <Redirect to={`/${demoKeys[0]}`} />}
+                />
+                {demoKeys.map(key => (
+                  <Route
+                    key={key}
+                    path={`/${key}`}
+                    component={demos[key]}
+                  />
+                ))}
+              </Switch>
             </div>
           </DndProvider>
         </div>
       </Router>
-    );
+    )
   }
 }
 
-export default App;
+export default App
