@@ -8,10 +8,25 @@ export function _get(object, key) {
   return typeof object.get === 'function' ? object.get(key) : object[key];
 }
 
+/**
+ * @deprecated Prefer sortByItemTimeStart — sorts by legacy `start` and mutates arrays.
+ */
 export function _sort(object) {
   return typeof object.get === 'function' ? object.sortBy(
     (f) => f.get('start'),
   ) : object.sort((a, b) => a.start - b.start);
+}
+
+/**
+ * Non-mutating sort by item start time key (defaultKeys.itemTimeStartKey = start_time).
+ */
+export function sortByItemTimeStart(items, itemTimeStartKey = 'start_time') {
+  if (typeof items.get === 'function') {
+    return items.sortBy(item => item.get(itemTimeStartKey));
+  }
+  return items.slice().sort(
+    (a, b) => _get(a, itemTimeStartKey) - _get(b, itemTimeStartKey),
+  );
 }
 
 export function _length(object) {

@@ -72,6 +72,8 @@ export class ItemsContextProvider extends PureComponent {
     dragOffset: PropTypes.number.isRequired,
     interactingItemId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     resizeEdge: PropTypes.oneOf(['right', 'left']),
+    itemRenderBuffer: PropTypes.number,
+    itemRenderCull: PropTypes.bool,
   }
 
   render() {
