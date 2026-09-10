@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getItemDimensions should evaluate dimensions for an item 1`] = `
-Object {
-  "dimensions": Object {
+{
+  "dimensions": {
     "collisionLeft": 1540540000000,
     "collisionWidth": 6803877,
     "height": 60,

@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, cleanup } from 'react-testing-library'
+import { render, cleanup } from '@testing-library/react'
 import DateHeader from 'lib/headers/DateHeader'
 import SidebarHeader from 'lib/headers/SidebarHeader'
 import TimelineHeaders from 'lib/headers/TimelineHeaders'
@@ -8,7 +8,7 @@ import { RenderHeadersWrapper } from '../../test-utility/header-renderer'
 import { getCustomHeadersInTimeline } from '../../test-utility/headerRenderers'
 import { parsePxToNumbers } from '../../test-utility/index'
 
-import '@testing-library/jest-dom/extend-expect'
+import '@testing-library/jest-dom'
 import moment from 'moment'
 
 describe('CustomHeader Component Test', () => {
@@ -52,7 +52,7 @@ describe('CustomHeader Component Test', () => {
   })
 
   it('Given CustomHeader When pass an interval style with (width, position and left) Then it should not override the default values', () => {
-    const { getByTestId } = render(
+    const { getAllByTestId, getByTestId } = render(
       getCustomHeadersInTimeline({
         intervalStyle: {
           width: 0,
@@ -62,14 +62,14 @@ describe('CustomHeader Component Test', () => {
       })
     )
     const { width, position, left } = getComputedStyle(
-      getByTestId('customHeaderInterval')
+      getAllByTestId('customHeaderInterval')[0]
     )
     expect(width).not.toBe('0px')
     expect(position).not.toBe('fixed')
     expect(left).not.toBe('1222222px')
   })
   it('Given CustomHeader When pass an interval style other than (width, position and left) Then it should rendered correctly', () => {
-    const { getByTestId } = render(
+    const { getAllByTestId, getByTestId } = render(
       getCustomHeadersInTimeline({
         intervalStyle: {
           lineHeight: '30px',
@@ -86,7 +86,7 @@ describe('CustomHeader Component Test', () => {
       borderLeft,
       cursor,
       color
-    } = getComputedStyle(getByTestId('customHeaderInterval'))
+    } = getComputedStyle(getAllByTestId('customHeaderInterval')[0])
     expect(lineHeight).toBe('30px')
     expect(textAlign).toBe('center')
     expect(borderLeft).toBe('1px solid black')

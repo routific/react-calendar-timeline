@@ -277,10 +277,6 @@ export default class ReactCalendarTimeline extends Component {
     hideHorizontalLines: false,
   }
 
-  static childContextTypes = {
-    getTimelineContext: PropTypes.func,
-  }
-
   getTimeStep = (timeSteps) => {
     if (Array.isArray(timeSteps) && timeSteps.length > 0) {
       const { visibleTimeStart, visibleTimeEnd } = this.state;
@@ -294,12 +290,6 @@ export default class ReactCalendarTimeline extends Component {
       return timeStepToReturn;
     }
     return timeSteps;
-  }
-
-  getChildContext() {
-    return {
-      getTimelineContext: () => this.getTimelineContext(),
-    };
   }
 
   getTimelineContext = () => {

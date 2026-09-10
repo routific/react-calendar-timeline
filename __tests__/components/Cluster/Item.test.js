@@ -1,5 +1,4 @@
 import React from 'react';
-import 'react-testing-library/cleanup-after-each';
 import Item from 'lib/items/Item';
 import { noop } from 'test-utility/index';
 import { defaultItemRenderer } from 'lib/items/defaultItemRenderer';

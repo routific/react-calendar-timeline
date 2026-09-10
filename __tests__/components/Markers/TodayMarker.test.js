@@ -1,6 +1,6 @@
 import React from 'react'
-import { render, fireEvent, cleanup } from 'react-testing-library'
-import '@testing-library/jest-dom/extend-expect'
+import { render, fireEvent, cleanup } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import { RenderWrapper } from 'test-utility/marker-renderer'
 import TimelineMarkers from 'lib/markers/public/TimelineMarkers'
 import TodayMarker from 'lib/markers/public/TodayMarker'
