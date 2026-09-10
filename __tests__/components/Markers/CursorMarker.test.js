@@ -1,6 +1,6 @@
 import React from 'react'
-import { render, fireEvent, cleanup } from 'react-testing-library'
-import '@testing-library/jest-dom/extend-expect'
+import { render, fireEvent, cleanup, act } from '@testing-library/react'
+import '@testing-library/jest-dom'
 import TimelineMarkers from 'lib/markers/public/TimelineMarkers'
 import CursorMarker from 'lib/markers/public/CursorMarker'
 import { RenderWrapper } from 'test-utility/marker-renderer'
@@ -16,6 +16,13 @@ import { MarkerCanvasProvider } from 'lib/markers/MarkerCanvasContext'
 describe('CursorMarker', () => {
   afterEach(cleanup)
   const defaultCursorMarkerTestId = 'default-cursor-marker'
+
+  const notifyMouseOver = (subscribeToMouseOverMock, payload) => {
+    act(() => {
+      subscribeToMouseOverMock.mock.calls[0][0](payload)
+    })
+  }
+
   it('renders one', () => {
     const subscribeToMouseOverMock = jest.fn()
 
@@ -31,7 +38,7 @@ describe('CursorMarker', () => {
       </MarkerCanvasProvider>
     )
 
-    subscribeToMouseOverMock.mock.calls[0][0]({
+    notifyMouseOver(subscribeToMouseOverMock, {
       isCursorOverCanvas: true
     })
 
@@ -55,7 +62,7 @@ describe('CursorMarker', () => {
       </MarkerCanvasProvider>
     )
 
-    subscribeToMouseOverMock.mock.calls[0][0]({
+    notifyMouseOver(subscribeToMouseOverMock, {
       isCursorOverCanvas: true
     })
 
@@ -78,7 +85,7 @@ describe('CursorMarker', () => {
 
     const leftOffset = 1000
 
-    subscribeToMouseOverMock.mock.calls[0][0]({
+    notifyMouseOver(subscribeToMouseOverMock, {
       isCursorOverCanvas: true,
       leftOffset
     })
@@ -105,7 +112,7 @@ describe('CursorMarker', () => {
 
     const now = Date.now()
 
-    subscribeToMouseOverMock.mock.calls[0][0]({
+    notifyMouseOver(subscribeToMouseOverMock, {
       isCursorOverCanvas: true,
       date: now
     })
@@ -147,7 +154,7 @@ describe('CursorMarker', () => {
 
     const { queryByTestId, getByText } = render(<RemoveCursorMarker />)
 
-    subscribeToMouseOverMock.mock.calls[0][0]({
+    notifyMouseOver(subscribeToMouseOverMock, {
       isCursorOverCanvas: true
     })
 

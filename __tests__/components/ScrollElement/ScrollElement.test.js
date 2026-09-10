@@ -1,7 +1,7 @@
-import React from 'react'
-import { mount } from 'enzyme'
-import { sel, noop } from 'test-utility'
-import ScrollElement from 'lib/scroll/ScrollElement'
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react';
+import { noop } from 'test-utility';
+import ScrollElement from 'lib/scroll/ScrollElement';
 
 const defaultProps = {
   width: 1000,
@@ -15,32 +15,31 @@ const defaultProps = {
   onMouseLeave: noop,
   onMouseMove: noop,
   onMouseEnter: noop,
-  onContextMenu: noop
-}
+  onContextMenu: noop,
+};
 
 const createMouseEvent = pageX => ({
   button: 0,
   pageX,
-  preventDefault: noop
-})
+  preventDefault: noop,
+});
 
-const scrollElementSelector = sel('scroll-element')
-
+// Skipped legacy suite — needs fuller drag/scroll redesign under React 18.
 xdescribe('ScrollElement', () => {
   describe('mouse event delegates', () => {
-    let onDoubleClickMock,
-      onMouseLeaveMock,
-      onMouseMoveMock,
-      onMouseEnterMock,
-      onContextMenuMock,
-      wrapper
+    let onDoubleClickMock;
+    let onMouseLeaveMock;
+    let onMouseMoveMock;
+    let onMouseEnterMock;
+    let onContextMenuMock;
+    let scrollElement;
 
     beforeEach(() => {
-      onDoubleClickMock = jest.fn()
-      onMouseLeaveMock = jest.fn()
-      onMouseMoveMock = jest.fn()
-      onMouseEnterMock = jest.fn()
-      onContextMenuMock = jest.fn()
+      onDoubleClickMock = jest.fn();
+      onMouseLeaveMock = jest.fn();
+      onMouseMoveMock = jest.fn();
+      onMouseEnterMock = jest.fn();
+      onContextMenuMock = jest.fn();
 
       const props = {
         ...defaultProps,
@@ -48,201 +47,156 @@ xdescribe('ScrollElement', () => {
         onMouseLeave: onMouseLeaveMock,
         onMouseMove: onMouseMoveMock,
         onMouseEnter: onMouseEnterMock,
-        onContextMenu: onContextMenuMock
-      }
+        onContextMenu: onContextMenuMock,
+      };
 
-      wrapper = mount(
+      const { getByTestId } = render(
         <ScrollElement {...props}>
           <div />
-        </ScrollElement>
-      )
-    })
+        </ScrollElement>,
+      );
+      scrollElement = getByTestId('scroll-element');
+    });
 
     it('scroll element onMouseLeave calls passed in onMouseLeave', () => {
-      wrapper.find(scrollElementSelector).simulate('mouseleave')
-      expect(onMouseLeaveMock).toHaveBeenCalledTimes(1)
-    })
+      fireEvent.mouseLeave(scrollElement);
+      expect(onMouseLeaveMock).toHaveBeenCalledTimes(1);
+    });
     it('scroll element onMouseMove calls passed in onMouseMove', () => {
-      wrapper.find(scrollElementSelector).simulate('mousemove')
-      expect(onMouseMoveMock).toHaveBeenCalledTimes(1)
-    })
+      fireEvent.mouseMove(scrollElement);
+      expect(onMouseMoveMock).toHaveBeenCalledTimes(1);
+    });
     it('scroll element onMouseEnter calls passed in onMouseEnter', () => {
-      wrapper.find(scrollElementSelector).simulate('mouseenter')
-      expect(onMouseEnterMock).toHaveBeenCalledTimes(1)
-    })
+      fireEvent.mouseEnter(scrollElement);
+      expect(onMouseEnterMock).toHaveBeenCalledTimes(1);
+    });
     it('scroll element onContextMenu calls passed in onContextMenu', () => {
-      wrapper.find(scrollElementSelector).simulate('contextmenu')
-      expect(onContextMenuMock).toHaveBeenCalledTimes(1)
-    })
-  })
-  describe('mouse drag', () => {
-    let wrapper
+      fireEvent.contextMenu(scrollElement);
+      expect(onContextMenuMock).toHaveBeenCalledTimes(1);
+    });
+  });
 
-    beforeEach(() => {
-      wrapper = mount(
+  describe('mouse drag', () => {
+    it('scrolls left', () => {
+      const { getByTestId } = render(
         <ScrollElement {...defaultProps}>
           <div />
-        </ScrollElement>
-      )
-    })
-    it('scrolls left', () => {
-      const originX = 100
-      const destinationX = 200
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const originX = 100;
+      const destinationX = 200;
+      const scrollDifference = -(destinationX - originX);
 
-      const scrollDifference = -(destinationX - originX)
+      scrollElement.scrollLeft = originX;
 
-      const mouseDownEvent = createMouseEvent(originX)
-      const mouseOverEvent = createMouseEvent(destinationX)
+      fireEvent.mouseDown(scrollElement, createMouseEvent(originX));
+      fireEvent.mouseMove(scrollElement, createMouseEvent(destinationX));
 
-      wrapper.instance().scrollComponent.scrollLeft = originX
-
-      wrapper
-        .find(scrollElementSelector)
-        .simulate('mousedown', mouseDownEvent)
-        .simulate('mousemove', mouseOverEvent)
-
-      expect(wrapper.instance().scrollComponent.scrollLeft).toBe(
-        originX + scrollDifference
-      )
-    })
+      expect(scrollElement.scrollLeft).toBe(originX + scrollDifference);
+    });
 
     it('scrolls right', () => {
-      const originX = 300
-      const destinationX = 100
-
-      const scrollDifference = -(destinationX - originX)
-
-      const mouseDownEvent = createMouseEvent(originX)
-      const mouseOverEvent = createMouseEvent(destinationX)
-
-      wrapper.instance().scrollComponent.scrollLeft = originX
-
-      wrapper
-        .find(scrollElementSelector)
-        .simulate('mousedown', mouseDownEvent)
-        .simulate('mousemove', mouseOverEvent)
-
-      expect(wrapper.instance().scrollComponent.scrollLeft).toBe(
-        originX + scrollDifference
-      )
-    })
-  })
-
-  describe('mouse leave', () => {
-    // guard against bug where dragging persisted after mouse leave
-    it('cancels dragging on mouse leave', () => {
-      const wrapper = mount(
+      const { getByTestId } = render(
         <ScrollElement {...defaultProps}>
           <div />
-        </ScrollElement>
-      )
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const originX = 300;
+      const destinationX = 100;
+      const scrollDifference = -(destinationX - originX);
 
-      const initialScrollLeft = wrapper.instance().scrollComponent.scrollLeft
-      const mouseDownEvent = createMouseEvent(100)
-      const mouseLeaveEvent = createMouseEvent(100)
-      const mouseMoveEvent = createMouseEvent(200)
+      scrollElement.scrollLeft = originX;
 
-      wrapper
-        .find(scrollElementSelector)
-        .simulate('mousedown', mouseDownEvent)
-        .simulate('mouseleave', mouseLeaveEvent)
-        .simulate('mousemove', mouseMoveEvent)
+      fireEvent.mouseDown(scrollElement, createMouseEvent(originX));
+      fireEvent.mouseMove(scrollElement, createMouseEvent(destinationX));
 
-      // scrollLeft doesnt move
-      expect(wrapper.instance().scrollComponent.scrollLeft).toBe(
-        initialScrollLeft
-      )
-    })
-  })
+      expect(scrollElement.scrollLeft).toBe(originX + scrollDifference);
+    });
+  });
+
+  describe('mouse leave', () => {
+    it('cancels dragging on mouse leave', () => {
+      const { getByTestId } = render(
+        <ScrollElement {...defaultProps}>
+          <div />
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const initialScrollLeft = scrollElement.scrollLeft;
+
+      fireEvent.mouseDown(scrollElement, createMouseEvent(100));
+      fireEvent.mouseLeave(scrollElement, createMouseEvent(100));
+      fireEvent.mouseMove(scrollElement, createMouseEvent(200));
+
+      expect(scrollElement.scrollLeft).toBe(initialScrollLeft);
+    });
+  });
 
   describe('scroll', () => {
     it('calls onScroll with current scrollLeft', () => {
-      const onScrollMock = jest.fn()
-      const props = {
-        ...defaultProps,
-        onScroll: onScrollMock
-      }
-
-      const wrapper = mount(
-        <ScrollElement {...props}>
+      const onScrollMock = jest.fn();
+      const { getByTestId } = render(
+        <ScrollElement {...defaultProps} onScroll={onScrollMock}>
           <div />
-        </ScrollElement>
-      )
-      const scrollLeft = 200
-      wrapper.instance().scrollComponent.scrollLeft = scrollLeft
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      scrollElement.scrollLeft = 200;
 
-      wrapper.find(scrollElementSelector).simulate('scroll')
+      fireEvent.scroll(scrollElement);
 
-      expect(onScrollMock).toHaveBeenCalledTimes(1)
-    })
+      expect(onScrollMock).toHaveBeenCalledTimes(1);
+    });
+
     it('adds width to scrollLeft if scrollLeft is less than half of width', () => {
-      const width = 800
-      const props = {
-        ...defaultProps,
-        width
-      }
-
-      const wrapper = mount(
-        <ScrollElement {...props}>
+      const width = 800;
+      const { getByTestId } = render(
+        <ScrollElement {...defaultProps} width={width}>
           <div />
-        </ScrollElement>
-      )
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const currentScrollLeft = 300;
+      scrollElement.scrollLeft = currentScrollLeft;
 
-      const currentScrollLeft = 300
-      wrapper.instance().scrollComponent.scrollLeft = currentScrollLeft
+      fireEvent.scroll(scrollElement);
 
-      wrapper.simulate('scroll')
+      expect(scrollElement.scrollLeft).toBe(currentScrollLeft + width);
+    });
 
-      expect(wrapper.instance().scrollComponent.scrollLeft).toBe(
-        currentScrollLeft + width
-      )
-    })
     it('subtracts width from scrollLeft if scrollLeft is greater than one and a half of width', () => {
-      const width = 800
-      const props = {
-        ...defaultProps,
-        width
-      }
-
-      const wrapper = mount(
-        <ScrollElement {...props}>
+      const width = 800;
+      const { getByTestId } = render(
+        <ScrollElement {...defaultProps} width={width}>
           <div />
-        </ScrollElement>
-      )
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const currentScrollLeft = 1300;
+      scrollElement.scrollLeft = currentScrollLeft;
 
-      const currentScrollLeft = 1300
-      wrapper.instance().scrollComponent.scrollLeft = currentScrollLeft
+      fireEvent.scroll(scrollElement);
 
-      wrapper.simulate('scroll')
-
-      expect(wrapper.instance().scrollComponent.scrollLeft).toBe(
-        currentScrollLeft - width
-      )
-    })
+      expect(scrollElement.scrollLeft).toBe(currentScrollLeft - width);
+    });
 
     it('does not alter scrollLeft if scrollLeft is between 0.5 and 1.5 of width', () => {
-      const width = 800
-      const props = {
-        ...defaultProps,
-        width
-      }
-
-      const wrapper = mount(
-        <ScrollElement {...props}>
+      const width = 800;
+      const { getByTestId } = render(
+        <ScrollElement {...defaultProps} width={width}>
           <div />
-        </ScrollElement>
-      )
-
-      // three samples between this range
-      const scrolls = [width * 0.5 + 1, width, width * 1.5 - 1]
+        </ScrollElement>,
+      );
+      const scrollElement = getByTestId('scroll-element');
+      const scrolls = [width * 0.5 + 1, width, width * 1.5 - 1];
 
       scrolls.forEach(scroll => {
-        wrapper.instance().scrollComponent.scrollLeft = scroll
-
-        wrapper.simulate('scroll')
-
-        expect(wrapper.instance().scrollComponent.scrollLeft).toBe(scroll)
-      })
-    })
-  })
-})
+        scrollElement.scrollLeft = scroll;
+        fireEvent.scroll(scrollElement);
+        expect(scrollElement.scrollLeft).toBe(scroll);
+      });
+    });
+  });
+});

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres (more or less) to [Semantic Versioning](http://semver.org/).
 Change log
+
+## Unreleased
+
+### Performance (Phase 4)
+- Mount-cull timeline items to visible time ± `itemRenderBuffer` (default 0.5); set `itemRenderCull={false}` for legacy full-canvas mounts
+- Compare `selected` with value equality in Items SCU (avoids remount thrash on new array refs)
+- Non-mutating `sortByItemTimeStart` using `itemTimeStartKey` on all stack paths when `itemsSorted` is false
+- Default `zoomThrottle` raised from 1ms to 16ms
+- Skip `getItemWithInteractions` map allocation when not dragging/resizing
+
+### Modernization (Phases 0–3)
+- Node ≥18 / 20 CI, dart-sass library build, npm lockfile (replaces yarn)
+- React 18/19 peer range; Enzyme → Testing Library; Jest 29
+- Library + demo builds on Vite; ResizeObserver resize detection; scroll wheel/rAF polish
+- Default zoom control uses inline SVG icons (dropped `@ant-design/icons` / antd)
+- Removed webpack demo toolchain; modern ESLint 8 + `@babel/eslint-parser`
+- Publish ships `dist` + `lib` CSS shim only (no source tree in the package)
+
+### Deferred
+- `moment` → dayjs (coordinate with planning-web)
+- Optional TypeScript conversion
+
 ## 0.30.9
 - Added zoomControl to the timeline. This is a boolean, default false, that will show a floating zoom control in the library. This control allows you to drag it around the screen, zoom in/out and reset. Zoom scale is set to 70%.
 

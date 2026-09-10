@@ -1,7 +1,6 @@
 import React from 'react'
-import { render } from 'react-testing-library'
+import { render } from '@testing-library/react'
 import renderWithTimelineStateAndHelpers from '../../test-utility/renderWithTimelineStateAndHelpers'
-import 'react-testing-library/cleanup-after-each'
 import { stackTimelineItems } from 'lib/utility/calendar'
 import {
   HelpersContextProvider,

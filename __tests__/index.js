@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react';
 import Timeline from 'lib/Timeline';
 
 import moment from 'moment';
@@ -36,7 +36,7 @@ const items = [
 
 xdescribe('Timeline', () => {
   it('shows grouping no matter of the group order', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Timeline
         groups={groups}
         items={items}
@@ -64,7 +64,7 @@ xdescribe('Timeline', () => {
     expect(itemsOrder[2].title).toBe('item 3');
   });
   it('assigns top dimension to all items', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Timeline
         groups={groups}
         items={items}
@@ -83,7 +83,7 @@ xdescribe('Timeline', () => {
   it('renders component with empty groups', () => {
     let allCorrect = true;
     try {
-      mount(
+      render(
         <Timeline
           groups={[]}
           items={items}
@@ -110,7 +110,7 @@ xdescribe('Timeline', () => {
 
     let allCorrect = true;
     try {
-      mount(
+      render(
         <Timeline
           groups={groups}
           items={itemsNoValidGroup}
@@ -126,7 +126,7 @@ xdescribe('Timeline', () => {
 
   it('passes correct props to plugins', () => {
     const Plugin = () => <div className="test-plugin" />;
-    const wrapper = mount(
+    const wrapper = render(
       <Timeline
         groups={[]}
         items={items}
@@ -169,7 +169,7 @@ xdescribe('Timeline', () => {
       defaultTimeEnd: moment('1995-12-25').add(12, 'hour'),
     };
 
-    const wrapper = mount(<Timeline {...props} />);
+    const wrapper = render(<Timeline {...props} />);
     expect(wrapper.find('div.rct-item').length).toEqual(3);
   });
 
@@ -195,7 +195,7 @@ xdescribe('Timeline', () => {
       },
     };
 
-    const wrapper = mount(<Timeline {...props} />);
+    const wrapper = render(<Timeline {...props} />);
     const wrapperItems = wrapper.find('h1.rct-item');
     expect(wrapperItems.length).toEqual(3);
     wrapperItems.forEach((item, index) => {
@@ -225,7 +225,7 @@ xdescribe('Timeline', () => {
       },
     };
 
-    const wrapper = mount(<Timeline {...props} />);
+    const wrapper = render(<Timeline {...props} />);
     const wrapperItems = wrapper.find('h1.rct-item');
     expect(wrapperItems.length).toEqual(3);
     wrapperItems.forEach((item, index) => {

@@ -1,9 +1,9 @@
 import React from 'react'
-import { render, cleanup } from 'react-testing-library'
+import { render, cleanup } from '@testing-library/react'
 import DateHeader from 'lib/headers/DateHeader'
 import SidebarHeader from 'lib/headers/SidebarHeader'
 import TimelineHeaders from 'lib/headers/TimelineHeaders'
-import '@testing-library/jest-dom/extend-expect'
+import '@testing-library/jest-dom'
 import { RenderHeadersWrapper } from '../../test-utility/header-renderer'
 import {
   renderSidebarHeaderWithCustomValues,

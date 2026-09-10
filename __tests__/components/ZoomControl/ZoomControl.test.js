@@ -1,8 +1,7 @@
 import React from 'react';
-import 'react-testing-library/cleanup-after-each';
-import { fireEvent } from 'react-testing-library';
+import { fireEvent } from '@testing-library/react';
 import ZoomControl from 'lib/zoom';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import render from '../../test-utility/renderWithTimelineStateAndHelpers';
 
 describe('Zoom Control', () => {

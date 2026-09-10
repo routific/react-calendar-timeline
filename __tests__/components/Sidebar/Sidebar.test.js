@@ -1,23 +1,23 @@
-import React from 'react'
-import { mount } from 'enzyme'
-import Sidebar from 'lib/layout/Sidebar'
+import React from 'react';
+import { render } from '@testing-library/react';
+import Sidebar from 'lib/layout/Sidebar';
 
 const defaultProps = {
   groups: [
     {
-        bgColor: '#e8ccff',
-        id: '2998',
-        label: 'Label Dustin"',
-        rightTitle: 'Wolff',
-        title: 'Carlotta',
+      bgColor: '#e8ccff',
+      id: '2998',
+      label: 'Label Dustin"',
+      rightTitle: 'Wolff',
+      title: 'Carlotta',
     },
     {
-        bgColor: '#e8ccff',
-        id: '2999',
-        label: 'Label Myrtle"',
-        rightTitle: '"Sauer"',
-        title: 'Elmer',
-    }
+      bgColor: '#e8ccff',
+      id: '2999',
+      label: 'Label Myrtle"',
+      rightTitle: '"Sauer"',
+      title: 'Elmer',
+    },
   ],
   width: 10,
   height: 10,
@@ -31,15 +31,15 @@ const defaultProps = {
     itemIdKey: 'id',
     itemTimeEndKey: 'end',
     itemTimeStartKey: 'start',
-    itemTitleKey: 'title'
-  }
-}
+    itemTitleKey: 'title',
+  },
+};
 
-describe('GroupRows', () => {
+describe('Sidebar', () => {
   it('passes props and get right height for first group', () => {
-    const wrapper = mount(<Sidebar {...defaultProps} />);
+    const { container } = render(<Sidebar {...defaultProps} />);
 
-    const component = wrapper.find('div.rct-sidebar-row').first();
-    expect(component.prop('style').height).toBe('30px');
-  })
-})
+    const component = container.querySelector('.rct-sidebar-row');
+    expect(component.style.height).toBe('30px');
+  });
+});

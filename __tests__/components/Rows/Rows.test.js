@@ -1,5 +1,4 @@
 import React from 'react'
-import 'react-testing-library/cleanup-after-each'
 import render from 'test-utility/renderWithTimelineStateAndHelpers'
 import Rows from 'lib/rows/Rows'
 import { props, state } from '../../../__fixtures__/stateAndProps'
