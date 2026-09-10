@@ -9,21 +9,36 @@ import {
 import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+import DemoMain from './demo-main';
+import DemoPerformance from './demo-performance';
+import DemoTreeGroups from './demo-tree-groups';
+import DemoLinkedTimelines from './demo-linked-timelines';
+import DemoElementResize from './demo-element-resize';
+import DemoRenderers from './demo-renderers';
+import DemoVerticalClasses from './demo-vertical-classes';
+import DemoCustomItems from './demo-custom-items';
+import DemoHeaders from './demo-headers';
+import DemoCustomInfoLabel from './demo-custom-info-label';
+import DemoControlledSelect from './demo-controlled-select';
+import DemoClustering from './demo-clustering';
+import DemoClusteringCustomRender from './demo-clustering-custom-render';
+import DemoClusteringIncreasedHoverAffordance from './demo-clustering-increased-hover-affordance';
+
 const demos = {
-  main: require('./demo-main').default,
-  performance: require('./demo-performance').default,
-  treeGroups: require('./demo-tree-groups').default,
-  linkedTimelines: require('./demo-linked-timelines').default,
-  elementResize: require('./demo-element-resize').default,
-  renderers: require('./demo-renderers').default,
-  verticalClasses: require('./demo-vertical-classes').default,
-  customItems: require('./demo-custom-items').default,
-  customHeaders: require('./demo-headers').default,
-  customInfoLabel: require('./demo-custom-info-label').default,
-  controledSelect: require('./demo-controlled-select').default,
-  clusteringItems: require('./demo-clustering').default,
-  clusteringItemsCustomRender: require('./demo-clustering-custom-render').default,
-  clusteringHoverAffordance: require('./demo-clustering-increased-hover-affordance').default,
+  main: DemoMain,
+  performance: DemoPerformance,
+  treeGroups: DemoTreeGroups,
+  linkedTimelines: DemoLinkedTimelines,
+  elementResize: DemoElementResize,
+  renderers: DemoRenderers,
+  verticalClasses: DemoVerticalClasses,
+  customItems: DemoCustomItems,
+  customHeaders: DemoHeaders,
+  customInfoLabel: DemoCustomInfoLabel,
+  controledSelect: DemoControlledSelect,
+  clusteringItems: DemoClustering,
+  clusteringItemsCustomRender: DemoClusteringCustomRender,
+  clusteringHoverAffordance: DemoClusteringIncreasedHoverAffordance,
 };
 
 // A simple component that shows the pathname of the current location
