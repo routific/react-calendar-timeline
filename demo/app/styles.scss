@@ -4,6 +4,12 @@ body {
   font-size: 13px;
 }
 
+.demo-shell--dark {
+  min-height: 100vh;
+  background: #061932;
+  color: #ecf1f7;
+}
+
 .react-calendar-timeline .rct-item.item-weekend {
   background: #21f32c;
   border-color: #29b31a;
@@ -19,6 +25,16 @@ body {
   left: 0;
   background: #fff;
   z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 0;
+
+  .demo-shell--dark & {
+    background: #0c1f3a;
+    border-bottom: 1px solid #324667;
+    color: #ecf1f7;
+  }
 
   &.sticky {
     position: relative;
@@ -29,9 +45,26 @@ body {
     color: blue;
     text-decoration: none;
 
+    .demo-shell--dark & {
+      color: #6faaef;
+    }
+
     &.selected {
       text-decoration: underline;
     }
+  }
+}
+
+.demo-theme-toggle {
+  margin-left: auto;
+  margin-right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+
+  select {
+    font: inherit;
   }
 }
 

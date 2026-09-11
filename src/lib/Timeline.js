@@ -94,7 +94,9 @@ export default class ReactCalendarTimeline extends Component {
     groupRenderer: PropTypes.func,
     zoomRenderer: PropTypes.func,
     clusterSettings: PropTypes.object,
-    // className: PropTypes.string,
+    className: PropTypes.string,
+    /** Surface theme. `dark` applies Hive-aligned Elevation/05 backgrounds. */
+    theme: PropTypes.oneOf(['light', 'dark']),
     style: PropTypes.object,
 
     keys: PropTypes.shape({
@@ -254,6 +256,7 @@ export default class ReactCalendarTimeline extends Component {
 
     style: {},
     className: '',
+    theme: 'light',
     keys: defaultKeys,
     timeSteps: defaultTimeSteps,
     headerRef: () => {},
@@ -1093,7 +1096,13 @@ export default class ReactCalendarTimeline extends Component {
               <div
                 style={this.props.style}
                 ref={el => (this.container = el)}
-                className="react-calendar-timeline"
+                className={[
+                  'react-calendar-timeline',
+                  this.props.theme === 'dark' ? 'rct-theme-dark' : null,
+                  this.props.className || null,
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
               >
                  {zoomControl()}
                 {this.renderHeaders()}

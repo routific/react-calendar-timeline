@@ -1,3 +1,7 @@
+// Surface tokens aligned with Hive v5 Elevation primitives (not a Hive dependency).
+// Light Elevation/05=#FAFCFF, /25=#BFCBDA · Dark Elevation/05=#061932, /25=#324667
+// Consumers (e.g. planning-web) can override any --rct-* var with colorVars.* for exact parity.
+
 $item-color: white;
 $item-background: #2196f3;
 $item-border: 1px solid #1a6fb3;
@@ -5,25 +9,65 @@ $item-selected-color: white;
 $item-selected-background: #ffc107;
 $item-selected-border: 1px solid #ff9800;
 
-$row-background-even: rgba(231, 231, 231, 0.25);
-$row-background-odd: transparent;
-
-$border-color: #bbb;
 $border-width: 1px;
 $thick-border-width: 2px;
-$sidebar-color: #ffffff;
-$sidebar-background-color: #c52020;
 $list-item-padding: 0 4px;
-$weekend: rgba(250, 246, 225, 0.5);
+
+// Legacy SCSS aliases → CSS variables (set on .react-calendar-timeline)
+$row-background-even: var(--rct-row-even);
+$row-background-odd: var(--rct-row-odd);
+$border-color: var(--rct-border);
+$weekend: var(--rct-weekend);
 
 .react-calendar-timeline {
+  // Light (default) — Hive Elevation/05 + /25
+  --rct-bg: #fafcff;
+  --rct-header-bg: #fafcff;
+  --rct-border: #bfcbda;
+  --rct-date-header-bg: #ecf1f7;
+  --rct-text: #1e3352;
+  --rct-text-muted: #677a95;
+  --rct-row-even: rgba(3, 17, 36, 0.04);
+  --rct-row-odd: transparent;
+  --rct-weekend: rgba(250, 246, 225, 0.5);
+
   //create local stack context for z-index
   position: relative;
   z-index: 0;
+  background: var(--rct-bg);
+  color: var(--rct-text);
 
   * {
     box-sizing: border-box;
   }
+
+  &.rct-theme-dark {
+    // Dark — Hive Elevation/05 + /25
+    --rct-bg: #061932;
+    --rct-header-bg: #061932;
+    --rct-border: #324667;
+    --rct-date-header-bg: #0c1f3a;
+    --rct-text: #ecf1f7;
+    --rct-text-muted: #9fb3c8;
+    --rct-row-even: rgba(255, 255, 255, 0.04);
+    --rct-row-odd: transparent;
+    --rct-weekend: rgba(255, 255, 255, 0.03);
+  }
+}
+
+// Ancestor-driven theme (demo shell / planning-web wrapper) without a theme prop
+[data-rct-theme='dark'] .react-calendar-timeline:not(.rct-theme-light) {
+  --rct-bg: #061932;
+  --rct-header-bg: #061932;
+  --rct-border: #324667;
+  --rct-date-header-bg: #0c1f3a;
+  --rct-text: #ecf1f7;
+  --rct-text-muted: #9fb3c8;
+  --rct-row-even: rgba(255, 255, 255, 0.04);
+  --rct-row-odd: transparent;
+  --rct-weekend: rgba(255, 255, 255, 0.03);
+  background: var(--rct-bg);
+  color: var(--rct-text);
 }
 
 .rct-outer {
@@ -69,6 +113,7 @@ $weekend: rgba(250, 246, 225, 0.5);
   position: relative;
   box-sizing: border-box;
   border-right: $border-width solid $border-color;
+  background: var(--rct-bg);
 
   &.rct-sidebar-right {
     border-right: 0;
@@ -83,6 +128,7 @@ $weekend: rgba(250, 246, 225, 0.5);
     box-sizing: border-box;
     margin: 0;
     border-bottom: $border-width solid $border-color;
+    color: var(--rct-text);
 
     &.rct-sidebar-row-odd {
       background: $row-background-odd;
@@ -149,26 +195,26 @@ $weekend: rgba(250, 246, 225, 0.5);
   align-items: center;
   justify-content: center;
   height: 100%;
-  border-bottom: 1px solid #bbb;
+  border-bottom: 1px solid $border-color;
   cursor: pointer;
   font-size: 14px;
-  background-color: rgb(240, 240, 240);
-  border-left: 2px solid #bbb;
+  background-color: var(--rct-date-header-bg);
+  border-left: 2px solid $border-color;
+  color: var(--rct-text-muted);
 }
 
 .rct-dateHeader-primary {
-  background-color: initial;
-  border-left: 1px solid #bbb;
-  border-right: 1px solid #bbb;
-  color: #fff
+  background-color: var(--rct-header-bg);
+  border-left: 1px solid $border-color;
+  border-right: 1px solid $border-color;
+  color: var(--rct-text);
 }
 
 .rct-header-root {
-  background: #c52020;
-  border-bottom: 1px solid #bbb;
+  background: var(--rct-header-bg);
+  border-bottom: 1px solid $border-color;
 }
 
 .rct-calendar-header {
-  border: 1px solid #bbb,
-
+  border: 1px solid $border-color;
 }

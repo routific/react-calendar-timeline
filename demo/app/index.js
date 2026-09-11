@@ -53,6 +53,7 @@ function setDemoHash(key) {
 
 export default function App() {
   const [activeDemo, setActiveDemo] = useState(getDemoKeyFromHash)
+  const [theme, setTheme] = useState('light')
 
   useEffect(() => {
     const syncFromHash = () => {
@@ -72,13 +73,13 @@ export default function App() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div>
+      <div className={`demo-shell demo-shell--${theme}`} data-rct-theme={theme}>
         <div
           className={`demo-row${
             activeDemo.indexOf('sticky') >= 0 ? ' sticky' : ''
           }`}
         >
-          Choose the demo:
+          <span className="demo-row-label">Choose the demo:</span>
           {demoKeys.map(key => (
             <a
               key={key}
@@ -93,6 +94,17 @@ export default function App() {
               {key}
             </a>
           ))}
+          <label className="demo-theme-toggle">
+            Theme
+            <select
+              value={theme}
+              onChange={event => setTheme(event.target.value)}
+              aria-label="Timeline theme"
+            >
+              <option value="light">light</option>
+              <option value="dark">dark</option>
+            </select>
+          </label>
         </div>
         <div className="demo-demo">
           <ActiveDemo />

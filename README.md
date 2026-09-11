@@ -162,6 +162,16 @@ An array specifying keys in the `items` and `groups` objects. Defaults to
 
 Additional class names as a string for the root Timeline element.
 
+## theme
+
+`'light' | 'dark'` (default `'light'`).
+
+Applies Hive-aligned surface colors via CSS variables (`--rct-bg`, `--rct-border`, `--rct-header-bg`, etc.). Dark mode uses Elevation/05 (`#061932`) backgrounds and Elevation/25 (`#324667`) borders.
+
+You can also set `data-rct-theme="dark"` on an ancestor instead of the prop. Override any `--rct-*` variable from the host app (e.g. with Hive `colorVars`) for exact design-system parity.
+
+Stop/item chrome is unchanged — customize via `itemRenderer` / future theming work.
+
 ## sidebarWidth
 
 Width of the sidebar in pixels. If set to `0`, the sidebar is not rendered. Defaults to `150`.
