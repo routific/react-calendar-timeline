@@ -1,11 +1,23 @@
 # Publishes the npm package when a `vX.Y.Z` tag is pushed.
 # Tags are produced by `version-bump.yml` after a PR is merged to master.
+#
+# Auth (same pattern as hive):
+# 1. Prefer npm Trusted Publisher (OIDC) — configure on npmjs.com for this
+#    package → GitHub Actions → routific/react-calendar-timeline /
+#    .github/workflows/npm-publish.yml
+# 2. Fallback: repo secret NPM_WRITE_TOKEN (Automation token with publish
+#    rights to @routific)
 name: Publish to npm
 
 on:
   push:
     tags:
       - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish (e.g. v1.0.0)'
+        required: true
 
 permissions:
   id-token: write  # Required for OIDC trusted publishing
@@ -16,17 +28,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+
+      # Publish with npm 11.5.1+ so OIDC trusted publishing can authenticate
+      # (same requirement as hive).
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
           cache: npm
-      - run: npm ci
-      - run: npm run build:lib
-      # OIDC first; NODE_AUTH_TOKEN is a fallback if trusted publisher is not set.
-      - run: npm publish
+
+      - name: Verify npm auth material
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_WRITE_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::warning::NPM_WRITE_TOKEN is empty. Publish will only work if Trusted Publisher (OIDC) is configured for this package on npmjs.com."
+          else
+            echo "NPM_WRITE_TOKEN is present (length ${#NODE_AUTH_TOKEN})."
+          fi
+          echo "registry=$(npm config get registry)"
+          test -f "$HOME/.npmrc" && echo "Found ~/.npmrc from setup-node" || echo "::warning::No ~/.npmrc — setup-node registry-url may not have written auth"
+
+      - run: npm ci
+      - run: npm run build:lib
+
+      - name: Upgrade npm for OIDC publish
+        run: npm install -g npm@11
+
+      - name: Publish
+        id: publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_WRITE_TOKEN }}
+
       - name: Build Slack payload
         env:
           TAG_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
@@ -37,6 +73,7 @@ jobs:
             --arg url "$TAG_URL" \
             '{text: (":package: Timeline published `" + $id + "` to npm (<" + $url + "|view tag>)")}' \
             > slack-payload.json
+
       - name: Notify Slack
         continue-on-error: true
         uses: slackapi/slack-github-action@v2.0.0
