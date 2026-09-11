@@ -1,0 +1,67 @@
+# Bumps package.json on merge to master based on the PR's `release: *` label.
+# Uses phips28/gh-action-bump-version (same tool as hive / planning-web) to bump,
+# commit, tag, and push. Pushing with GH_PAT triggers npm-publish.yml via
+# the new `vX.Y.Z` tag.
+name: Version bump
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+
+concurrency:
+  group: version-bump
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    if: github.event.pull_request.merged == true
+    name: Determine bump level
+    runs-on: ubuntu-latest
+    outputs:
+      level: ${{ steps.level.outputs.level }}
+    steps:
+      - id: level
+        env:
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          level=$(printf '%s' "$LABELS" | jq -r '
+            if any(.[]; . == "release: major") then "major"
+            elif any(.[]; . == "release: minor") then "minor"
+            elif any(.[]; . == "release: patch") then "patch"
+            elif any(.[]; . == "release: skip") then "skip"
+            else "" end
+          ')
+          if [ -z "$level" ]; then
+            echo "::error::No release label found on PR #${{ github.event.pull_request.number }}."
+            exit 1
+          fi
+          echo "level=$level" >> "$GITHUB_OUTPUT"
+          echo "Release level: $level"
+
+  bump:
+    needs: decide
+    if: needs.decide.outputs.level != 'skip'
+    name: Bump version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Automated version bump
+        id: version-bump
+        # Pinned to v11.0.7 commit SHA — same pin as hive
+        uses: phips28/gh-action-bump-version@fdad52b3b3bbe8fad96b8ca18c56127a96f603db
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          target-branch: master
+          tag-prefix: 'v'
+          version-type: ${{ needs.decide.outputs.level }}
+
+      - name: Output new tag
+        run: echo "New tag ${{ steps.version-bump.outputs.newTag }}"

@@ -1,0 +1,46 @@
+# Publishes the npm package when a `vX.Y.Z` tag is pushed.
+# Tags are produced by `version-bump.yml` after a PR is merged to master.
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  id-token: write  # Required for OIDC trusted publishing
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+      - run: npm ci
+      - run: npm run build:lib
+      # OIDC first; NODE_AUTH_TOKEN is a fallback if trusted publisher is not set.
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_WRITE_TOKEN }}
+      - name: Build Slack payload
+        env:
+          TAG_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          jq -n \
+            --arg id "@routific/react-calendar-timeline@${version}" \
+            --arg url "$TAG_URL" \
+            '{text: (":package: Timeline published `" + $id + "` to npm (<" + $url + "|view tag>)")}' \
+            > slack-payload.json
+      - name: Notify Slack
+        continue-on-error: true
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-file-path: slack-payload.json
