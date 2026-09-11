@@ -1,6 +1,6 @@
 {
   "name": "@routific/react-calendar-timeline",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "react calendar timeline",
   "main": "dist/react-calendar-timeline.cjs.js",
   "module": "dist/react-calendar-timeline.es.js",
