@@ -1,9 +1,8 @@
-import { render } from 'react-testing-library'
+import { render } from '@testing-library/react'
 import SidebarHeader from 'lib/headers/SidebarHeader'
 import DateHeader from 'lib/headers/DateHeader'
 import TimelineHeaders from 'lib/headers/TimelineHeaders'
-import '@testing-library/jest-dom/extend-expect'
-import 'react-testing-library/cleanup-after-each'
+import '@testing-library/jest-dom'
 
 import React from 'react'
 
@@ -135,7 +134,7 @@ describe('TimelineHeader', () => {
       getAllByTestId,
       debug
     } = renderSidebarHeaderWithCustomValues({ variant: 'right' })
-    expect(getByTestId('sidebarHeader')).toBeInTheDocument()
+    expect(getAllByTestId('sidebarHeader')[1]).toBeInTheDocument()
     expect(getAllByTestId('sidebarHeader')).toHaveLength(2)
     expect(
       getAllByTestId('sidebarHeader')[1].previousElementSibling

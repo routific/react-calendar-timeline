@@ -1,5 +1,4 @@
 import React from 'react'
-import 'react-testing-library/cleanup-after-each'
 import render from '../../test-utility/renderWithTimelineStateAndHelpers'
 import Items from 'lib/items/Items'
 import { ItemsContextProvider } from 'lib/items/ItemsContext'

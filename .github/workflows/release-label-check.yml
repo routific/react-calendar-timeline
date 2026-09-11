@@ -1,0 +1,32 @@
+# Fails the PR until exactly one `release: major|minor|patch|skip` label is set.
+# Mark this check as required in branch protection for `master` once wired up.
+#
+# NOTE: this label set is also enumerated in version-bump.yml (decide job).
+# Keep both files in sync when adding or changing release labels.
+name: Release label check
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
+    branches:
+      - master
+
+jobs:
+  check:
+    name: Verify release label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check labels
+        env:
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          count=$(printf '%s' "$LABELS" | jq '[.[] | select(. == "release: major" or . == "release: minor" or . == "release: patch" or . == "release: skip")] | length')
+          echo "Found $count release label(s)."
+          if [ "$count" -eq 0 ]; then
+            echo "::error::This PR needs a release label: 'release: patch', 'release: minor', 'release: major', or 'release: skip'."
+            exit 1
+          fi
+          if [ "$count" -gt 1 ]; then
+            echo "::error::This PR has more than one release label. Pick exactly one."
+            exit 1
+          fi

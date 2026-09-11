@@ -19,11 +19,7 @@ Checkout the [examples here](https://github.com/namespace-ee/react-calendar-time
 # Getting started
 
 ```bash
-# via yarn
-yarn add react-calendar-timeline
-
-# via npm
-npm install --save react-calendar-timeline
+npm install --save @routific/react-calendar-timeline
 ```
 
 `react-calendar-timeline` has [react](https://reactjs.org/), [react-dom](https://reactjs.org/docs/react-dom.html), [`moment`](http://momentjs.com/) and [`interactjs`](http://interactjs.io/docs/) as peer dependencies.
@@ -1614,7 +1610,7 @@ You can switch the order between `RowColumns`, `RowItems` and custom layers. Thi
 
 ## My timeline is unstyled
 
-You need to include the `Timeline.css` file, either via static file reference or webpack stylesheet bundling. The file is located at `lib/Timeline.css`
+You need to include the `Timeline.css` file (static import or bundler). Prefer `@routific/react-calendar-timeline/lib/Timeline.css` (or `./style.css`).
 
 ## How can I have items with different colors?
 
@@ -1704,10 +1700,10 @@ The pinch gesture on a trackpad (not a touch device) works in Chrome and Firefox
 If you like to improve React Calendar Timeline fork the repo and get started by running the following:
 
 ```bash
-$ git clone https://github.com/namespace-ee/react-calendar-timeline.git react-calendar-timeline
+$ git clone https://github.com/routific/react-calendar-timeline.git react-calendar-timeline
 $ cd react-calendar-timeline
-$ yarn
-$ yarn start
+$ npm install
+$ npm start
 ```
 
 Check http://0.0.0.0:8888/ in your browser and have fun!

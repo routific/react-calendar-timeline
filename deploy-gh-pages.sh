@@ -18,11 +18,11 @@ function doCompile {
   # npm test
   # npm run build
   echo "-- doCompile"
-  yarn
-  yarn run build:demo
+  npm ci
+  npm run build:demo
 
   mkdir -p $DEPLOY_DIR/
-  cp ./build/* ./$DEPLOY_DIR/
+  cp ./demo/dist/* ./$DEPLOY_DIR/ 2>/dev/null || cp ./build/* ./$DEPLOY_DIR/
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify

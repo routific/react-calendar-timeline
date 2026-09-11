@@ -7,27 +7,5 @@
       }
     ],
     "@babel/preset-react"
-  ],
-  "plugins": [
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread",
-    "@babel/plugin-proposal-private-methods"
-  ],
-  "env": {
-    "production": {
-      "plugins": [
-        [
-          "react-remove-properties",
-          {
-            "properties": [
-              "data-testid"
-            ]
-          }
-        ]
-      ],
-      "ignore": [
-        "src/lib/__tests__/**"
-      ]
-    }
-  }
+  ]
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import createReactContext from 'create-react-context';
 import {
   calculateXPositionForTime,
   calculateTimeForXPosition,
@@ -30,7 +29,7 @@ const defaultContextState = {
 };
 /* eslint-enable */
 
-const TimelineStateContext = createReactContext(defaultContextState);
+const TimelineStateContext = React.createContext(defaultContextState);
 
 const { Consumer, Provider } = TimelineStateContext;
 

@@ -1,27 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`stackItems should stack items while moving an item 1`] = `
-Object {
-  "groupHeights": Array [
+{
+  "groupHeights": [
     60,
     30,
     30,
   ],
-  "groupTops": Array [
+  "groupTops": [
     0,
     60,
     90,
   ],
-  "groupsWithItemsDimensions": Object {
-    "1": Object {
-      "group": Object {
+  "groupsWithItemsDimensions": {
+    "1": {
+      "group": {
         "id": "1",
       },
       "height": 60,
       "index": 0,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540543600000,
             "collisionWidth": 6803877,
             "height": 22.5,
@@ -32,8 +32,8 @@ Object {
           },
           "id": "0",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540532800000,
             "collisionWidth": 21203877,
             "height": 22.5,
@@ -44,8 +44,8 @@ Object {
           },
           "id": "5",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540550800000,
             "collisionWidth": 24803877,
             "height": 22.5,
@@ -56,8 +56,8 @@ Object {
           },
           "id": "6",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540570000000,
             "collisionWidth": 14875919,
             "height": 22.5,
@@ -68,8 +68,8 @@ Object {
           },
           "id": "1",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540620000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -81,8 +81,8 @@ Object {
           "id": "2",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "end_time": 1540550403877,
@@ -91,7 +91,7 @@ Object {
           "start_time": 1540543600000,
           "title": "title 0",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -101,7 +101,7 @@ Object {
           "start_time": 1540532800000,
           "title": "title 5",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -111,7 +111,7 @@ Object {
           "start_time": 1540550800000,
           "title": "title 6",
         },
-        Object {
+        {
           "canMove": true,
           "canResize": "both",
           "end_time": 1540584875919,
@@ -120,7 +120,7 @@ Object {
           "start_time": 1540570000000,
           "title": "title 1",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -132,24 +132,24 @@ Object {
         },
       ],
     },
-    "2": Object {
-      "group": Object {
+    "2": {
+      "group": {
         "id": "2",
       },
       "height": 30,
       "index": 1,
-      "itemDimensions": Array [],
-      "items": Array [],
+      "itemDimensions": [],
+      "items": [],
     },
-    "3": Object {
-      "group": Object {
+    "3": {
+      "group": {
         "id": "3",
       },
       "height": 30,
       "index": 2,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540656000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -161,8 +161,8 @@ Object {
           "id": "3",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -176,8 +176,8 @@ Object {
     },
   },
   "height": 120,
-  "itemsWithInteractions": Array [
-    Object {
+  "itemsWithInteractions": [
+    {
       "canMove": false,
       "canResize": false,
       "end_time": 1540550403877,
@@ -186,7 +186,7 @@ Object {
       "start_time": 1540543600000,
       "title": "title 0",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -196,7 +196,7 @@ Object {
       "start_time": 1540532800000,
       "title": "title 5",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -206,7 +206,7 @@ Object {
       "start_time": 1540550800000,
       "title": "title 6",
     },
-    Object {
+    {
       "canMove": true,
       "canResize": "both",
       "end_time": 1540584875919,
@@ -215,7 +215,7 @@ Object {
       "start_time": 1540570000000,
       "title": "title 1",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -225,7 +225,7 @@ Object {
       "start_time": 1540620000000,
       "title": "title 2",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -240,27 +240,27 @@ Object {
 `;
 
 exports[`stackItems should stack items while resize item left 1`] = `
-Object {
-  "groupHeights": Array [
+{
+  "groupHeights": [
     60,
     30,
     30,
   ],
-  "groupTops": Array [
+  "groupTops": [
     0,
     60,
     90,
   ],
-  "groupsWithItemsDimensions": Object {
-    "1": Object {
-      "group": Object {
+  "groupsWithItemsDimensions": {
+    "1": {
+      "group": {
         "id": "1",
       },
       "height": 60,
       "index": 0,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540543600000,
             "collisionWidth": 3203877,
             "height": 22.5,
@@ -271,8 +271,8 @@ Object {
           },
           "id": "0",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540532800000,
             "collisionWidth": 21203877,
             "height": 22.5,
@@ -283,8 +283,8 @@ Object {
           },
           "id": "5",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540550800000,
             "collisionWidth": 24803877,
             "height": 22.5,
@@ -295,8 +295,8 @@ Object {
           },
           "id": "6",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540570000000,
             "collisionWidth": 14875919,
             "height": 22.5,
@@ -307,8 +307,8 @@ Object {
           },
           "id": "1",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540620000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -320,8 +320,8 @@ Object {
           "id": "2",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "end_time": 1540546803877,
@@ -330,7 +330,7 @@ Object {
           "start_time": 1540543600000,
           "title": "title 0",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -340,7 +340,7 @@ Object {
           "start_time": 1540532800000,
           "title": "title 5",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -350,7 +350,7 @@ Object {
           "start_time": 1540550800000,
           "title": "title 6",
         },
-        Object {
+        {
           "canMove": true,
           "canResize": "both",
           "end_time": 1540584875919,
@@ -359,7 +359,7 @@ Object {
           "start_time": 1540570000000,
           "title": "title 1",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -371,24 +371,24 @@ Object {
         },
       ],
     },
-    "2": Object {
-      "group": Object {
+    "2": {
+      "group": {
         "id": "2",
       },
       "height": 30,
       "index": 1,
-      "itemDimensions": Array [],
-      "items": Array [],
+      "itemDimensions": [],
+      "items": [],
     },
-    "3": Object {
-      "group": Object {
+    "3": {
+      "group": {
         "id": "3",
       },
       "height": 30,
       "index": 2,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540656000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -400,8 +400,8 @@ Object {
           "id": "3",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -415,8 +415,8 @@ Object {
     },
   },
   "height": 120,
-  "itemsWithInteractions": Array [
-    Object {
+  "itemsWithInteractions": [
+    {
       "canMove": false,
       "canResize": false,
       "end_time": 1540546803877,
@@ -425,7 +425,7 @@ Object {
       "start_time": 1540543600000,
       "title": "title 0",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -435,7 +435,7 @@ Object {
       "start_time": 1540532800000,
       "title": "title 5",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -445,7 +445,7 @@ Object {
       "start_time": 1540550800000,
       "title": "title 6",
     },
-    Object {
+    {
       "canMove": true,
       "canResize": "both",
       "end_time": 1540584875919,
@@ -454,7 +454,7 @@ Object {
       "start_time": 1540570000000,
       "title": "title 1",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -464,7 +464,7 @@ Object {
       "start_time": 1540620000000,
       "title": "title 2",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -479,27 +479,27 @@ Object {
 `;
 
 exports[`stackItems should stack items while resize item right 1`] = `
-Object {
-  "groupHeights": Array [
+{
+  "groupHeights": [
     60,
     30,
     30,
   ],
-  "groupTops": Array [
+  "groupTops": [
     0,
     60,
     90,
   ],
-  "groupsWithItemsDimensions": Object {
-    "1": Object {
-      "group": Object {
+  "groupsWithItemsDimensions": {
+    "1": {
+      "group": {
         "id": "1",
       },
       "height": 60,
       "index": 0,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540540000000,
             "collisionWidth": 10403877,
             "height": 22.5,
@@ -510,8 +510,8 @@ Object {
           },
           "id": "0",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540532800000,
             "collisionWidth": 21203877,
             "height": 22.5,
@@ -522,8 +522,8 @@ Object {
           },
           "id": "5",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540550800000,
             "collisionWidth": 24803877,
             "height": 22.5,
@@ -534,8 +534,8 @@ Object {
           },
           "id": "6",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540570000000,
             "collisionWidth": 14875919,
             "height": 22.5,
@@ -546,8 +546,8 @@ Object {
           },
           "id": "1",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540620000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -559,8 +559,8 @@ Object {
           "id": "2",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "end_time": 1540550403877,
@@ -569,7 +569,7 @@ Object {
           "start_time": 1540540000000,
           "title": "title 0",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -579,7 +579,7 @@ Object {
           "start_time": 1540532800000,
           "title": "title 5",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -589,7 +589,7 @@ Object {
           "start_time": 1540550800000,
           "title": "title 6",
         },
-        Object {
+        {
           "canMove": true,
           "canResize": "both",
           "end_time": 1540584875919,
@@ -598,7 +598,7 @@ Object {
           "start_time": 1540570000000,
           "title": "title 1",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -610,24 +610,24 @@ Object {
         },
       ],
     },
-    "2": Object {
-      "group": Object {
+    "2": {
+      "group": {
         "id": "2",
       },
       "height": 30,
       "index": 1,
-      "itemDimensions": Array [],
-      "items": Array [],
+      "itemDimensions": [],
+      "items": [],
     },
-    "3": Object {
-      "group": Object {
+    "3": {
+      "group": {
         "id": "3",
       },
       "height": 30,
       "index": 2,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540656000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -639,8 +639,8 @@ Object {
           "id": "3",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -654,8 +654,8 @@ Object {
     },
   },
   "height": 120,
-  "itemsWithInteractions": Array [
-    Object {
+  "itemsWithInteractions": [
+    {
       "canMove": false,
       "canResize": false,
       "end_time": 1540550403877,
@@ -664,7 +664,7 @@ Object {
       "start_time": 1540540000000,
       "title": "title 0",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -674,7 +674,7 @@ Object {
       "start_time": 1540532800000,
       "title": "title 5",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -684,7 +684,7 @@ Object {
       "start_time": 1540550800000,
       "title": "title 6",
     },
-    Object {
+    {
       "canMove": true,
       "canResize": "both",
       "end_time": 1540584875919,
@@ -693,7 +693,7 @@ Object {
       "start_time": 1540570000000,
       "title": "title 1",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -703,7 +703,7 @@ Object {
       "start_time": 1540620000000,
       "title": "title 2",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -718,27 +718,27 @@ Object {
 `;
 
 exports[`stackItems work as expected 1`] = `
-Object {
-  "groupHeights": Array [
+{
+  "groupHeights": [
     60,
     30,
     30,
   ],
-  "groupTops": Array [
+  "groupTops": [
     0,
     60,
     90,
   ],
-  "groupsWithItemsDimensions": Object {
-    "1": Object {
-      "group": Object {
+  "groupsWithItemsDimensions": {
+    "1": {
+      "group": {
         "id": "1",
       },
       "height": 60,
       "index": 0,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540540000000,
             "collisionWidth": 6803877,
             "height": 22.5,
@@ -749,8 +749,8 @@ Object {
           },
           "id": "0",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540532800000,
             "collisionWidth": 21203877,
             "height": 22.5,
@@ -761,8 +761,8 @@ Object {
           },
           "id": "5",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540550800000,
             "collisionWidth": 24803877,
             "height": 22.5,
@@ -773,8 +773,8 @@ Object {
           },
           "id": "6",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540570000000,
             "collisionWidth": 14875919,
             "height": 22.5,
@@ -785,8 +785,8 @@ Object {
           },
           "id": "1",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540620000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -798,8 +798,8 @@ Object {
           "id": "2",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "end_time": 1540546803877,
@@ -808,7 +808,7 @@ Object {
           "start_time": 1540540000000,
           "title": "title 0",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -818,7 +818,7 @@ Object {
           "start_time": 1540532800000,
           "title": "title 5",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -828,7 +828,7 @@ Object {
           "start_time": 1540550800000,
           "title": "title 6",
         },
-        Object {
+        {
           "canMove": true,
           "canResize": "both",
           "end_time": 1540584875919,
@@ -837,7 +837,7 @@ Object {
           "start_time": 1540570000000,
           "title": "title 1",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -849,24 +849,24 @@ Object {
         },
       ],
     },
-    "2": Object {
-      "group": Object {
+    "2": {
+      "group": {
         "id": "2",
       },
       "height": 30,
       "index": 1,
-      "itemDimensions": Array [],
-      "items": Array [],
+      "itemDimensions": [],
+      "items": [],
     },
-    "3": Object {
-      "group": Object {
+    "3": {
+      "group": {
         "id": "3",
       },
       "height": 30,
       "index": 2,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540656000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -878,8 +878,8 @@ Object {
           "id": "3",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -893,8 +893,8 @@ Object {
     },
   },
   "height": 120,
-  "itemsWithInteractions": Array [
-    Object {
+  "itemsWithInteractions": [
+    {
       "canMove": false,
       "canResize": false,
       "end_time": 1540546803877,
@@ -903,7 +903,7 @@ Object {
       "start_time": 1540540000000,
       "title": "title 0",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -913,7 +913,7 @@ Object {
       "start_time": 1540532800000,
       "title": "title 5",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -923,7 +923,7 @@ Object {
       "start_time": 1540550800000,
       "title": "title 6",
     },
-    Object {
+    {
       "canMove": true,
       "canResize": "both",
       "end_time": 1540584875919,
@@ -932,7 +932,7 @@ Object {
       "start_time": 1540570000000,
       "title": "title 1",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -942,7 +942,7 @@ Object {
       "start_time": 1540620000000,
       "title": "title 2",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -957,27 +957,27 @@ Object {
 `;
 
 exports[`stackItems work as expected no stack 1`] = `
-Object {
-  "groupHeights": Array [
+{
+  "groupHeights": [
     30,
     30,
     30,
   ],
-  "groupTops": Array [
+  "groupTops": [
     0,
     30,
     60,
   ],
-  "groupsWithItemsDimensions": Object {
-    "1": Object {
-      "group": Object {
+  "groupsWithItemsDimensions": {
+    "1": {
+      "group": {
         "id": "1",
       },
       "height": 30,
       "index": 0,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540540000000,
             "collisionWidth": 6803877,
             "height": 22.5,
@@ -988,8 +988,8 @@ Object {
           },
           "id": "0",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540532800000,
             "collisionWidth": 21203877,
             "height": 22.5,
@@ -1000,8 +1000,8 @@ Object {
           },
           "id": "5",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540550800000,
             "collisionWidth": 24803877,
             "height": 22.5,
@@ -1012,8 +1012,8 @@ Object {
           },
           "id": "6",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540570000000,
             "collisionWidth": 14875919,
             "height": 22.5,
@@ -1024,8 +1024,8 @@ Object {
           },
           "id": "1",
         },
-        Object {
-          "dimensions": Object {
+        {
+          "dimensions": {
             "collisionLeft": 1540620000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -1037,8 +1037,8 @@ Object {
           "id": "2",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "end_time": 1540546803877,
@@ -1047,7 +1047,7 @@ Object {
           "start_time": 1540540000000,
           "title": "title 0",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -1057,7 +1057,7 @@ Object {
           "start_time": 1540532800000,
           "title": "title 5",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -1067,7 +1067,7 @@ Object {
           "start_time": 1540550800000,
           "title": "title 6",
         },
-        Object {
+        {
           "canMove": true,
           "canResize": "both",
           "end_time": 1540584875919,
@@ -1076,7 +1076,7 @@ Object {
           "start_time": 1540570000000,
           "title": "title 1",
         },
-        Object {
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -1088,24 +1088,24 @@ Object {
         },
       ],
     },
-    "2": Object {
-      "group": Object {
+    "2": {
+      "group": {
         "id": "2",
       },
       "height": 30,
       "index": 1,
-      "itemDimensions": Array [],
-      "items": Array [],
+      "itemDimensions": [],
+      "items": [],
     },
-    "3": Object {
-      "group": Object {
+    "3": {
+      "group": {
         "id": "3",
       },
       "height": 30,
       "index": 2,
-      "itemDimensions": Array [
-        Object {
-          "dimensions": Object {
+      "itemDimensions": [
+        {
+          "dimensions": {
             "collisionLeft": 1540656000000,
             "collisionWidth": 20397548,
             "height": 22.5,
@@ -1117,8 +1117,8 @@ Object {
           "id": "3",
         },
       ],
-      "items": Array [
-        Object {
+      "items": [
+        {
           "canMove": false,
           "canResize": false,
           "className": "",
@@ -1132,8 +1132,8 @@ Object {
     },
   },
   "height": 90,
-  "itemsWithInteractions": Array [
-    Object {
+  "itemsWithInteractions": [
+    {
       "canMove": false,
       "canResize": false,
       "end_time": 1540546803877,
@@ -1142,7 +1142,7 @@ Object {
       "start_time": 1540540000000,
       "title": "title 0",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -1152,7 +1152,7 @@ Object {
       "start_time": 1540532800000,
       "title": "title 5",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -1162,7 +1162,7 @@ Object {
       "start_time": 1540550800000,
       "title": "title 6",
     },
-    Object {
+    {
       "canMove": true,
       "canResize": "both",
       "end_time": 1540584875919,
@@ -1171,7 +1171,7 @@ Object {
       "start_time": 1540570000000,
       "title": "title 1",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
@@ -1181,7 +1181,7 @@ Object {
       "start_time": 1540620000000,
       "title": "title 2",
     },
-    Object {
+    {
       "canMove": false,
       "canResize": false,
       "className": "",
