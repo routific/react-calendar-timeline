@@ -1,12 +1,10 @@
-# Publishes the npm package when a `vX.Y.Z` tag is pushed.
-# Tags are produced by `version-bump.yml` after a PR is merged to master.
+# Publishes when a `vX.Y.Z` tag is pushed (from version-bump.yml) or via manual dispatch.
 #
-# Auth (same pattern as hive):
-# 1. Prefer npm Trusted Publisher (OIDC) — configure on npmjs.com for this
-#    package → GitHub Actions → routific/react-calendar-timeline /
-#    .github/workflows/npm-publish.yml
-# 2. Fallback: repo secret NPM_WRITE_TOKEN (Automation token with publish
-#    rights to @routific)
+# Auth: npm Trusted Publisher (OIDC) — same model as hive.
+# Do NOT pass NODE_AUTH_TOKEN / registry-url auth lines; they override OIDC and
+# cause EOTP / ENEEDAUTH. Configure Trusted Publisher on the package for:
+#   repo: routific/react-calendar-timeline
+#   workflow: npm-publish.yml
 name: Publish to npm
 
 on:
@@ -20,57 +18,49 @@ on:
         required: true
 
 permissions:
-  id-token: write  # Required for OIDC trusted publishing
+  id-token: write
   contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
-      # Publish with npm 11.5.1+ so OIDC trusted publishing can authenticate
-      # (same requirement as hive).
+      # Node 24 ships an npm new enough for Trusted Publisher OIDC.
+      # Do not set registry-url here — setup-node would write an empty
+      # _authToken line that prevents OIDC from running.
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          registry-url: 'https://registry.npmjs.org'
+          node-version: 24
           cache: npm
 
-      - name: Verify npm auth material
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_WRITE_TOKEN }}
+      - name: Ensure npm supports Trusted Publisher
         run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "::warning::NPM_WRITE_TOKEN is empty. Publish will only work if Trusted Publisher (OIDC) is configured for this package on npmjs.com."
-          else
-            echo "NPM_WRITE_TOKEN is present (length ${#NODE_AUTH_TOKEN})."
-          fi
-          echo "registry=$(npm config get registry)"
-          test -f "$HOME/.npmrc" && echo "Found ~/.npmrc from setup-node" || echo "::warning::No ~/.npmrc — setup-node registry-url may not have written auth"
+          npm install -g npm@11.6.2
+          npm --version
 
       - run: npm ci
       - run: npm run build:lib
 
-      - name: Upgrade npm for OIDC publish
-        run: npm install -g npm@11
-
+      # No NODE_AUTH_TOKEN — OIDC only.
       - name: Publish
-        id: publish
-        run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_WRITE_TOKEN }}
+        run: npm publish --access restricted
 
       - name: Build Slack payload
         env:
-          TAG_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+          TAG_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
         run: |
           version=$(node -p "require('./package.json').version")
+          tag="${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}"
           jq -n \
             --arg id "@routific/react-calendar-timeline@${version}" \
-            --arg url "$TAG_URL" \
+            --arg url "${{ github.server_url }}/${{ github.repository }}/releases/tag/${tag}" \
             '{text: (":package: Timeline published `" + $id + "` to npm (<" + $url + "|view tag>)")}' \
             > slack-payload.json
 
