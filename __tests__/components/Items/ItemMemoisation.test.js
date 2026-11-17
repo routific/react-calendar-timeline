@@ -2,7 +2,9 @@ import React from 'react';
 import moment from 'moment';
 import { render } from '@testing-library/react';
 import Timeline from 'lib/Timeline';
-import { isSameCluster } from 'lib/items/Items';
+import GroupRow from 'lib/rows/GroupRow';
+import RowItems from 'lib/items/Items';
+import { isSameCluster } from 'lib/utility/calendar';
 import {
   LINE_HEIGHT,
   DAY_START,
@@ -177,6 +179,97 @@ describe('Item memoisation', () => {
       expect(calls).toHaveLength(0);
       expect(clusterCalls.map(call => call.item.group)).toEqual(['g2']);
       expect(clusterCalls[0].item.items.map(i => i.title)).toContain('changed');
+    });
+
+    it('gives the layout and the cluster renderer the same cluster object', () => {
+      const clusterCalls = [];
+      const rowItems = {};
+      // eslint-disable-next-line react/display-name
+      const rowRenderer = ({ group, getRowItems }) => {
+        rowItems[group.id] = getRowItems();
+        return <GroupRow><RowItems /></GroupRow>;
+      };
+      const groups = makeGroups(2);
+      const items = tinyStops(groups);
+      const { rerender } = renderTimeline({
+        groups,
+        items,
+        clusterSettings,
+        rowRenderer,
+        itemRendererCluster: countingRenderer(clusterCalls),
+      });
+
+      rerender({ groups: [...groups], items: [...items], rowData: {} });
+
+      const rendered = clusterCalls.filter(call => call.item.group === 'g0').pop().item;
+      expect(rowItems.g0).toContain(rendered);
+    });
+
+    it('re-renders clusters with the new settings when the settings change', () => {
+      const clusterCalls = [];
+      const groups = makeGroups(2);
+      const items = tinyStops(groups);
+      const { rerender } = renderTimeline({
+        groups, items, clusterSettings, itemRendererCluster: countingRenderer(clusterCalls),
+      });
+      const before = clusterCalls.filter(call => call.item.group === 'g0').pop().item;
+      expect(before.isTinyItem).toBeUndefined();
+      clusterCalls.length = 0;
+
+      // Settings alone re-render the clusters; the next stack (here a new items array)
+      // builds new cluster objects instead of reusing ones made with the old settings.
+      rerender({ clusterSettings: { ...clusterSettings, enableIncreasedHoverOnTinyItem: true } });
+      expect(clusterCalls.filter(call => call.item.group === 'g0').pop().item.isTinyItem).toBe(true);
+
+      rerender({
+        clusterSettings: { ...clusterSettings, enableIncreasedHoverOnTinyItem: true, tinyItemSize: 0.9 },
+        items: [...items],
+      });
+      const after = clusterCalls.filter(call => call.item.group === 'g0').pop().item;
+      expect(after).not.toBe(before);
+      expect(after.isTinyItem).toBe(true);
+    });
+  });
+
+  describe('inputs that are not part of the item', () => {
+    it('re-renders every item when the item renderer function changes', () => {
+      const calls = [];
+      const groups = makeGroups(3);
+      const items = makeItems(groups);
+      const { rerender } = renderTimeline({ groups, items, itemRenderer: countingRenderer(calls) });
+      calls.length = 0;
+
+      rerender({ itemRenderer: countingRenderer(calls) });
+
+      expect(idsOf(calls)).toEqual(['i0', 'i1', 'i2']);
+    });
+
+    it('re-renders every item when useResizeHandle changes', () => {
+      const calls = [];
+      const groups = makeGroups(2);
+      const items = makeItems(groups);
+      const itemRenderer = countingRenderer(calls);
+      const { rerender } = renderTimeline({ groups, items, itemRenderer });
+      calls.length = 0;
+
+      rerender({ useResizeHandle: true });
+
+      expect(idsOf(calls)).toEqual(['i0', 'i1']);
+    });
+
+    it('does not re-render items for a new clusterSettings object with the same values', () => {
+      const calls = [];
+      const groups = makeGroups(2);
+      const items = makeItems(groups);
+      const itemRenderer = countingRenderer(calls);
+      const { rerender } = renderTimeline({
+        groups, items, itemRenderer, clusterSettings: { tinyItemSize: 1, clusteringRange: 5 },
+      });
+      calls.length = 0;
+
+      rerender({ clusterSettings: { tinyItemSize: 1, clusteringRange: 5 } });
+
+      expect(calls).toHaveLength(0);
     });
   });
 
