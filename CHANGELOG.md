@@ -8,6 +8,20 @@ Change log
 
 ## Unreleased
 
+### Row windowing and item memoisation
+- New opt-in `rowWindowing` prop: only the rows inside the vertical scroll viewport (plus `rowWindowingOverscan`, default 400px) are mounted; spacers keep row positions and scroll height. `rowWindowingPinnedGroupIds` keeps chosen rows mounted
+- New `scrollToGroup(groupId, { align, behavior })` instance method that scrolls a row into view from the stacked layout, mounted or not
+- New `refreshRowWindow()` instance method for layout changes the timeline cannot observe
+- Unchanged items keep the same `dimensions` object and rebuilt clusters over the same items keep the same cluster object (shared by the layout, `getRowItems()` and the renderer), so they skip re-rendering; inserting a row no longer re-renders the items below it
+- Groups whose items did not change are no longer laid out again when a new `groups` array is passed
+- Row drop zones and item drag/resize interactables are released from interact.js when they unmount (an item that unmounts mid-drag is released when the drag ends)
+- Fix: a drag released outside every row now ends the drag; before, the item stayed drawn at its dragged position until the next drag
+
+#### Behaviour changes
+- Items no longer re-render as a side effect of unrelated updates. Before, a new `groups` array or re-clustering gave every item new dimensions, which re-rendered every item and refreshed whatever its renderer read from outside its parameters. Renderers that depend on outside state must subscribe to it
+- Items now re-render when the `itemRenderer` or `itemRendererCluster` function changes, or when `useResizeHandle` or `clusterSettings` (by value) change. Before, a new renderer function was ignored. Consumers passing inline renderer functions must make them stable, or every mounted item re-renders on each parent render
+- `timelineContext.visibleTimeStart`/`visibleTimeEnd`/`timelineWidth` only refresh when the item renders for another reason (as before for horizontal scrolling, now also for updates that used to re-render every item)
+
 ### Performance (Phase 4)
 - Mount-cull timeline items to visible time ± `itemRenderBuffer` (default 0.5); set `itemRenderCull={false}` for legacy full-canvas mounts
 - Compare `selected` with value equality in Items SCU (avoids remount thrash on new array refs)

@@ -29,6 +29,14 @@ class GroupRow extends Component {
     });
   }
 
+  componentWillUnmount() {
+    // Rows unmount when groups are removed or scrolled out of a windowed timeline;
+    // drop the interactable so interact.js does not keep detached dropzones.
+    if (this.ref.current) {
+      interact(this.ref.current).unset();
+    }
+  }
+
   render() {
     const {
       onContextMenu,

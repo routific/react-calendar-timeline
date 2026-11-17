@@ -1,6 +1,6 @@
 import moment from 'moment';
 import memoize from 'memoize-one';
-import { _get, arraysEqual } from './generic';
+import { _get, arraysEqual, shallowEqualObjects } from './generic';
 import ClusteringService from './ClusteringService';
 
 /**
@@ -758,7 +758,46 @@ export function shouldCluster(clusterSettings, canvasTimeSpan) {
 
   return true;
 }
+// Cluster objects are rebuilt on every stack; `isTinyItem` is written onto them while rendering.
+const CLUSTER_IGNORED_KEYS = ['items', 'isTinyItem'];
+
+/**
+ * A rebuilt cluster that groups the same item objects over the same time span as `previous`.
+ */
+export function isSameCluster(previous, next) {
+  return Boolean(previous && previous.isCluster && next.isCluster)
+    && shallowEqualObjects(previous, next, CLUSTER_IGNORED_KEYS)
+    && arraysEqual(previous.items, next.items);
+}
+
+// Clusters from the previous stack, by group id, with the settings they were built with.
+let previousClusters = new Map();
+
+/**
+ * Replaces each rebuilt cluster with the cluster object from the previous stack when it
+ * groups the same items over the same span with the same settings. Layout (and everything
+ * reading `group.items`) and the rendered item then share one stable object, so unchanged
+ * clusters keep their identity and their row's layout cache stays valid.
+ */
+function reusePreviousClusters(groupId, clusteredItems, clusterSettings, nextClusters) {
+  const previous = previousClusters.get(groupId);
+  const canReuse = previous && shallowEqualObjects(previous.clusterSettings, clusterSettings);
+  const byId = new Map();
+  const result = clusteredItems.map(item => {
+    if (!item.isCluster) {
+      return item;
+    }
+    const previousCluster = canReuse ? previous.byId.get(item.id) : undefined;
+    const stable = isSameCluster(previousCluster, item) ? previousCluster : item;
+    byId.set(stable.id, stable);
+    return stable;
+  });
+  nextClusters.set(groupId, { clusterSettings, byId });
+  return result;
+}
+
 export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, canvasTimeStart, canvasTimeEnd) {
+  const nextClusters = new Map();
   const groupOrders = getGroupOrders(groups, keys);
   const groupsWithItems = {};
   const groupKeys = Object.keys(groupOrders);
@@ -780,7 +819,12 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
         itemTimeEndKey,
       );
       clusterService.cluster();
-      _groupedItems = clusterService.items;
+      _groupedItems = reusePreviousClusters(
+        _get(groupOrder.group, keys.groupIdKey),
+        clusterService.items,
+        clusterSettings,
+        nextClusters,
+      );
     }
 
     groupsWithItems[element] = {
@@ -788,6 +832,9 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
       group: groupOrder.group,
       items: _groupedItems,
     };
+  }
+  if (nextClusters.size > 0 || previousClusters.size > 0) {
+    previousClusters = nextClusters;
   }
   return groupsWithItems;
 }
@@ -819,17 +866,32 @@ export function isEqualItemWithDimensions(newArgs, oldArgs) {
   return shallowIsEqualOrderedGroup(newGroup, oldGroup);
 }
 
+let previousGroupsCache = null;
+
 /**
  * returns a cache in the form of dictionary ([groupId]: cachedMethod) for calculating getGroupWithItemDimensions
- * the cache is cleared if groups or keys changed in reference
+ * a new `groups` array keeps the cached method of every group id it still contains, so
+ * groups whose items did not change are not laid out again; the cache is cleared if keys
+ * or method changed in reference
  * @param {*} groups
  * @param {*} keys
  */
-export const getGroupsCache = memoize((groups, keys, method) => groups.reduce((acc, group) => {
-  const id = _get(group, keys.groupIdKey);
-  acc[id] = memoize(method, isEqualItemWithDimensions);
-  return acc;
-}, {}));
+export const getGroupsCache = memoize((groups, keys, method) => {
+  const previous = previousGroupsCache
+    && previousGroupsCache.keys === keys
+    && previousGroupsCache.method === method
+    ? previousGroupsCache.byId
+    : {};
+  const byId = groups.reduce((acc, group) => {
+    const id = _get(group, keys.groupIdKey);
+    acc[id] = Object.prototype.hasOwnProperty.call(previous, id)
+      ? previous[id]
+      : memoize(method, isEqualItemWithDimensions);
+    return acc;
+  }, {});
+  previousGroupsCache = { keys, method, byId };
+  return byId;
+});
 
 export function getGroupsWithItemDimensions(
   groupsWithItems,

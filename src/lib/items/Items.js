@@ -3,7 +3,7 @@ import React, { PureComponent, Component } from 'react';
 import Item from './Item';
 import { TimelineStateConsumer } from '../timeline/TimelineStateContext';
 import { ItemsConsumer } from './ItemsContext';
-import { _get, arraysEqual } from '../utility/generic';
+import { _get, arraysEqual, shallowEqualObjects } from '../utility/generic';
 import {
   getItemRenderWindow,
   isItemInRenderWindow,
@@ -105,7 +105,25 @@ export class Items extends Component {
       && nextProps.resizing === this.props.resizing
       && nextProps.resizeEdge === this.props.resizeEdge
       && nextProps.interactingItemId === this.props.interactingItemId
+      && nextProps.scrollRef === this.props.scrollRef
+      && nextProps.itemRenderer === this.props.itemRenderer
+      && nextProps.itemRendererCluster === this.props.itemRendererCluster
+      && nextProps.clusterSettings === this.props.clusterSettings
+      && nextProps.useResizeHandle === this.props.useResizeHandle
     );
+  }
+
+  // Last dimensions object handed to each item, by item id. A row is laid out again when
+  // the canvas changes or the rows above it change; reusing the previous object when its
+  // values are unchanged keeps the `dimensions` prop referentially stable, so unchanged
+  // items skip rendering.
+  dimensionsById = new Map()
+
+  getStableDimensions(itemId, dimensions, nextDimensionsById) {
+    const previous = this.dimensionsById.get(itemId);
+    const stable = previous && shallowEqualObjects(previous, dimensions) ? previous : dimensions;
+    nextDimensionsById.set(itemId, stable);
+    return stable;
   }
 
   isSelected(item, itemIdKey) {
@@ -150,9 +168,12 @@ export class Items extends Component {
       itemRenderBuffer,
     );
 
-    return (
+    const nextDimensionsById = new Map();
+
+    const rendered = (
       <div className="rct-items">
         {items.map((item, i) => {
+          const itemId = _get(item, itemIdKey);
           const isInteractingItem = this.isInteractingItem(item);
           if (!this.shouldMountItem(
             item,
@@ -170,11 +191,11 @@ export class Items extends Component {
 
           return (
           <Item
-            key={_get(item, itemIdKey)}
+            key={itemId}
             item={item}
             keys={this.props.keys}
             order={order}
-            dimensions={itemDimension.dimensions}
+            dimensions={this.getStableDimensions(itemId, itemDimension.dimensions, nextDimensionsById)}
             selected={this.isSelected(item, itemIdKey)}
             canChangeGroup={
               _get(item, 'canChangeGroup') !== undefined
@@ -226,6 +247,9 @@ export class Items extends Component {
         })}
       </div>
     );
+
+    this.dimensionsById = nextDimensionsById;
+    return rendered;
   }
 }
 
