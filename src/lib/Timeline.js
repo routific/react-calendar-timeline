@@ -411,6 +411,8 @@ export default class ReactCalendarTimeline extends Component {
       resizingEdge: undefined,
       // Measured in componentDidMount, before the first paint; no rows are mounted until then.
       rowViewport: null,
+      // Item pressed for a drag or resize, from the start of the gesture.
+      interactingItemId: null,
     };
 
     const canvasWidth = getCanvasWidth(this.state.width);
@@ -455,6 +457,7 @@ export default class ReactCalendarTimeline extends Component {
 
     if (this.props.rowWindowing) {
       this.attachRowWindowing();
+      this.windowedGroupTops = this.state.groupTops;
     }
 
     if (this.props.resizeDetector && this.props.resizeDetector.addListener) {
@@ -602,15 +605,40 @@ export default class ReactCalendarTimeline extends Component {
       } else {
         this.detachRowWindowing();
       }
-    } else if (
-      this.props.rowWindowing
-      && (this.state.groupTops !== prevState.groupTops
-        || this.state.groupHeights !== prevState.groupHeights
-        || this.props.rowWindowingOverscan !== prevProps.rowWindowingOverscan)
+    } else if (this.props.rowWindowing) {
+      const { groupTops } = this.getRenderLayout();
+      if (
+        groupTops !== this.windowedGroupTops
+        || this.props.rowWindowingOverscan !== prevProps.rowWindowingOverscan
+      ) {
+        if (this.state.draggingItem || this.state.resizingItem) {
+          // Every drag move re-stacks; only check that the rendered rows still cover the view.
+          this.updateRowViewport();
+        } else {
+          this.refreshRowWindow();
+        }
+      }
+    }
+    this.windowedGroupTops = this.props.rowWindowing ? this.getRenderLayout().groupTops : null;
+  }
+
+  /**
+   * Re-detect the vertical scroll container and re-measure which rows to mount. Runs on
+   * layout changes and container resizes; call it after changing the page around the
+   * timeline in a way that moves it inside its scroll container without a scroll or resize
+   * (for example content above it changing height, or an ancestor becoming scrollable).
+   */
+  refreshRowWindow = () => {
+    if (!this.props.rowWindowing || !this.scrollComponent) {
+      return;
+    }
+    if (
+      !this.verticalScrollParent
+      || getVerticalScrollParent(this.scrollComponent) !== this.verticalScrollParent
     ) {
-      this.updateRowViewport({
-        exact: this.props.rowWindowingOverscan !== prevProps.rowWindowingOverscan,
-      });
+      this.attachRowWindowing();
+    } else {
+      this.updateRowViewport({ exact: true });
     }
   }
 
@@ -623,9 +651,14 @@ export default class ReactCalendarTimeline extends Component {
     this.verticalScrollParent = scrollParent;
     scrollParent.addEventListener('scroll', this.handleVerticalScroll, { passive: true });
     window.addEventListener('resize', this.handleVerticalScroll);
-    if (scrollParent !== window && typeof ResizeObserver !== 'undefined') {
+    if (typeof ResizeObserver !== 'undefined') {
       this.rowWindowResizeObserver = new ResizeObserver(this.handleVerticalScroll);
-      this.rowWindowResizeObserver.observe(scrollParent);
+      if (scrollParent !== window) {
+        this.rowWindowResizeObserver.observe(scrollParent);
+      }
+      if (this.container) {
+        this.rowWindowResizeObserver.observe(this.container);
+      }
     }
     this.updateRowViewport({ exact: true });
   }
@@ -666,7 +699,8 @@ export default class ReactCalendarTimeline extends Component {
     if (!this.props.rowWindowing || !this.scrollComponent || !this.verticalScrollParent) {
       return;
     }
-    const { groupTops, groupHeights, rowViewport } = this.state;
+    const { rowViewport } = this.state;
+    const { groupTops, groupHeights } = this.getRenderLayout();
     const { rowWindowingOverscan } = this.props;
     const nextViewport = measureRowViewport(this.scrollComponent, this.verticalScrollParent);
     const rendered = getVisibleRowRange(groupTops, groupHeights, rowViewport, rowWindowingOverscan);
@@ -683,6 +717,54 @@ export default class ReactCalendarTimeline extends Component {
     }
   }
 
+  stackForInteraction = memoize(
+    (props, items, groups, canvasWidth, canvasTimeStart, canvasTimeEnd, draggingItem,
+      resizingItem, dragTime, resizingEdge, resizeTime, newGroupId) => stackTimelineItems(
+      ReactCalendarTimeline.getItemsForStack(props, items),
+      groups,
+      canvasWidth,
+      canvasTimeStart,
+      canvasTimeEnd,
+      props.keys,
+      props.lineHeight,
+      props.itemHeightRatio,
+      props.stackItems,
+      draggingItem,
+      resizingItem,
+      dragTime,
+      resizingEdge,
+      resizeTime,
+      newGroupId,
+      props.clusterSettings,
+    ),
+  )
+
+  /**
+   * The layout that is rendered: the stacked state, or while an item is dragged or resized,
+   * a re-stack that includes the interaction (a row the item is dragged into can grow).
+   * Row windowing and `scrollToGroup` read this so they agree with what is on screen.
+   */
+  getRenderLayout() {
+    const { state, props } = this;
+    if (!state.draggingItem && !state.resizingItem) {
+      return state;
+    }
+    return this.stackForInteraction(
+      props,
+      props.items,
+      props.groups,
+      getCanvasWidth(state.width),
+      state.canvasTimeStart,
+      state.canvasTimeEnd,
+      state.draggingItem,
+      state.resizingItem,
+      state.dragTime,
+      state.resizingEdge,
+      state.resizeTime,
+      state.newGroupId,
+    );
+  }
+
   getRenderedGroupIndices = memoize(
     (start, end, pinnedIndicesKey, count) => getRenderedRowIndices(
       { start, end },
@@ -697,15 +779,17 @@ export default class ReactCalendarTimeline extends Component {
    */
   getPinnedGroupIndices(groupsWithItemsDimensions) {
     const { rowWindowingPinnedGroupIds, items, keys } = this.props;
-    const { draggingItem, resizingItem, newGroupId } = this.state;
+    const {
+      draggingItem, resizingItem, newGroupId, interactingItemId: pressedItemId,
+    } = this.state;
     const pinnedGroupIds = rowWindowingPinnedGroupIds ? rowWindowingPinnedGroupIds.slice() : [];
-    const interactingItemId = draggingItem || resizingItem;
+    const interactingItemId = draggingItem || resizingItem || pressedItemId;
     if (interactingItemId) {
       const item = items.find(i => _get(i, keys.itemIdKey) === interactingItemId);
       if (item) {
         pinnedGroupIds.push(_get(item, keys.itemGroupKey));
       }
-      if (newGroupId != null) {
+      if (draggingItem && newGroupId != null) {
         pinnedGroupIds.push(newGroupId);
       }
     }
@@ -726,12 +810,13 @@ export default class ReactCalendarTimeline extends Component {
    * @returns {boolean} false when the group is unknown or the timeline is not mounted
    */
   scrollToGroup = (groupId, { align = 'auto', behavior = 'auto' } = {}) => {
-    const group = this.state.groupsWithItemsDimensions[groupId];
+    const layout = this.getRenderLayout();
+    const group = layout.groupsWithItemsDimensions[groupId];
     if (!group || !this.scrollComponent || typeof window === 'undefined') {
       return false;
     }
-    const rowTop = this.state.groupTops[group.index];
-    const rowHeight = this.state.groupHeights[group.index];
+    const rowTop = layout.groupTops[group.index];
+    const rowHeight = layout.groupHeights[group.index];
     const scrollParent = this.verticalScrollParent || getVerticalScrollParent(this.scrollComponent);
     const isWindow = scrollParent === window;
     const viewTop = isWindow
@@ -813,11 +898,7 @@ export default class ReactCalendarTimeline extends Component {
 
     if (resolvedProps.rowWindowing && this.verticalScrollParent) {
       // A resize can change which element scrolls (e.g. a consumer's CSS breakpoint).
-      if (getVerticalScrollParent(this.scrollComponent) !== this.verticalScrollParent) {
-        this.attachRowWindowing();
-      } else {
-        this.handleVerticalScroll();
-      }
+      this.refreshRowWindow();
     }
   }
 
@@ -998,6 +1079,31 @@ export default class ReactCalendarTimeline extends Component {
       time: dragTime,
       newGroupId,
     });
+  }
+
+  /**
+   * Called by the rows when an item drag or resize starts (with its id) and ends (null).
+   */
+  handleItemInteraction = itemId => {
+    if (itemId != null) {
+      if (this.props.rowWindowing) {
+        this.setState({ interactingItemId: itemId });
+      }
+      return;
+    }
+    const update = {};
+    if (this.state.interactingItemId != null) {
+      update.interactingItemId = null;
+    }
+    // A drag released outside every row never reaches dropItem; end it here so the
+    // item does not stay drawn at its dragged position.
+    if (this.state.draggingItem) {
+      update.draggingItem = null;
+      update.dragTime = null;
+    }
+    if (Object.keys(update).length > 0) {
+      this.setState(update);
+    }
   }
 
   dropItem = (item, dragTime, newGroupId) => {
@@ -1217,41 +1323,14 @@ export default class ReactCalendarTimeline extends Component {
       canvasTimeStart,
       canvasTimeEnd,
     } = this.state;
-    let {
-      groupsWithItemsDimensions, height, groupHeights, groupTops, itemsWithInteractions,
-    } = this.state;
-
     const zoom = visibleTimeEnd - visibleTimeStart;
     const canvasWidth = getCanvasWidth(width);
     const minUnit = getMinUnit(zoom, width, this.getTimeStep(timeSteps));
 
     const isInteractingWithItem = !!draggingItem || !!resizingItem;
-
-    if (isInteractingWithItem) {
-      const stackResults = stackTimelineItems(
-        ReactCalendarTimeline.getItemsForStack(this.props, items),
-        groups,
-        canvasWidth,
-        this.state.canvasTimeStart,
-        this.state.canvasTimeEnd,
-        this.props.keys,
-        this.props.lineHeight,
-        this.props.itemHeightRatio,
-        this.props.stackItems,
-        this.state.draggingItem,
-        this.state.resizingItem,
-        this.state.dragTime,
-        this.state.resizingEdge,
-        this.state.resizeTime,
-        this.state.newGroupId,
-        this.props.clusterSettings,
-      );
-      groupsWithItemsDimensions = stackResults.groupsWithItemsDimensions;
-      height = stackResults.height;
-      groupHeights = stackResults.groupHeights;
-      groupTops = stackResults.groupTops;
-      itemsWithInteractions = stackResults.itemsWithInteractions;
-    }
+    const {
+      groupsWithItemsDimensions, height, groupHeights, groupTops, itemsWithInteractions,
+    } = this.getRenderLayout();
 
     const outerComponentStyle = {
       height: `${height}px`,
@@ -1350,6 +1429,7 @@ export default class ReactCalendarTimeline extends Component {
                         groupTops={groupTops}
                         renderedGroupIndices={renderedGroupIndices}
                         rowWindowing={this.props.rowWindowing}
+                        onItemInteraction={this.handleItemInteraction}
                         itemRenderer={itemRenderer}
                         itemRendererCluster={itemRendererCluster}
                         itemResized={this.resizedItem}

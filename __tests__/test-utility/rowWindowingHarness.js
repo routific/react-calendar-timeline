@@ -1,4 +1,7 @@
+import React from 'react';
 import moment from 'moment';
+import { render, fireEvent, act } from '@testing-library/react';
+import Timeline from 'lib/Timeline';
 
 export const LINE_HEIGHT = 30;
 export const SCROLLER_HEIGHT = 300;
@@ -84,3 +87,50 @@ export function prepareScroller(scroller, geometry) {
     geometry.scrollTop = top;
   });
 }
+
+/**
+ * Renders a Timeline inside a fake scroll container (see mockLayout) and returns helpers
+ * to re-render it and to scroll the container.
+ */
+export function renderScrollingTimeline({ groupCount = 50, ...props } = {}, { geometry } = {}) {
+  const scroller = document.createElement('div');
+  scroller.setAttribute('data-testid', 'scroller');
+  scroller.style.overflowY = 'auto';
+  document.body.appendChild(scroller);
+  prepareScroller(scroller, geometry);
+
+  const groups = props.groups || makeGroups(groupCount);
+  const items = props.items || makeItems(groups);
+  const timelineRef = React.createRef();
+  const allProps = {
+    groups,
+    items,
+    lineHeight: LINE_HEIGHT,
+    itemHeightRatio: 0.75,
+    defaultTimeStart: moment(DAY_START + 6 * HOUR),
+    defaultTimeEnd: moment(DAY_START + 18 * HOUR),
+    rowWindowingOverscan: 0,
+    ...props,
+  };
+  const utils = render(<Timeline ref={timelineRef} {...allProps} />, { container: scroller });
+  const rerender = nextProps => utils.rerender(<Timeline ref={timelineRef} {...allProps} {...nextProps} />);
+
+  const scrollTo = top => {
+    act(() => {
+      geometry.scrollTop = top;
+      fireEvent.scroll(scroller);
+    });
+  };
+
+  return {
+    ...utils, scroller, timelineRef, rerender, scrollTo, groups, items,
+  };
+}
+
+export const sidebarRows = container => container.querySelectorAll('.rct-sidebar-row');
+export const groupRows = container => container.querySelectorAll('[data-testid="groupRow"]');
+export const renderedGroupIds = container => Array.from(groupRows(container)).map(row => row.dataset.groupid);
+export const rowSpacers = container => container.querySelectorAll('.rct-horizontal-lines > .rct-row-spacer');
+export const sidebarSpacers = container => container.querySelectorAll('.rct-sidebar .rct-row-spacer');
+export const itemElement = (container, title) => Array.from(container.querySelectorAll('.rct-item'))
+  .find(el => el.textContent === title);

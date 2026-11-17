@@ -16,12 +16,26 @@ class Rows extends React.PureComponent {
 
   state = this.initState
 
+  componentWillUnmount() {
+    this.restoreDynamicDrop();
+  }
+
+  restoreDynamicDrop() {
+    if (this.previousDynamicDrop !== undefined) {
+      interact.dynamicDrop(this.previousDynamicDrop);
+      this.previousDynamicDrop = undefined;
+    }
+  }
+
   handleDragStart = (dragging, dragOffset, itemId) => {
-    if (this.props.rowWindowing) {
+    if (this.props.rowWindowing && this.previousDynamicDrop === undefined) {
       // Rows mount and unmount while the user scrolls during a drag, so interact.js has to
       // re-collect its dropzones on every move instead of only at drag start.
       this.previousDynamicDrop = interact.dynamicDrop();
       interact.dynamicDrop(true);
+    }
+    if (this.props.onItemInteraction) {
+      this.props.onItemInteraction(itemId);
     }
     this.setState({
       dragging,
@@ -31,9 +45,9 @@ class Rows extends React.PureComponent {
   }
 
   clearState = () => {
-    if (this.previousDynamicDrop !== undefined) {
-      interact.dynamicDrop(this.previousDynamicDrop);
-      this.previousDynamicDrop = undefined;
+    this.restoreDynamicDrop();
+    if (this.props.onItemInteraction) {
+      this.props.onItemInteraction(null);
     }
     this.setState(this.initState);
   }
@@ -48,6 +62,9 @@ class Rows extends React.PureComponent {
   }
 
   handleResizeStart = (resizing, itemId) => {
+    if (this.props.onItemInteraction) {
+      this.props.onItemInteraction(itemId);
+    }
     this.setState({
       resizing,
       interactingItemId: itemId,

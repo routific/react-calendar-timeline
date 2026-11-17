@@ -1,8 +1,5 @@
-import React from 'react';
-import moment from 'moment';
-import { render, fireEvent, act } from '@testing-library/react';
+import { fireEvent, act } from '@testing-library/react';
 import interact from 'interactjs';
-import Timeline from 'lib/Timeline';
 import {
   LINE_HEIGHT,
   SCROLLER_HEIGHT,
@@ -11,68 +8,18 @@ import {
   makeGroups,
   makeItems,
   mockLayout,
-  prepareScroller,
+  renderScrollingTimeline,
+  sidebarRows,
+  groupRows,
+  renderedGroupIds,
+  rowSpacers,
+  sidebarSpacers,
 } from 'test-utility/rowWindowingHarness';
 
-jest.mock('interactjs', () => {
-  const dropzones = new Set();
-  const interactable = el => ({
-    dropzone() {
-      dropzones.add(el);
-      return this;
-    },
-    unset() {
-      dropzones.delete(el);
-    },
-  });
-  const interactMock = jest.fn(interactable);
-  interactMock.dynamicDrop = jest.fn(() => false);
-  interactMock.dropzones = dropzones;
-  return interactMock;
-});
+jest.mock('interactjs', () => require('test-utility/interactMock').createInteractMock());
 
 const GROUP_COUNT = 50;
-
-function renderTimeline(props = {}, { geometry } = {}) {
-  const scroller = document.createElement('div');
-  scroller.setAttribute('data-testid', 'scroller');
-  scroller.style.overflowY = 'auto';
-  document.body.appendChild(scroller);
-  prepareScroller(scroller, geometry);
-
-  const groups = props.groups || makeGroups(GROUP_COUNT);
-  const items = props.items || makeItems(groups);
-  const timelineRef = React.createRef();
-  const allProps = {
-    groups,
-    items,
-    lineHeight: LINE_HEIGHT,
-    itemHeightRatio: 0.75,
-    defaultTimeStart: moment(DAY_START + 6 * HOUR),
-    defaultTimeEnd: moment(DAY_START + 18 * HOUR),
-    rowWindowingOverscan: 0,
-    ...props,
-  };
-  const utils = render(<Timeline ref={timelineRef} {...allProps} />, { container: scroller });
-  const rerender = nextProps => utils.rerender(<Timeline ref={timelineRef} {...allProps} {...nextProps} />);
-
-  const scrollTo = top => {
-    act(() => {
-      geometry.scrollTop = top;
-      fireEvent.scroll(scroller);
-    });
-  };
-
-  return {
-    ...utils, scroller, timelineRef, rerender, scrollTo, groups, items,
-  };
-}
-
-const sidebarRows = container => container.querySelectorAll('.rct-sidebar-row');
-const groupRows = container => container.querySelectorAll('[data-testid="groupRow"]');
-const renderedGroupIds = container => Array.from(groupRows(container)).map(row => row.dataset.groupid);
-const rowSpacers = container => container.querySelectorAll('.rct-horizontal-lines > .rct-row-spacer');
-const sidebarSpacers = container => container.querySelectorAll('.rct-sidebar .rct-row-spacer');
+const renderTimeline = (props = {}, layout = {}) => renderScrollingTimeline({ groupCount: GROUP_COUNT, ...props }, layout);
 
 describe('Timeline row windowing', () => {
   let layout;
@@ -82,6 +29,7 @@ describe('Timeline row windowing', () => {
   });
 
   afterEach(() => {
+    interact.reset();
     layout.restore();
     document.body.innerHTML = '';
   });
@@ -254,16 +202,16 @@ describe('Timeline row windowing', () => {
   it('registers rows scrolled into view as drop targets and releases unmounted ones', () => {
     const { container, scrollTo } = renderTimeline({ rowWindowing: true }, layout);
     const firstRow = groupRows(container)[0];
-    expect(interact.dropzones.has(firstRow)).toBe(true);
+    expect(interact.live.has(firstRow)).toBe(true);
 
     scrollTo(30 * LINE_HEIGHT);
 
     expect(firstRow.isConnected).toBe(false);
-    expect(interact.dropzones.has(firstRow)).toBe(false);
+    expect(interact.live.has(firstRow)).toBe(false);
     const newRows = Array.from(groupRows(container));
     expect(newRows[0].dataset.groupid).toBe('g30');
-    newRows.forEach(row => expect(interact.dropzones.has(row)).toBe(true));
-    expect(interact.dropzones.size).toBe(newRows.length);
+    newRows.forEach(row => expect(interact.live.has(row)).toBe(true));
+    expect(interact.live.size).toBe(newRows.length);
   });
 
   it('calls sidebarRowRef for the rows it mounts', () => {
