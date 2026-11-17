@@ -232,6 +232,26 @@ Append a special `.rct-drag-right` handle to the elements and only resize if dra
 
 Stack items under each other, so there is no visual overlap when times collide.  Can be overridden in the `groups` array. Defaults to `false`. Requires millisecond or `Moment` timestamps, not native JavaScript `Date` objects.
 
+## rowWindowing
+
+Only mount the group rows that are inside the viewport of the timeline's vertical scroll container: sidebar entries, rows (`rowRenderer`) and their items. Defaults to `false`, which renders every row as before.
+
+Every group is still stacked, so row heights (including stacked items), row positions and the total scroll height are the same as without windowing. Rows that are not mounted are replaced by spacers. The vertical scroll container is the closest ancestor of the timeline body whose `overflow-y` is `auto`, `scroll` or `overlay` (this can be `.rct-outer` itself), or the window.
+
+Things to know when turning it on:
+
+- `sidebarRowRef` and refs inside `rowRenderer`/`groupRenderer` only exist for mounted rows. To bring a row into view, call [`scrollToGroup`](#scrolltogroupgroupid-options) on the timeline instance instead of reading the row's DOM node.
+- Rows are mounted shortly after a scroll, in batches (see `rowWindowingOverscan`). Mounted rows register as drop targets as they appear; while an item is dragged, interact.js re-collects drop targets on every move.
+- Anything rendered inside a row that must survive the row scrolling out of view (for example a drag ghost owned by the row) needs its group in `rowWindowingPinnedGroupIds`. The source and target rows of an item being dragged or resized with the built-in interactions are pinned automatically.
+
+## rowWindowingOverscan
+
+Extra height in px rendered above and below the viewport when `rowWindowing` is on. Defaults to `400`. While scrolling, the mounted rows only change once the viewport comes within half of this distance of their edge.
+
+## rowWindowingPinnedGroupIds
+
+Array of group ids that stay mounted when `rowWindowing` is on, even when they are scrolled out of view. Defaults to `null`.
+
 ## traditionalZoom
 
 Zoom in when scrolling the mouse up/down. Defaults to `false`
@@ -417,6 +437,11 @@ Look at the demo-clustering || demo-clustering-custom-render || demo-clustering-
 Render prop function used to render a customized item. The function provides multiple parameters that can be used to render each item.
 
 Parameters provided to the function has two types: context params which have the state of the item and timeline, and prop getters functions
+
+An item only renders again when something it receives changes: the `item` object (by reference), its dimensions (by value), selection, the canvas, or drag/resize state. Unchanged items keep the same `itemContext.dimensions` object, and clusters that group the same item objects over the same time span keep the same cluster object, so a renderer can also memoise on them. In turn:
+
+- keep each item object the same reference until that item changes; rebuilding every item on each update re-renders every item;
+- a renderer that reads state from outside its parameters (a store, a closure) has to subscribe to that state itself (for example a MobX `observer` or a React context), because a new `itemRenderer` function alone does not re-render items.
 
 ## itemRendererCluster
 Render prop function used to render a custom cluster item.  The function provides multiple parameters that can be used to render each item. All items inside of the cluster are available via item.items.
@@ -684,6 +709,17 @@ Given a item id, It will return back the left and top of the item relative to th
 ### `getGroupDimensions(groupId: string | number): groupDimensions`
 
 Given groupId. The method will return `height` of the group row and `top` of the group row relative to the calendar.
+
+## Timeline instance methods
+
+Available on a `ref` to the `Timeline` component.
+
+### `scrollToGroup(groupId, options)`
+
+Scrolls the vertical scroll container so that the group's row is visible, using the stacked layout, so it works for rows that are not mounted with `rowWindowing`. Returns `false` when the group is unknown.
+
+- `options.align`: `'auto'` (default; only scrolls when the row is not fully visible, by the smallest distance), `'start'`, `'center'` or `'end'`.
+- `options.behavior`: passed to `scrollTo`, `'auto'` (default) or `'smooth'`.
 
 ## Example
 

@@ -16,3 +16,6 @@ gh-pages
 coverage
 
 *.orig
+
+# benchmark builds
+/benchmark/dist

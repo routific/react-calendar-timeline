@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { _get, arraysEqual } from '../utility/generic';
+import { getRowSegments } from '../utility/rowWindow';
 
 export default class Sidebar extends Component {
   static propTypes = {
@@ -13,6 +14,9 @@ export default class Sidebar extends Component {
     groupRenderer: PropTypes.func,
     isRightSidebar: PropTypes.bool,
     sidebarRowRef: PropTypes.func,
+    /** Row indices to render; every row is rendered when not set. */
+    renderedGroupIndices: PropTypes.array,
+    groupTops: PropTypes.array,
   }
 
   shouldComponentUpdate(nextProps) {
@@ -23,6 +27,9 @@ export default class Sidebar extends Component {
       && arraysEqual(nextProps.groups, this.props.groups)
       && arraysEqual(nextProps.groupHeights, this.props.groupHeights)
       && nextProps.sidebarRowRef === this.props.sidebarRowRef
+      && nextProps.renderedGroupIndices === this.props.renderedGroupIndices
+      && (!nextProps.renderedGroupIndices
+        || arraysEqual(nextProps.groupTops, this.props.groupTops))
     );
   }
 
@@ -38,7 +45,7 @@ export default class Sidebar extends Component {
 
   render() {
     const {
-      width, groupHeights, height, isRightSidebar, sidebarRowRef,
+      width, groupHeights, height, isRightSidebar, sidebarRowRef, renderedGroupIndices,
     } = this.props;
 
     const { groupIdKey, groupTitleKey, groupRightTitleKey } = this.props.keys;
@@ -52,7 +59,7 @@ export default class Sidebar extends Component {
       width: `${width}px`,
     };
 
-    const groupLines = this.props.groups.map((group, index) => {
+    const renderGroupLine = (group, index) => {
       const elementStyle = {
         height: `${groupHeights[index]}px`,
         lineHeight: `${groupHeights[index]}px`,
@@ -75,7 +82,28 @@ export default class Sidebar extends Component {
           )}
         </div>
       );
-    });
+    };
+
+    let groupLines;
+    if (renderedGroupIndices) {
+      const { groups, groupTops } = this.props;
+      groupLines = [];
+      getRowSegments(renderedGroupIndices, groupTops, groupHeights).forEach(({ index, spacerBefore }) => {
+        if (spacerBefore > 0) {
+          groupLines.push(
+            <div
+              key={`row-spacer-${_get(groups[index], groupIdKey)}`}
+              className="rct-row-spacer"
+              aria-hidden="true"
+              style={{ height: `${spacerBefore}px` }}
+            />,
+          );
+        }
+        groupLines.push(renderGroupLine(groups[index], index));
+      });
+    } else {
+      groupLines = this.props.groups.map(renderGroupLine);
+    }
 
     return (
       <div

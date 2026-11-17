@@ -8,6 +8,13 @@ Change log
 
 ## Unreleased
 
+### Row windowing and item memoisation
+- New opt-in `rowWindowing` prop: only the rows inside the vertical scroll viewport (plus `rowWindowingOverscan`, default 400px) are mounted; spacers keep row positions and scroll height. `rowWindowingPinnedGroupIds` keeps chosen rows mounted
+- New `scrollToGroup(groupId, { align, behavior })` instance method that scrolls a row into view from the stacked layout, mounted or not
+- Unchanged items keep the same `dimensions` object and rebuilt clusters over the same items keep the same cluster object, so they skip re-rendering; inserting a row no longer re-renders the items below it
+- Groups whose items did not change are no longer laid out again when a new `groups` array is passed
+- Row drop zones are released from interact.js when a row unmounts
+
 ### Performance (Phase 4)
 - Mount-cull timeline items to visible time ± `itemRenderBuffer` (default 0.5); set `itemRenderCull={false}` for legacy full-canvas mounts
 - Compare `selected` with value equality in Items SCU (avoids remount thrash on new array refs)

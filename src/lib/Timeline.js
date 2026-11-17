@@ -1,6 +1,7 @@
 import PropTypes, { number } from 'prop-types';
 import React, { Component } from 'react';
 import throttle from 'lodash.throttle';
+import memoize from 'memoize-one';
 
 import Sidebar from './layout/Sidebar';
 import ScrollElement from './scroll/ScrollElement';
@@ -19,6 +20,13 @@ import {
   stackTimelineItems,
 } from './utility/calendar';
 import { _get, _length, sortByItemTimeStart } from './utility/generic';
+import {
+  getVerticalScrollParent,
+  measureRowViewport,
+  getVisibleRowRange,
+  getRenderedRowIndices,
+  rowRangesEqual,
+} from './utility/rowWindow';
 import {
   defaultKeys,
   defaultTimeSteps,
@@ -67,6 +75,16 @@ export default class ReactCalendarTimeline extends Component {
     itemRenderBuffer: PropTypes.number,
     /** Set false to mount every canvas-visible item (legacy behavior). */
     itemRenderCull: PropTypes.bool,
+    /**
+     * Only mount the group rows (sidebar entries, rows and their items) that overlap the
+     * viewport of the vertical scroll container, plus `rowWindowingOverscan` px above and
+     * below it. Every group is still stacked, so scroll height and row positions are unchanged.
+     */
+    rowWindowing: PropTypes.bool,
+    /** Extra px of rows rendered above and below the viewport when `rowWindowing` is on. */
+    rowWindowingOverscan: PropTypes.number,
+    /** Group ids that stay mounted when `rowWindowing` is on, even while scrolled out of view. */
+    rowWindowingPinnedGroupIds: PropTypes.array,
 
     traditionalZoom: PropTypes.bool,
 
@@ -221,6 +239,9 @@ export default class ReactCalendarTimeline extends Component {
     stackItems: false,
     itemRenderBuffer: 0.5,
     itemRenderCull: true,
+    rowWindowing: false,
+    rowWindowingOverscan: 400,
+    rowWindowingPinnedGroupIds: null,
 
     traditionalZoom: false,
 
@@ -388,6 +409,8 @@ export default class ReactCalendarTimeline extends Component {
       resizingItem: null,
       resizeTime: undefined,
       resizingEdge: undefined,
+      // Measured in componentDidMount, before the first paint; no rows are mounted until then.
+      rowViewport: null,
     };
 
     const canvasWidth = getCanvasWidth(this.state.width);
@@ -430,6 +453,10 @@ export default class ReactCalendarTimeline extends Component {
   componentDidMount() {
     this.resize(this.props);
 
+    if (this.props.rowWindowing) {
+      this.attachRowWindowing();
+    }
+
     if (this.props.resizeDetector && this.props.resizeDetector.addListener) {
       this.props.resizeDetector.addListener(this);
     }
@@ -445,6 +472,7 @@ export default class ReactCalendarTimeline extends Component {
     }
 
     windowResizeDetector.removeListener(this);
+    this.detachRowWindowing();
   }
 
   static getItemsForStack(props, items = props.items) {
@@ -567,6 +595,171 @@ export default class ReactCalendarTimeline extends Component {
       this.scrollComponent.scrollLeft = scrollLeft;
       this.scrollHeaderRef.scrollLeft = scrollLeft;
     }
+
+    if (this.props.rowWindowing !== prevProps.rowWindowing) {
+      if (this.props.rowWindowing) {
+        this.attachRowWindowing();
+      } else {
+        this.detachRowWindowing();
+      }
+    } else if (
+      this.props.rowWindowing
+      && (this.state.groupTops !== prevState.groupTops
+        || this.state.groupHeights !== prevState.groupHeights
+        || this.props.rowWindowingOverscan !== prevProps.rowWindowingOverscan)
+    ) {
+      this.updateRowViewport({
+        exact: this.props.rowWindowingOverscan !== prevProps.rowWindowingOverscan,
+      });
+    }
+  }
+
+  attachRowWindowing() {
+    this.detachRowWindowing();
+    if (!this.scrollComponent || typeof window === 'undefined') {
+      return;
+    }
+    const scrollParent = getVerticalScrollParent(this.scrollComponent);
+    this.verticalScrollParent = scrollParent;
+    scrollParent.addEventListener('scroll', this.handleVerticalScroll, { passive: true });
+    window.addEventListener('resize', this.handleVerticalScroll);
+    if (scrollParent !== window && typeof ResizeObserver !== 'undefined') {
+      this.rowWindowResizeObserver = new ResizeObserver(this.handleVerticalScroll);
+      this.rowWindowResizeObserver.observe(scrollParent);
+    }
+    this.updateRowViewport({ exact: true });
+  }
+
+  detachRowWindowing() {
+    if (this.verticalScrollParent) {
+      this.verticalScrollParent.removeEventListener('scroll', this.handleVerticalScroll, { passive: true });
+      window.removeEventListener('resize', this.handleVerticalScroll);
+      this.verticalScrollParent = null;
+    }
+    if (this.rowWindowResizeObserver) {
+      this.rowWindowResizeObserver.disconnect();
+      this.rowWindowResizeObserver = null;
+    }
+    if (this.rowWindowFrame != null) {
+      cancelAnimationFrame(this.rowWindowFrame);
+      this.rowWindowFrame = null;
+    }
+  }
+
+  handleVerticalScroll = () => {
+    if (this.rowWindowFrame != null) {
+      return;
+    }
+    this.rowWindowFrame = requestAnimationFrame(() => {
+      this.rowWindowFrame = null;
+      this.updateRowViewport();
+    });
+  }
+
+  /**
+   * Re-measure which part of the rows is inside the vertical viewport and move the window
+   * of mounted rows when needed. While scrolling, the window only moves once the viewport
+   * comes within half the overscan of its edge, so rows are mounted in batches rather than
+   * on every scroll frame. `exact` re-centres the window on the viewport regardless.
+   */
+  updateRowViewport({ exact = false } = {}) {
+    if (!this.props.rowWindowing || !this.scrollComponent || !this.verticalScrollParent) {
+      return;
+    }
+    const { groupTops, groupHeights, rowViewport } = this.state;
+    const { rowWindowingOverscan } = this.props;
+    const nextViewport = measureRowViewport(this.scrollComponent, this.verticalScrollParent);
+    const rendered = getVisibleRowRange(groupTops, groupHeights, rowViewport, rowWindowingOverscan);
+    let shouldMove;
+    if (exact || !rowViewport) {
+      const target = getVisibleRowRange(groupTops, groupHeights, nextViewport, rowWindowingOverscan);
+      shouldMove = !rowRangesEqual(rendered, target);
+    } else {
+      const needed = getVisibleRowRange(groupTops, groupHeights, nextViewport, rowWindowingOverscan / 2);
+      shouldMove = needed.start < rendered.start || needed.end > rendered.end;
+    }
+    if (shouldMove) {
+      this.setState({ rowViewport: nextViewport });
+    }
+  }
+
+  getRenderedGroupIndices = memoize(
+    (start, end, pinnedIndicesKey, count) => getRenderedRowIndices(
+      { start, end },
+      pinnedIndicesKey ? pinnedIndicesKey.split(',').map(Number) : [],
+      count,
+    ),
+  )
+
+  /**
+   * Rows kept mounted regardless of scroll position: the consumer's pinned groups, plus the
+   * source and target rows of an item being dragged or resized.
+   */
+  getPinnedGroupIndices(groupsWithItemsDimensions) {
+    const { rowWindowingPinnedGroupIds, items, keys } = this.props;
+    const { draggingItem, resizingItem, newGroupId } = this.state;
+    const pinnedGroupIds = rowWindowingPinnedGroupIds ? rowWindowingPinnedGroupIds.slice() : [];
+    const interactingItemId = draggingItem || resizingItem;
+    if (interactingItemId) {
+      const item = items.find(i => _get(i, keys.itemIdKey) === interactingItemId);
+      if (item) {
+        pinnedGroupIds.push(_get(item, keys.itemGroupKey));
+      }
+      if (newGroupId != null) {
+        pinnedGroupIds.push(newGroupId);
+      }
+    }
+    return pinnedGroupIds
+      .map(groupId => groupsWithItemsDimensions[groupId])
+      .filter(Boolean)
+      .map(group => group.index)
+      .sort((a, b) => a - b);
+  }
+
+  /**
+   * Scroll the vertical scroll container so that a group's row is in view. Works with and
+   * without `rowWindowing`; with it, the row (and its `sidebarRowRef`) is mounted once the
+   * scroll has been applied.
+   * @param {string|number} groupId
+   * @param {{ align?: 'auto'|'start'|'center'|'end', behavior?: 'auto'|'smooth' }} [options]
+   *   `auto` only scrolls when the row is not fully visible, by the smallest distance.
+   * @returns {boolean} false when the group is unknown or the timeline is not mounted
+   */
+  scrollToGroup = (groupId, { align = 'auto', behavior = 'auto' } = {}) => {
+    const group = this.state.groupsWithItemsDimensions[groupId];
+    if (!group || !this.scrollComponent || typeof window === 'undefined') {
+      return false;
+    }
+    const rowTop = this.state.groupTops[group.index];
+    const rowHeight = this.state.groupHeights[group.index];
+    const scrollParent = this.verticalScrollParent || getVerticalScrollParent(this.scrollComponent);
+    const isWindow = scrollParent === window;
+    const viewTop = isWindow
+      ? 0
+      : scrollParent.getBoundingClientRect().top + (scrollParent.clientTop || 0);
+    const viewHeight = isWindow ? window.innerHeight : scrollParent.clientHeight;
+    const scrollTop = isWindow ? window.scrollY : scrollParent.scrollTop;
+    const rowsOffset = this.scrollComponent.getBoundingClientRect().top - viewTop + scrollTop;
+    const rowStart = rowsOffset + rowTop;
+    const rowEnd = rowStart + rowHeight;
+
+    let target;
+    if (align === 'start') {
+      target = rowStart;
+    } else if (align === 'end') {
+      target = rowEnd - viewHeight;
+    } else if (align === 'center') {
+      target = rowStart - (viewHeight - rowHeight) / 2;
+    } else if (rowStart < scrollTop) {
+      target = rowStart;
+    } else if (rowEnd > scrollTop + viewHeight) {
+      target = Math.min(rowEnd - viewHeight, rowStart);
+    } else {
+      return true;
+    }
+
+    scrollParent.scrollTo({ top: Math.max(target, 0), behavior });
+    return true;
   }
 
   resize = (props, containerWidthFromObserver) => {
@@ -616,6 +809,15 @@ export default class ReactCalendarTimeline extends Component {
     this.scrollComponent.scrollLeft = width;
     if (this.scrollHeaderRef) {
       this.scrollHeaderRef.scrollLeft = width;
+    }
+
+    if (resolvedProps.rowWindowing && this.verticalScrollParent) {
+      // A resize can change which element scrolls (e.g. a consumer's CSS breakpoint).
+      if (getVerticalScrollParent(this.scrollComponent) !== this.verticalScrollParent) {
+        this.attachRowWindowing();
+      } else {
+        this.handleVerticalScroll();
+      }
     }
   }
 
@@ -885,7 +1087,7 @@ export default class ReactCalendarTimeline extends Component {
     this.props.headerRef(el);
   }
 
-  sidebar(height, groupHeights) {
+  sidebar(height, groupHeights, groupTops, renderedGroupIndices) {
     const { sidebarWidth } = this.props;
     return (
       sidebarWidth && (
@@ -897,12 +1099,14 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRowRef={this.props.sidebarRowRef}
+          groupTops={groupTops}
+          renderedGroupIndices={renderedGroupIndices}
         />
       )
     );
   }
 
-  rightSidebar(height, groupHeights) {
+  rightSidebar(height, groupHeights, groupTops, renderedGroupIndices) {
     const { rightSidebarWidth } = this.props;
     return (
       rightSidebarWidth && (
@@ -915,6 +1119,8 @@ export default class ReactCalendarTimeline extends Component {
           groupHeights={groupHeights}
           height={height}
           sidebarRowRef={this.props.sidebarRowRef}
+          groupTops={groupTops}
+          renderedGroupIndices={renderedGroupIndices}
         />
       )
     );
@@ -1051,6 +1257,22 @@ export default class ReactCalendarTimeline extends Component {
       height: `${height}px`,
     };
 
+    let renderedGroupIndices = null;
+    if (this.props.rowWindowing) {
+      const range = getVisibleRowRange(
+        groupTops,
+        groupHeights,
+        this.state.rowViewport,
+        this.props.rowWindowingOverscan,
+      );
+      renderedGroupIndices = this.getRenderedGroupIndices(
+        range.start,
+        range.end,
+        this.getPinnedGroupIndices(groupsWithItemsDimensions).join(','),
+        groupHeights.length,
+      );
+    }
+
     const zoomControl = () => {
       if (zoomRenderer) {
         return zoomRenderer({
@@ -1107,7 +1329,9 @@ export default class ReactCalendarTimeline extends Component {
                  {zoomControl()}
                 {this.renderHeaders()}
                 <div style={outerComponentStyle} className="rct-outer" ref={this.props.containerRef}>
-                  {sidebarWidth > 0 ? this.sidebar(height, groupHeights) : null}
+                  {sidebarWidth > 0
+                    ? this.sidebar(height, groupHeights, groupTops, renderedGroupIndices)
+                    : null}
                   <ScrollElement
                     scrollRef={this.getScrollElementRef}
                     width={width}
@@ -1123,6 +1347,9 @@ export default class ReactCalendarTimeline extends Component {
                       <Rows
                         items={isInteractingWithItem ? itemsWithInteractions : items}
                         groupHeights={groupHeights}
+                        groupTops={groupTops}
+                        renderedGroupIndices={renderedGroupIndices}
+                        rowWindowing={this.props.rowWindowing}
                         itemRenderer={itemRenderer}
                         itemRendererCluster={itemRendererCluster}
                         itemResized={this.resizedItem}
@@ -1174,7 +1401,7 @@ export default class ReactCalendarTimeline extends Component {
                     </MarkerCanvas>
                   </ScrollElement>
                   {rightSidebarWidth > 0
-                    ? this.rightSidebar(height, groupHeights)
+                    ? this.rightSidebar(height, groupHeights, groupTops, renderedGroupIndices)
                     : null}
                 </div>
               </div>
