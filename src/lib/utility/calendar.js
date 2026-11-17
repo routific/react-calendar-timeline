@@ -819,17 +819,32 @@ export function isEqualItemWithDimensions(newArgs, oldArgs) {
   return shallowIsEqualOrderedGroup(newGroup, oldGroup);
 }
 
+let previousGroupsCache = null;
+
 /**
  * returns a cache in the form of dictionary ([groupId]: cachedMethod) for calculating getGroupWithItemDimensions
- * the cache is cleared if groups or keys changed in reference
+ * a new `groups` array keeps the cached method of every group id it still contains, so
+ * groups whose items did not change are not laid out again; the cache is cleared if keys
+ * or method changed in reference
  * @param {*} groups
  * @param {*} keys
  */
-export const getGroupsCache = memoize((groups, keys, method) => groups.reduce((acc, group) => {
-  const id = _get(group, keys.groupIdKey);
-  acc[id] = memoize(method, isEqualItemWithDimensions);
-  return acc;
-}, {}));
+export const getGroupsCache = memoize((groups, keys, method) => {
+  const previous = previousGroupsCache
+    && previousGroupsCache.keys === keys
+    && previousGroupsCache.method === method
+    ? previousGroupsCache.byId
+    : {};
+  const byId = groups.reduce((acc, group) => {
+    const id = _get(group, keys.groupIdKey);
+    acc[id] = Object.prototype.hasOwnProperty.call(previous, id)
+      ? previous[id]
+      : memoize(method, isEqualItemWithDimensions);
+    return acc;
+  }, {});
+  previousGroupsCache = { keys, method, byId };
+  return byId;
+});
 
 export function getGroupsWithItemDimensions(
   groupsWithItems,

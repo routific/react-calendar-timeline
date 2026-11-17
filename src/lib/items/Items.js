@@ -3,7 +3,7 @@ import React, { PureComponent, Component } from 'react';
 import Item from './Item';
 import { TimelineStateConsumer } from '../timeline/TimelineStateContext';
 import { ItemsConsumer } from './ItemsContext';
-import { _get, arraysEqual } from '../utility/generic';
+import { _get, arraysEqual, shallowEqualObjects } from '../utility/generic';
 import {
   getItemRenderWindow,
   isItemInRenderWindow,
@@ -18,6 +18,18 @@ const canResizeRight = (item, canResize) => {
   const value = _get(item, 'canResize') !== undefined ? _get(item, 'canResize') : canResize;
   return value === 'right' || value === 'both' || value === true;
 };
+
+// Cluster objects are rebuilt on every stack; `isTinyItem` is written onto them while rendering.
+const CLUSTER_IGNORED_KEYS = ['items', 'isTinyItem'];
+
+/**
+ * A rebuilt cluster that groups the same item objects over the same time span as `previous`.
+ */
+export function isSameCluster(previous, next) {
+  return Boolean(previous && previous.isCluster && next.isCluster)
+    && shallowEqualObjects(previous, next, CLUSTER_IGNORED_KEYS)
+    && arraysEqual(previous.items, next.items);
+}
 
 export class Items extends Component {
   static propTypes = {
@@ -108,6 +120,31 @@ export class Items extends Component {
     );
   }
 
+  // Last dimensions object and cluster object handed to each item, by item id. Stacking builds
+  // new objects every time a row is laid out again (canvas change, a new `groups` array, a
+  // rebuilt cluster); reusing the previous object when its values are unchanged keeps the
+  // `dimensions` and `item` props referentially stable, so unchanged items skip rendering.
+  dimensionsById = new Map()
+
+  clustersById = new Map()
+
+  getStableDimensions(itemId, dimensions, nextDimensionsById) {
+    const previous = this.dimensionsById.get(itemId);
+    const stable = previous && shallowEqualObjects(previous, dimensions) ? previous : dimensions;
+    nextDimensionsById.set(itemId, stable);
+    return stable;
+  }
+
+  getStableItem(itemId, item, nextClustersById) {
+    if (!item.isCluster) {
+      return item;
+    }
+    const previous = this.clustersById.get(itemId);
+    const stable = isSameCluster(previous, item) ? previous : item;
+    nextClustersById.set(itemId, stable);
+    return stable;
+  }
+
   isSelected(item, itemIdKey) {
     if (!this.props.selected) {
       return this.props.selectedItem === _get(item, itemIdKey);
@@ -150,9 +187,14 @@ export class Items extends Component {
       itemRenderBuffer,
     );
 
-    return (
+    const nextDimensionsById = new Map();
+    const nextClustersById = new Map();
+
+    const rendered = (
       <div className="rct-items">
-        {items.map((item, i) => {
+        {items.map((rawItem, i) => {
+          const itemId = _get(rawItem, itemIdKey);
+          const item = this.getStableItem(itemId, rawItem, nextClustersById);
           const isInteractingItem = this.isInteractingItem(item);
           if (!this.shouldMountItem(
             item,
@@ -170,11 +212,11 @@ export class Items extends Component {
 
           return (
           <Item
-            key={_get(item, itemIdKey)}
+            key={itemId}
             item={item}
             keys={this.props.keys}
             order={order}
-            dimensions={itemDimension.dimensions}
+            dimensions={this.getStableDimensions(itemId, itemDimension.dimensions, nextDimensionsById)}
             selected={this.isSelected(item, itemIdKey)}
             canChangeGroup={
               _get(item, 'canChangeGroup') !== undefined
@@ -226,6 +268,10 @@ export class Items extends Component {
         })}
       </div>
     );
+
+    this.dimensionsById = nextDimensionsById;
+    this.clustersById = nextClustersById;
+    return rendered;
   }
 }
 

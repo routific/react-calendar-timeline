@@ -91,7 +91,9 @@ export default class Item extends Component {
 
   interactMounted = false;
 
-  shouldComponentUpdate(nextProps, nextState) {
+  // The row index (`order.index`) is not compared: it changes for every item below a
+  // row that is inserted or removed, and nothing an item renders depends on it.
+  shouldComponentUpdate(nextProps) {
     const shouldUpdate = nextProps.dragging !== this.props.dragging
       || nextProps.resizing !== this.props.resizing
       || nextProps.keys !== this.props.keys
@@ -101,8 +103,7 @@ export default class Item extends Component {
       || nextProps.canvasTimeStart !== this.props.canvasTimeStart
       || nextProps.canvasTimeEnd !== this.props.canvasTimeEnd
       || nextProps.canvasWidth !== this.props.canvasWidth
-      || (nextProps.order ? nextProps.order.index : undefined)
-        !== (this.props.order ? this.props.order.index : undefined)
+      || !nextProps.order !== !this.props.order
       || nextProps.dragSnap !== this.props.dragSnap
       || nextProps.minResizeWidth !== this.props.minResizeWidth
       || nextProps.canChangeGroup !== this.props.canChangeGroup
