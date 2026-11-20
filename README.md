@@ -418,6 +418,13 @@ Render prop function used to render a customized item. The function provides mul
 
 Parameters provided to the function has two types: context params which have the state of the item and timeline, and prop getters functions
 
+An item only renders again when something it receives changes: the `item` object (by reference), its dimensions (by value), selection, the canvas, drag/resize state, `useResizeHandle`, `clusterSettings` (by value), or the `itemRenderer`/`itemRendererCluster` function (by reference). Unchanged items keep the same `itemContext.dimensions` object, and clusters that group the same item objects over the same time span, with the same `clusterSettings`, keep the same cluster object (the same one the layout and `getRowItems()` hold), so a renderer can also memoise on them. In turn:
+
+- keep each item object the same reference until that item changes; rebuilding every item on each update re-renders every item;
+- keep `itemRenderer` and `itemRendererCluster` stable (a module-level function or `useCallback`); an inline arrow function re-renders every mounted item each time the parent renders;
+- a renderer that reads state from outside its parameters (a store) has to subscribe to that state itself (for example a MobX `observer` or a React context);
+- `timelineContext.visibleTimeStart`, `visibleTimeEnd` and `timelineWidth` are the values from the item's last render: they change on every frame of a horizontal scroll and do not re-render items on their own.
+
 ## itemRendererCluster
 Render prop function used to render a custom cluster item.  The function provides multiple parameters that can be used to render each item. All items inside of the cluster are available via item.items.
 

@@ -43,6 +43,31 @@ export function arraysEqual(array1, array2) {
   );
 }
 
+const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+
+/**
+ * Same own enumerable keys with strictly equal values, ignoring `ignoredKeys`.
+ * Runs once per rendered item, so it avoids allocating key arrays.
+ */
+export function shallowEqualObjects(obj1, obj2, ignoredKeys) {
+  if (obj1 === obj2) return true;
+  if (!obj1 || !obj2) return false;
+  let count1 = 0;
+  for (const key in obj1) {
+    if (hasOwn(obj1, key) && !(ignoredKeys && ignoredKeys.includes(key))) {
+      if (!hasOwn(obj2, key) || obj1[key] !== obj2[key]) return false;
+      count1 += 1;
+    }
+  }
+  let count2 = 0;
+  for (const key in obj2) {
+    if (hasOwn(obj2, key) && !(ignoredKeys && ignoredKeys.includes(key))) {
+      count2 += 1;
+    }
+  }
+  return count1 === count2;
+}
+
 export function deepObjectCompare(obj1, obj2) {
   return isEqual(obj1, obj2);
 }
