@@ -1,4 +1,4 @@
-import { getGroupsCache } from 'lib/utility/calendar';
+import { getGroupsCache, createStackCache } from 'lib/utility/calendar';
 import { groups, items } from '../../../__fixtures__/itemsAndGroups';
 import { props, state } from '../../../__fixtures__/stateAndProps';
 
@@ -85,5 +85,33 @@ describe('getGroupsCache', () => {
       // reset after checking each method before trying the next one in the groupid:method dictionary
       mockMethod.mockClear();
     });
+  });
+  it('keeps the cached method of each group id across a new groups array', () => {
+    const mockMethod = jest.fn();
+    const stackCache = createStackCache();
+    const oldResult = getGroupsCache(groups, props.keys, mockMethod, stackCache);
+    const newResult = getGroupsCache([...groups].reverse(), props.keys, mockMethod, stackCache);
+    expect(newResult).not.toBe(oldResult);
+    Object.keys(oldResult).forEach(key => {
+      expect(newResult[key]).toBe(oldResult[key]);
+    });
+  });
+  it('drops cached methods when keys change', () => {
+    const mockMethod = jest.fn();
+    const stackCache = createStackCache();
+    const oldResult = getGroupsCache(groups, props.keys, mockMethod, stackCache);
+    const newResult = getGroupsCache(groups, { ...props.keys }, mockMethod, stackCache);
+    Object.keys(oldResult).forEach(key => {
+      expect(newResult[key]).not.toBe(oldResult[key]);
+    });
+  });
+  it('keeps separate caches apart', () => {
+    const mockMethod = jest.fn();
+    const first = createStackCache();
+    const second = createStackCache();
+    const firstResult = getGroupsCache(groups, props.keys, mockMethod, first);
+    getGroupsCache([{ id: 'other' }], props.keys, mockMethod, second);
+    expect(getGroupsCache([...groups], props.keys, mockMethod, first)[groups[0].id])
+      .toBe(firstResult[groups[0].id]);
   });
 });

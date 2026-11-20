@@ -17,6 +17,7 @@ import {
   getCanvasWidth,
   calculateScrollCanvas,
   stackTimelineItems,
+  createStackCache,
 } from './utility/calendar';
 import { _get, _length, sortByItemTimeStart } from './utility/generic';
 import {
@@ -388,6 +389,9 @@ export default class ReactCalendarTimeline extends Component {
       resizingItem: null,
       resizeTime: undefined,
       resizingEdge: undefined,
+      // Mutable cache shared by every stack of this timeline (see createStackCache). It
+      // lives in state because getDerivedStateFromProps stacks without an instance.
+      stackCache: createStackCache(),
     };
 
     const canvasWidth = getCanvasWidth(this.state.width);
@@ -415,6 +419,7 @@ export default class ReactCalendarTimeline extends Component {
       this.state.resizeTime,
       this.state.newGroupId,
       props.clusterSettings,
+      this.state.stackCache,
     );
 
     /* eslint-disable react/no-direct-mutation-state */
@@ -525,6 +530,7 @@ export default class ReactCalendarTimeline extends Component {
           prevState.resizeTime,
           prevState.newGroupId,
           nextProps.clusterSettings,
+          prevState.stackCache,
         ),
       );
     }
@@ -603,6 +609,7 @@ export default class ReactCalendarTimeline extends Component {
       this.state.resizeTime,
       this.state.newGroupId,
       resolvedProps.clusterSettings,
+      this.state.stackCache,
     );
 
     this.setState({
@@ -1039,6 +1046,7 @@ export default class ReactCalendarTimeline extends Component {
         this.state.resizeTime,
         this.state.newGroupId,
         this.props.clusterSettings,
+        this.state.stackCache,
       );
       groupsWithItemsDimensions = stackResults.groupsWithItemsDimensions;
       height = stackResults.height;

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import memoize from 'memoize-one';
-import { _get, arraysEqual } from './generic';
+import { _get, arraysEqual, shallowEqualObjects } from './generic';
 import ClusteringService from './ClusteringService';
 
 /**
@@ -407,6 +407,9 @@ export function stackGroup(itemsDimensions, isGroupStacked, lineHeight) {
  * @param {left or right} resizingEdge
  * @param {number} resizeTime
  * @param {number} newGroupId
+ * @param {*} clusterSettings
+ * @param {*} stackCache optional, from `createStackCache()`; the timeline passes its own so
+ *   unchanged groups and clusters are reused from its previous stack
  */
 export function stackTimelineItems(
   items,
@@ -425,6 +428,7 @@ export function stackTimelineItems(
   resizeTime,
   newGroupId,
   clusterSettings,
+  stackCache,
 ) {
   const isInteracting = Boolean(draggingItem || resizingItem);
   const itemsWithInteractions = isInteracting
@@ -465,7 +469,7 @@ export function stackTimelineItems(
     clusterSettings,
     canvasTimeStart,
     canvasTimeEnd,
-
+    stackCache,
   );
   const groupsWithItemsDimensions = getGroupsWithItemDimensions(
     groupsWithItems,
@@ -477,6 +481,7 @@ export function stackTimelineItems(
     canvasTimeEnd,
     canvasWidth,
     groups,
+    stackCache,
   );
   const groupHeights = groups.map(group => {
     const groupKey = _get(group, keys.groupIdKey);
@@ -682,6 +687,7 @@ export function calculateScrollCanvas(
         mergedState.resizeTime,
         mergedState.newGroupId,
         props.clusterSettings,
+        mergedState.stackCache,
       ),
     );
   }
@@ -758,7 +764,64 @@ export function shouldCluster(clusterSettings, canvasTimeSpan) {
 
   return true;
 }
-export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, canvasTimeStart, canvasTimeEnd) {
+
+/**
+ * Per-timeline state carried from one stack to the next: the clusters built by the last
+ * stack (`clusters`, by group id) and the per-group memoised layout (`groupsCache`).
+ * Each Timeline owns one, so two timelines on a page do not overwrite each other's cache.
+ */
+export function createStackCache() {
+  return { clusters: new Map(), groupsCache: null };
+}
+
+// Used by callers that do not pass a stack cache (direct calls to the exported helpers).
+const defaultStackCache = createStackCache();
+
+// Cluster objects are rebuilt on every stack; `isTinyItem` is written onto them while rendering.
+const CLUSTER_IGNORED_KEYS = ['items', 'isTinyItem'];
+
+/**
+ * A rebuilt cluster that groups the same item objects over the same time span as `previous`.
+ */
+export function isSameCluster(previous, next) {
+  return Boolean(previous && previous.isCluster && next.isCluster)
+    && shallowEqualObjects(previous, next, CLUSTER_IGNORED_KEYS)
+    && arraysEqual(previous.items, next.items);
+}
+
+/**
+ * Replaces each rebuilt cluster with the cluster object from the previous stack when it
+ * groups the same items over the same span with the same settings. Layout (and everything
+ * reading `group.items`) and the rendered item then share one stable object, so unchanged
+ * clusters keep their identity and their row's layout cache stays valid.
+ */
+function reusePreviousClusters(
+  previousClusters, groupId, clusteredItems, clusterSettings, nextClusters,
+) {
+  const previous = previousClusters.get(groupId);
+  const canReuse = previous && shallowEqualObjects(previous.clusterSettings, clusterSettings);
+  const byId = new Map();
+  const result = clusteredItems.map(item => {
+    if (!item.isCluster) {
+      return item;
+    }
+    const previousCluster = canReuse ? previous.byId.get(item.id) : undefined;
+    const stable = isSameCluster(previousCluster, item) ? previousCluster : item;
+    byId.set(stable.id, stable);
+    return stable;
+  });
+  nextClusters.set(groupId, { clusterSettings, byId });
+  return result;
+}
+
+/**
+ * @param {*} stackCache optional, from `createStackCache()`; when given, rebuilt clusters
+ *   that equal the ones from the previous call with the same cache keep their identity
+ */
+export function getOrderedGroupsWithItems(
+  groups, items, keys, clusterSettings, canvasTimeStart, canvasTimeEnd, stackCache,
+) {
+  const nextClusters = new Map();
   const groupOrders = getGroupOrders(groups, keys);
   const groupsWithItems = {};
   const groupKeys = Object.keys(groupOrders);
@@ -780,7 +843,15 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
         itemTimeEndKey,
       );
       clusterService.cluster();
-      _groupedItems = clusterService.items;
+      _groupedItems = stackCache
+        ? reusePreviousClusters(
+          stackCache.clusters,
+          _get(groupOrder.group, keys.groupIdKey),
+          clusterService.items,
+          clusterSettings,
+          nextClusters,
+        )
+        : clusterService.items;
     }
 
     groupsWithItems[element] = {
@@ -788,6 +859,10 @@ export function getOrderedGroupsWithItems(groups, items, keys, clusterSettings, 
       group: groupOrder.group,
       items: _groupedItems,
     };
+  }
+  if (stackCache && (nextClusters.size > 0 || stackCache.clusters.size > 0)) {
+    // eslint-disable-next-line no-param-reassign
+    stackCache.clusters = nextClusters;
   }
   return groupsWithItems;
 }
@@ -821,15 +896,35 @@ export function isEqualItemWithDimensions(newArgs, oldArgs) {
 
 /**
  * returns a cache in the form of dictionary ([groupId]: cachedMethod) for calculating getGroupWithItemDimensions
- * the cache is cleared if groups or keys changed in reference
+ * the same dictionary is returned while groups, keys and method are the same references;
+ * a new `groups` array keeps the cached method of every group id it still contains, so
+ * groups whose items did not change are not laid out again; the cache is cleared if keys
+ * or method changed in reference
  * @param {*} groups
  * @param {*} keys
+ * @param {*} method
+ * @param {*} stackCache optional, from `createStackCache()`; holds the cache between calls
  */
-export const getGroupsCache = memoize((groups, keys, method) => groups.reduce((acc, group) => {
-  const id = _get(group, keys.groupIdKey);
-  acc[id] = memoize(method, isEqualItemWithDimensions);
-  return acc;
-}, {}));
+export function getGroupsCache(groups, keys, method, stackCache = defaultStackCache) {
+  const previous = stackCache.groupsCache;
+  const sameKeysAndMethod = Boolean(previous) && previous.keys === keys && previous.method === method;
+  if (sameKeysAndMethod && previous.groups === groups) {
+    return previous.byId;
+  }
+  const reusable = sameKeysAndMethod ? previous.byId : {};
+  const byId = groups.reduce((acc, group) => {
+    const id = _get(group, keys.groupIdKey);
+    acc[id] = Object.prototype.hasOwnProperty.call(reusable, id)
+      ? reusable[id]
+      : memoize(method, isEqualItemWithDimensions);
+    return acc;
+  }, {});
+  // eslint-disable-next-line no-param-reassign
+  stackCache.groupsCache = {
+    groups, keys, method, byId,
+  };
+  return byId;
+}
 
 export function getGroupsWithItemDimensions(
   groupsWithItems,
@@ -841,8 +936,9 @@ export function getGroupsWithItemDimensions(
   canvasTimeEnd,
   canvasWidth,
   groups,
+  stackCache,
 ) {
-  const cache = getGroupsCache(groups, keys, getGroupWithItemDimensions);
+  const cache = getGroupsCache(groups, keys, getGroupWithItemDimensions, stackCache);
   const groupKeys = Object.keys(groupsWithItems);
   return groupKeys.reduce((acc, groupKey) => {
     const group = groupsWithItems[groupKey];
